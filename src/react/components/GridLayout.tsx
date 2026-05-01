@@ -434,7 +434,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
 
   // Sync layout from props
   useEffect(() => {
-    if (activeDrag) return; // Don't update during drag
+    // if (activeDrag) return; // Don't update during drag (PCD: Removed for live smart-swapping)
     if (droppingDOMNode) return; // Don't update during drop from outside
 
     const layoutChanged = !deepEqual(propsLayout, prevPropsLayoutRef.current);
