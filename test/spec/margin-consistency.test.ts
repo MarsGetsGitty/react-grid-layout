@@ -5,7 +5,7 @@
  * items can be inconsistent (e.g., 0px, 1px, or 2px instead of consistent 1px).
  * This fix ensures margins are always consistent by adjusting item dimensions.
  */
-import { calcGridItemPosition } from "../../src/core/calculate";
+import { calcGridItemPosition } from "../../src/core/index.js";
 
 describe("PR #2150 - Margin consistency", () => {
   it("should have consistent margins when margin is [1,1]", () => {

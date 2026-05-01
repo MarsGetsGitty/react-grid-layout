@@ -59,7 +59,7 @@ export type {
   Mutable,
   DeepPartial,
   ArrayElement
-} from "./types.js";
+} from "./types/index.js";
 
 // Default configuration objects
 export {
@@ -67,23 +67,18 @@ export {
   defaultDragConfig,
   defaultResizeConfig,
   defaultDropConfig
-} from "./types.js";
+} from "./types/index.js";
 
 // =============================================================================
-// Collision Detection
+// Spatial Math & Geometry
 // =============================================================================
 
-export { collides, getFirstCollision, getAllCollisions } from "./collision.js";
-
-// =============================================================================
-// Sorting
-// =============================================================================
-
+export { collides, getFirstCollision, getAllCollisions } from "./spatial/collision.js";
 export {
   sortLayoutItems,
   sortLayoutItemsByRowCol,
   sortLayoutItemsByColRow
-} from "./sort.js";
+} from "./spatial/sort.js";
 
 // =============================================================================
 // Layout Utilities
@@ -112,10 +107,10 @@ export {
 
   // Validation
   validateLayout
-} from "./layout.js";
+} from "./layout/index.js";
 
 // =============================================================================
-// Compaction
+// Strategies (Compaction, Constraints, CSS)
 // =============================================================================
 
 // Compactor implementations
@@ -131,52 +126,7 @@ export {
   resolveCompactionCollision,
   compactItemVertical,
   compactItemHorizontal
-} from "./compactors.js";
-
-// Note: compact and compactItem are NOT exported (#2213)
-// Use compactor.compact() instead via the Compactor interface
-
-// =============================================================================
-// Position Calculations
-// =============================================================================
-
-export {
-  setTransform,
-  setTopLeft,
-  perc,
-  resizeItemInDirection,
-  // Position strategies
-  transformStrategy,
-  absoluteStrategy,
-  createScaledStrategy,
-  defaultPositionStrategy
-} from "./position.js";
-
-// =============================================================================
-// Grid Calculations
-// =============================================================================
-
-export type {
-  PositionParams,
-  GridCellDimensions,
-  GridCellConfig
-} from "./calculate.js";
-
-export {
-  calcGridColWidth,
-  calcGridItemWHPx,
-  calcGridItemPosition,
-  calcXY,
-  calcWH,
-  calcXYRaw,
-  calcWHRaw,
-  clamp,
-  calcGridCellDimensions
-} from "./calculate.js";
-
-// =============================================================================
-// Layout Constraints
-// =============================================================================
+} from "./strategies/compactors.js";
 
 export {
   // Built-in constraints
@@ -195,7 +145,42 @@ export {
   // Apply functions
   applyPositionConstraints,
   applySizeConstraints
-} from "./constraints.js";
+} from "./strategies/constraints.js";
+
+export {
+  setTransform,
+  setTopLeft,
+  perc,
+  // Position strategies
+  transformStrategy,
+  absoluteStrategy,
+  createScaledStrategy,
+  defaultPositionStrategy
+} from "./strategies/css-strategies.js";
+
+export { resizeItemInDirection } from "./math/resize-geometry.js";
+
+// =============================================================================
+// Grid Calculations
+// =============================================================================
+
+export type {
+  PositionParams,
+  GridCellDimensions,
+  GridCellConfig
+} from "./math/calculate.js";
+
+export {
+  calcGridColWidth,
+  calcGridItemWHPx,
+  calcGridItemPosition,
+  calcXY,
+  calcWH,
+  calcXYRaw,
+  calcWHRaw,
+  clamp,
+  calcGridCellDimensions
+} from "./math/calculate.js";
 
 // =============================================================================
 // Responsive Utilities
@@ -207,4 +192,30 @@ export {
   getColsFromBreakpoint,
   findOrGenerateResponsiveLayout,
   getIndentationValue
-} from "./responsive.js";
+} from "./layout/responsive.js";
+
+// =============================================================================
+// Engine Facade
+// =============================================================================
+
+export {
+  createPhysicsEngine,
+  type PhysicsEngine,
+  type PhysicsEngineConfig
+} from "./engine.js";
+
+// =============================================================================
+// Collision Strategies
+// =============================================================================
+
+export type {
+  DragSlot,
+  DragCollisionResolver,
+  ResizeCollisionResolver
+} from "./engines/index.js";
+
+export {
+  trySwap,
+  resolveResizeCollisions,
+  inferResizeHandles
+} from "./engines/index.js";

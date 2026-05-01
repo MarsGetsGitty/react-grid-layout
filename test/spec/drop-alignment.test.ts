@@ -9,7 +9,7 @@ import {
   calcGridColWidth,
   calcGridItemWHPx,
   type PositionParams
-} from "../../src/core/calculate";
+} from "../../src/core/index.js";
 
 describe("PR #2167 - Drop item alignment", () => {
   // Common test parameters matching a typical grid configuration

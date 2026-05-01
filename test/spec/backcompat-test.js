@@ -14,8 +14,8 @@ import ReactGridLayout from "../../src/legacy/ReactGridLayout";
 import ResponsiveReactGridLayout from "../../src/legacy/ResponsiveReactGridLayout";
 import WidthProvider from "../../src/legacy/WidthProvider";
 // Import directly from core modules (#2213)
-import { moveElement as _moveElement } from "../../src/core/layout";
-import { getCompactor } from "../../src/core/compactors";
+import { moveElement as _moveElement } from "../../src/core/index.js";
+import { getCompactor } from "../../src/core/index.js";
 
 // Helper to compact using compactor interface (#2213)
 function compact(layout, compactTypeStr, cols, allowOverlap = false) {

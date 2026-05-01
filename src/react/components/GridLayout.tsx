@@ -33,14 +33,14 @@ import type {
   Compactor,
   LayoutConstraint,
   EventCallback
-} from "../../core/types.js";
+} from "../../core/index.js";
 import {
   defaultGridConfig,
   defaultDragConfig,
   defaultResizeConfig,
   defaultDropConfig
-} from "../../core/types.js";
-import type { PositionParams } from "../../core/calculate.js";
+} from "../../core/index.js";
+import type { PositionParams } from "../../core/index.js";
 import {
   bottom,
   cloneLayoutItem,
@@ -48,17 +48,17 @@ import {
   moveElement,
   withLayoutItem,
   correctBounds
-} from "../../core/layout.js";
-import { getAllCollisions } from "../../core/collision.js";
+} from "../../core/index.js";
+import { getAllCollisions } from "../../core/index.js";
 // Note: compact from compact-compat.js is NOT used - we use compactor.compact() instead (#2213)
-import { getCompactor } from "../../core/compactors.js";
+import { getCompactor } from "../../core/index.js";
 import {
   calcXY,
   calcGridColWidth,
   calcGridItemWHPx
-} from "../../core/calculate.js";
-import { defaultPositionStrategy } from "../../core/position.js";
-import { defaultConstraints } from "../../core/constraints.js";
+} from "../../core/index.js";
+import { defaultPositionStrategy } from "../../core/index.js";
+import { defaultConstraints } from "../../core/index.js";
 
 import { GridItem, type ResizeHandle } from "./GridItem.js";
 

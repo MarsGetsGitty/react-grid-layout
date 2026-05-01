@@ -10,7 +10,7 @@ import {
   wrapCompactor,
   wrapOverlapCompactor
 } from "../../src/extras/wrapCompactor";
-import type { Layout } from "../../src/core/types";
+import type { Layout } from "../../src/core/index.js";
 
 describe("wrapCompactor", () => {
   describe("basic properties", () => {

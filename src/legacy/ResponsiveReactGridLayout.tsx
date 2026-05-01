@@ -23,13 +23,13 @@ import type {
   ResizeConfig,
   DropConfig,
   PositionStrategy
-} from "../core/types.js";
-import { getCompactor } from "../core/compactors.js";
+} from "../core/index.js";
+import { getCompactor } from "../core/index.js";
 import {
   transformStrategy,
   absoluteStrategy,
   createScaledStrategy
-} from "../core/position.js";
+} from "../core/index.js";
 
 // ============================================================================
 // Legacy Props Interface

@@ -26,8 +26,8 @@
  * ```
  */
 
-import type { Compactor, Layout, LayoutItem, Mutable } from "../core/types.js";
-import { cloneLayout, cloneLayoutItem } from "../core/layout.js";
+import type { Compactor, Layout, LayoutItem, Mutable } from "../core/index.js";
+import { cloneLayout, cloneLayoutItem } from "../core/index.js";
 
 /**
  * Sort items in wrap order: left-to-right, top-to-bottom.

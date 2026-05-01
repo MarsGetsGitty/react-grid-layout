@@ -34,7 +34,7 @@ export type {
   Breakpoint,
   Breakpoints,
   ResponsiveLayouts
-} from "../core/types.js";
+} from "../core/index.js";
 
 // Re-export props types
 export type { LegacyReactGridLayoutProps } from "./ReactGridLayout.js";

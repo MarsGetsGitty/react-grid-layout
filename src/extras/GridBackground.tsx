@@ -7,8 +7,8 @@
 
 import * as React from "react";
 import { useMemo } from "react";
-import { calcGridCellDimensions } from "../core/calculate.js";
-import type { GridCellConfig } from "../core/calculate.js";
+import { calcGridCellDimensions } from "../core/index.js";
+import type { GridCellConfig } from "../core/index.js";
 
 export interface GridBackgroundProps extends GridCellConfig {
   /**

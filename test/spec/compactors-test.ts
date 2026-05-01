@@ -13,8 +13,8 @@ import {
   horizontalOverlapCompactor,
   noOverlapCompactor,
   type Compactor
-} from "../../src/core/compactors";
-import type { Layout } from "../../src/core/types";
+} from "../../src/core/index.js";
+import type { Layout } from "../../src/core/index.js";
 
 describe("Compactors", () => {
   describe("verticalCompactor", () => {

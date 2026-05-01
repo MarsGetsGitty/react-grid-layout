@@ -4,7 +4,7 @@
  * These functions determine if and where layout items overlap.
  */
 
-import type { Layout, LayoutItem } from "./types.js";
+import type { Layout, LayoutItem } from "../types/index.js";
 
 /**
  * Check if two layout items collide (overlap).

@@ -10,7 +10,7 @@ import type {
   LayoutConstraint,
   ConstraintContext,
   ResizeHandleAxis
-} from "./types.js";
+} from "../types/index.js";
 
 // ============================================================================
 // Utility Functions

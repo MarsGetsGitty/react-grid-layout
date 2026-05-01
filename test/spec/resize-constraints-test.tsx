@@ -31,7 +31,7 @@ jest.mock("react-resizable", () => {
 
 // Import GridItem AFTER the mock is set up
 import { GridItem, type GridItemProps } from "../../src/react/index";
-import { calcGridItemWHPx, calcGridColWidth } from "../../src/core/calculate";
+import { calcGridItemWHPx, calcGridColWidth } from "../../src/core/index.js";
 
 describe("Resize Visual Constraints (#2235)", () => {
   beforeEach(() => {

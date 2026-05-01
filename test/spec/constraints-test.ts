@@ -17,12 +17,12 @@ import {
   defaultConstraints,
   applyPositionConstraints,
   applySizeConstraints
-} from "../../src/core/constraints";
+} from "../../src/core/index.js";
 import type {
   LayoutItem,
   LayoutConstraint,
   ConstraintContext
-} from "../../src/core/types";
+} from "../../src/core/index.js";
 
 // Helper to create a basic layout item
 function createItem(overrides: Partial<LayoutItem> = {}): LayoutItem {

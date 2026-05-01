@@ -31,10 +31,10 @@ import {
   setTransform,
   setTopLeft,
   perc
-} from "../../src/core/index";
+} from "../../src/core/index.js";
 
-import type { Layout, LayoutItem, Position } from "../../src/core/types";
-import type { PositionParams } from "../../src/core/calculate";
+import type { Layout, LayoutItem, Position } from "../../src/core/index.js";
+import type { PositionParams } from "../../src/core/index.js";
 
 describe("Core Functions", () => {
   // ==========================================================================

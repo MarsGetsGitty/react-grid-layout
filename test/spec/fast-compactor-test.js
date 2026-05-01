@@ -10,12 +10,12 @@
  *   npm test -- --testPathPattern=fast-compactor
  */
 
-import { verticalCompactor } from "../../src/core/compactors";
+import { verticalCompactor } from "../../src/core/index.js";
 import {
   fastVerticalCompactor,
   fastVerticalOverlapCompactor
 } from "../../src/extras/fastVerticalCompactor";
-import { collides } from "../../src/core/collision";
+import { collides } from "../../src/core/index.js";
 
 // Generate a random layout
 function generateRandomLayout(n, cols = 12, numStatics = 0) {

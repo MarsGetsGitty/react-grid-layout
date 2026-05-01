@@ -24,7 +24,7 @@ import {
   calcXY,
   calcWH
 } from "../../src/react/index";
-import { calcGridItemWHPx, calcGridColWidth } from "../../src/core/calculate";
+import { calcGridItemWHPx, calcGridColWidth } from "../../src/core/index.js";
 
 // Helper to dispatch native mouse events
 function dispatchMouseEvent(

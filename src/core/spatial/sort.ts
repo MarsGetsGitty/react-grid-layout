@@ -4,7 +4,7 @@
  * These functions sort layout items for compaction and iteration.
  */
 
-import type { CompactType, Layout, LayoutItem } from "./types.js";
+import type { CompactType, Layout, LayoutItem } from "../types/index.js";
 
 /**
  * Sort layout items based on the compaction type.

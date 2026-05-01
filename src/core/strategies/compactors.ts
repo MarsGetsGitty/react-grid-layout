@@ -11,11 +11,10 @@ import type {
   Layout,
   LayoutItem,
   Mutable
-} from "./types.js";
-import { getFirstCollision } from "./collision.js";
-import { sortLayoutItemsByRowCol, sortLayoutItemsByColRow } from "./sort.js";
-import { bottom, cloneLayoutItem, getStatics, cloneLayout } from "./layout.js";
-import { collides } from "./collision.js";
+} from "../types/index.js";
+import { getFirstCollision, collides } from "../spatial/index.js";
+import { sortLayoutItemsByRowCol, sortLayoutItemsByColRow } from "../spatial/index.js";
+import { bottom, cloneLayoutItem, getStatics, cloneLayout } from "../layout/index.js";
 
 // ============================================================================
 // Helpers for Custom Compactors

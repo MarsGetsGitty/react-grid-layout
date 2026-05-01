@@ -28,8 +28,8 @@ import type {
   Layout,
   LayoutItem as LayoutItemType,
   PositionStrategy
-} from "../../core/types.js";
-import type { PositionParams } from "../../core/calculate.js";
+} from "../../core/index.js";
+import type { PositionParams } from "../../core/index.js";
 import {
   calcGridItemPosition,
   calcGridItemWHPx,
@@ -37,18 +37,18 @@ import {
   calcXYRaw,
   calcWHRaw,
   clamp
-} from "../../core/calculate.js";
+} from "../../core/index.js";
 import {
   applyPositionConstraints,
   applySizeConstraints,
   defaultConstraints
-} from "../../core/constraints.js";
+} from "../../core/index.js";
 import {
   setTransform,
   setTopLeft,
   perc,
   resizeItemInDirection
-} from "../../core/position.js";
+} from "../../core/index.js";
 
 // ============================================================================
 // Types

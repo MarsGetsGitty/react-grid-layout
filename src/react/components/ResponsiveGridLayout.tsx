@@ -21,16 +21,16 @@ import type {
   Breakpoints,
   ResponsiveLayouts,
   Compactor
-} from "../../core/types.js";
-import { cloneLayout, correctBounds } from "../../core/layout.js";
+} from "../../core/index.js";
+import { cloneLayout, correctBounds } from "../../core/index.js";
 import {
   getBreakpointFromWidth,
   getColsFromBreakpoint,
   findOrGenerateResponsiveLayout,
   getIndentationValue
-} from "../../core/responsive.js";
-import { getCompactor } from "../../core/compactors.js";
-import { bottom } from "../../core/layout.js";
+} from "../../core/index.js";
+import { getCompactor } from "../../core/index.js";
+import { bottom } from "../../core/index.js";
 
 import { GridLayout, type GridLayoutProps } from "./GridLayout.js";
 

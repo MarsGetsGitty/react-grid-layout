@@ -11,9 +11,9 @@ import type {
   CompactType,
   Layout,
   ResponsiveLayouts
-} from "./types.js";
-import { cloneLayout, correctBounds } from "./layout.js";
-import { getCompactor } from "./compactors.js";
+} from "../types/index.js";
+import { cloneLayout, correctBounds } from "./index.js";
+import { getCompactor } from "../strategies/index.js";
 
 // ============================================================================
 // Breakpoint Utilities

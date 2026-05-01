@@ -16,9 +16,9 @@ import * as React from "react";
 import { render, act as _act } from "@testing-library/react";
 import ReactGridLayout from "../../src/legacy/ReactGridLayout";
 // Import directly from core modules (#2213)
-import { moveElement, correctBounds } from "../../src/core/layout";
-import { sortLayoutItemsByRowCol } from "../../src/core/sort";
-import { getCompactor } from "../../src/core/compactors";
+import { moveElement, correctBounds } from "../../src/core/index.js";
+import { sortLayoutItemsByRowCol } from "../../src/core/index.js";
+import { getCompactor } from "../../src/core/index.js";
 
 // Helper to compact using compactor interface (#2213)
 function compact(layout, compactTypeStr, cols, allowOverlap = false) {

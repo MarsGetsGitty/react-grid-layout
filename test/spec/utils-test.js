@@ -7,17 +7,17 @@ import {
   moveElement,
   moveElementAwayFromCollision,
   validateLayout
-} from "../../src/core/layout";
-import { collides } from "../../src/core/collision";
-import { sortLayoutItemsByRowCol } from "../../src/core/sort";
-import { getCompactor } from "../../src/core/compactors";
-import { resizeItemInDirection } from "../../src/core/position";
+} from "../../src/core/index.js";
+import { collides } from "../../src/core/index.js";
+import { sortLayoutItemsByRowCol } from "../../src/core/index.js";
+import { getCompactor } from "../../src/core/index.js";
+import { resizeItemInDirection } from "../../src/core/index.js";
 import {
   calcGridColWidth,
   calcGridItemPosition,
   calcWH,
   calcXY
-} from "../../src/core/calculate";
+} from "../../src/core/index.js";
 import { deepEqual } from "fast-equals";
 import deepFreeze from "./../util/deepFreeze";
 

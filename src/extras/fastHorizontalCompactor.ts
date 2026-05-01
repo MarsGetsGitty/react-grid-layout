@@ -23,8 +23,8 @@
  * ```
  */
 
-import type { Compactor, Layout, LayoutItem, Mutable } from "../core/types.js";
-import { cloneLayout } from "../core/layout.js";
+import type { Compactor, Layout, LayoutItem, Mutable } from "../core/index.js";
+import { cloneLayout } from "../core/index.js";
 
 /**
  * Ensure the tide array has enough rows.

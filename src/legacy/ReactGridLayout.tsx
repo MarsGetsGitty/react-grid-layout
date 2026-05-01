@@ -22,14 +22,14 @@ import type {
   DropConfig,
   PositionStrategy,
   LayoutConstraint
-} from "../core/types.js";
-import { getCompactor } from "../core/compactors.js";
+} from "../core/index.js";
+import { getCompactor } from "../core/index.js";
 import {
   transformStrategy,
   absoluteStrategy,
   createScaledStrategy
-} from "../core/position.js";
-import { defaultConstraints, containerBounds } from "../core/constraints.js";
+} from "../core/index.js";
+import { defaultConstraints, containerBounds } from "../core/index.js";
 
 // ============================================================================
 // Legacy Props Interface

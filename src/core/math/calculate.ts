@@ -4,7 +4,7 @@
  * These functions convert between grid units and pixel positions.
  */
 
-import type { Position, ResizeHandleAxis } from "./types.js";
+import type { Position, ResizeHandleAxis } from "../types/index.js";
 
 // ============================================================================
 // Types

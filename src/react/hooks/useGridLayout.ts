@@ -13,7 +13,7 @@ import type {
   DroppingPosition,
   Compactor,
   Mutable
-} from "../../core/types.js";
+} from "../../core/index.js";
 import {
   cloneLayout,
   cloneLayoutItem,
@@ -21,8 +21,8 @@ import {
   correctBounds,
   bottom,
   getLayoutItem
-} from "../../core/layout.js";
-import { verticalCompactor } from "../../core/compactors.js";
+} from "../../core/index.js";
+import { verticalCompactor } from "../../core/index.js";
 
 // ============================================================================
 // Types

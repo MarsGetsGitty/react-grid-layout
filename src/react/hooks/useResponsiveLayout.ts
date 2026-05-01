@@ -13,15 +13,15 @@ import type {
   Breakpoints,
   ResponsiveLayouts,
   Compactor
-} from "../../core/types.js";
-import { cloneLayout } from "../../core/layout.js";
+} from "../../core/index.js";
+import { cloneLayout } from "../../core/index.js";
 import {
   getBreakpointFromWidth,
   getColsFromBreakpoint,
   findOrGenerateResponsiveLayout,
   sortBreakpoints
-} from "../../core/responsive.js";
-import { verticalCompactor } from "../../core/compactors.js";
+} from "../../core/index.js";
+import { verticalCompactor } from "../../core/index.js";
 
 // ============================================================================
 // Types

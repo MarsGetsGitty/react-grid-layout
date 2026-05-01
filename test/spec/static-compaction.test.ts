@@ -5,7 +5,7 @@
  * optimization in resolveCompactionCollision could skip items that need
  * to be moved, causing incorrect compaction.
  */
-import { verticalCompactor } from "../../src/core/compactors";
+import { verticalCompactor } from "../../src/core/index.js";
 
 describe("PR #1309 - Static items compaction", () => {
   it("should handle recursive collision with statics mixed throughout layout", () => {

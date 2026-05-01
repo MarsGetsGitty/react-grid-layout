@@ -18,9 +18,9 @@ import {
 import {
   horizontalCompactor,
   verticalOverlapCompactor
-} from "../../src/core/compactors";
+} from "../../src/core/index.js";
 
-import type { Layout } from "../../src/core/types";
+import type { Layout } from "../../src/core/index.js";
 
 // Store ResizeObserver callbacks and instances for testing
 let resizeObserverInstances: MockResizeObserver[] = [];

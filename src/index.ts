@@ -75,7 +75,7 @@ export type {
   GridDragEvent,
   GridResizeEvent,
   EventCallback
-} from "./core/types.js";
+} from "./core/index.js";
 
 // =============================================================================
 // Core Utilities
