@@ -128,14 +128,6 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       const l = getLayoutItem(currentLayout, i);
       if (!l) return;
 
-      const placeholder: LayoutItem = {
-        w: l.w,
-        h: l.h,
-        x: l.x,
-        y: l.y,
-        i
-      };
-
       // ── Custom collision resolver path ──
       // When a collisionResolver is provided, it replaces the default
       // moveElement → compact pipeline entirely. The resolver receives
@@ -163,16 +155,36 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
 
         const resolved = collisionResolver(tentative, movedItem, originPos);
 
+        // Placeholder tracks the proposed grid position so the user
+        // always sees where the widget WOULD land, even when rejected.
+        const placeholder: LayoutItem = {
+          w: l.w,
+          h: l.h,
+          x,
+          y,
+          i
+        };
+
         onDragProp(tentative, oldDragItem, l, placeholder, data.e, data.node);
 
         if (resolved) {
           // Accept: use resolved layout
           setLayout(compactor.compact(resolved, cols));
-          setActiveDrag(placeholder);
         }
-        // null = reject: layout stays at last valid state, ghost follows cursor
+        // Always update placeholder so it tracks cursor position.
+        // On reject the layout stays at last valid state but the
+        // placeholder still shows where the widget is being dragged.
+        setActiveDrag(placeholder);
         return;
       }
+
+      const placeholder: LayoutItem = {
+        w: l.w,
+        h: l.h,
+        x: l.x,
+        y: l.y,
+        i
+      };
 
       // ── Default moveElement → compact pipeline ──
       const newLayout = moveElement(
@@ -208,29 +220,11 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       let finalLayout: Layout;
 
       if (collisionResolver) {
-        // Custom resolver path — run resolver one final time for the drop position
-        const tentative = moveElement(
-          currentLayout,
-          l,
-          x,
-          y,
-          true,
-          false,
-          compactType,
-          cols,
-          true
-        );
-        const movedItem = getLayoutItem(tentative, i);
-        const originPos = oldDragItem
-          ? { x: oldDragItem.x, y: oldDragItem.y }
-          : { x: l.x, y: l.y };
-
-        const resolved = movedItem
-          ? collisionResolver(tentative, movedItem, originPos)
-          : null;
-
-        // If resolver rejects at drop time, keep the current (last valid) layout
-        finalLayout = compactor.compact(resolved ?? currentLayout, cols);
+        // Custom resolver path — commit the last accepted layout.
+        // Do NOT re-resolve at the raw drop position: on a fast flick
+        // the cursor can be far from the last valid grid position,
+        // which causes teleport/overlap bugs.
+        finalLayout = compactor.compact(currentLayout, cols);
       } else {
         // Default path
         const newLayout = moveElement(

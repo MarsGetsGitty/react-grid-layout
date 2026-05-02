@@ -32,9 +32,17 @@
  */
 .react-grid-item.react-grid-item--drag-origin {
   opacity: 0.3;
+  /* Only animate opacity — suppress positional transitions so the
+     origin widget doesn't slide when a swap changes its grid cell. */
   transition: opacity 150ms ease;
   z-index: 1;
-  will-change: auto;
+  will-change: opacity;
+}
+
+/* When ghost drag is active, non-dragged items should snap faster.
+   The default 200ms slide makes swap targets lag behind the ghost. */
+.react-grid-layout--ghost-active .react-grid-item:not(.react-grid-item--drag-origin) {
+  transition-duration: 80ms;
 }
 
 /* Ghost drag — cursor-following clone */

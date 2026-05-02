@@ -686,7 +686,9 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
   // Render
   // ============================================================================
 
-  const mergedClassName = clsx(layoutClassName, className);
+  const mergedClassName = clsx(layoutClassName, className, {
+    "react-grid-layout--ghost-active": ghostDrag && activeDrag != null
+  });
   const mergedStyle: CSSProperties = {
     height: containerHeight,
     ...style
