@@ -270,7 +270,7 @@ describe("resolveResizeCollisions", () => {
     expect(c!.y).toBe(5); // chain-pushed by 1
   });
 
-  it("returns layout unchanged when no resize delta detected", () => {
+  it("returns cloned layout with newItem applied when no resize delta detected", () => {
     const layout = [
       item("a", 0, 0, 3, 2),
       item("b", 0, 2, 3, 2),
@@ -280,8 +280,9 @@ describe("resolveResizeCollisions", () => {
 
     const result = resolveResizeCollisions(layout, "a", oldA, newA, 10, 12);
 
-    // Returns the same layout reference (no delta = no-op)
-    expect(result).toBe(layout);
+    // Returns a new array (clone), not the original reference
+    expect(result).not.toBe(layout);
+    expect(result).toEqual(layout);
   });
 
   it("does not mutate input layout", () => {
@@ -297,5 +298,145 @@ describe("resolveResizeCollisions", () => {
 
     expect(layout[1].y).toBe(originalB.y);
     expect(layout[1].h).toBe(originalB.h);
+  });
+
+  // ===========================================================================
+  // Ship-gate tests (required before merge)
+  // ===========================================================================
+
+  it("1. south fast resize swallowing a smaller widget clears fully", () => {
+    // "a" resizes from h=3 to h=10, completely swallowing "b" (h=2)
+    const layout = [
+      item("a", 0, 0, 6, 10),
+      item("b", 0, 3, 6, 2, { minH: 1 }),
+    ];
+    const oldA = item("a", 0, 0, 6, 3);
+    const newA = item("a", 0, 0, 6, 10);
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 20, 12);
+
+    expect(result).not.toBeNull();
+    const b = result!.find(l => l.i === "b");
+    // b must be fully clear of a's bottom edge (y=10)
+    expect(b!.y).toBeGreaterThanOrEqual(10);
+  });
+
+  it("2. north resize with stale wrong-side overlap does not push wrong-side widget", () => {
+    // "x" overlaps "a"'s bottom edge (stale). "a" resizes north. "x" should NOT move.
+    const layout = [
+      item("x", 0, 4, 6, 2),
+      item("a", 0, 1, 6, 5),
+    ];
+    const oldA = item("a", 0, 2, 6, 4);
+    const newA = item("a", 0, 1, 6, 5);
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 10, 12);
+
+    expect(result).not.toBeNull();
+    const x = result!.find(l => l.i === "x");
+    expect(x!.y).toBe(4);
+    expect(x!.h).toBe(2);
+  });
+
+  it("3. diamond cascade: A hits B and C, both hit D — no residual overlap", () => {
+    const layout = [
+      item("a", 0, 0, 12, 4),
+      item("b", 0, 2, 6, 2, { minH: 2 }),
+      item("c", 6, 2, 6, 2, { minH: 2 }),
+      item("d", 0, 4, 12, 2, { minH: 2 }),
+    ];
+    const oldA = item("a", 0, 0, 12, 2);
+    const newA = item("a", 0, 0, 12, 4);
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 20, 12);
+
+    expect(result).not.toBeNull();
+    const b = result!.find(l => l.i === "b")!;
+    const c = result!.find(l => l.i === "c")!;
+    const d = result!.find(l => l.i === "d")!;
+
+    expect(b.y).toBeGreaterThanOrEqual(4);
+    expect(c.y).toBeGreaterThanOrEqual(4);
+    expect(d.y).toBeGreaterThanOrEqual(b.y + b.h);
+    expect(d.y).toBeGreaterThanOrEqual(c.y + c.h);
+  });
+
+  it("4a. bottom shrink returns the new (smaller) geometry", () => {
+    const layout = [
+      item("a", 0, 0, 3, 4),
+      item("b", 0, 4, 3, 2),
+    ];
+    const oldA = item("a", 0, 0, 3, 4);
+    const newA = item("a", 0, 0, 3, 2);
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 10, 12);
+
+    expect(result).not.toBeNull();
+    const a = result!.find(l => l.i === "a");
+    expect(a!.h).toBe(2);
+    expect(a!.y).toBe(0);
+  });
+
+  it("4b. right shrink returns the new (smaller) geometry", () => {
+    const layout = [
+      item("a", 0, 0, 6, 2),
+      item("b", 6, 0, 3, 2),
+    ];
+    const oldA = item("a", 0, 0, 6, 2);
+    const newA = item("a", 0, 0, 3, 2);
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 10, 12);
+
+    expect(result).not.toBeNull();
+    const a = result!.find(l => l.i === "a");
+    expect(a!.w).toBe(3);
+    expect(a!.x).toBe(0);
+  });
+
+  it("5. recursive pure-squash does not process stale overlaps", () => {
+    // "b" can fully squash (h=3 → minH=1). After squash, b's active edge
+    // doesn't move enough to sweep into "c". c should stay put.
+    const layout = [
+      item("a", 0, 0, 6, 4),
+      item("b", 0, 2, 6, 3, { minH: 1 }),
+      item("c", 0, 5, 6, 2),
+    ];
+    const oldA = item("a", 0, 0, 6, 2);
+    const newA = item("a", 0, 0, 6, 4);
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 20, 12);
+
+    expect(result).not.toBeNull();
+    const b = result!.find(l => l.i === "b")!;
+    const c = result!.find(l => l.i === "c")!;
+
+    expect(b.y).toBeGreaterThanOrEqual(4);
+    expect(c.y).toBe(5);
+    expect(c.h).toBe(2);
+  });
+
+  it("6. resized source out of bounds returns null", () => {
+    const layout = [item("a", 0, 0, 3, 2)];
+    const oldA = item("a", 0, 0, 3, 2);
+    const newA = item("a", 0, 0, 15, 2); // exceeds cols=12
+
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 10, 12);
+
+    expect(result).toBeNull();
+  });
+
+  it("7. target pushed out of bounds returns null", () => {
+    const layout = [
+      item("a", 0, 0, 6, 8),
+      item("b", 0, 6, 6, 2, { minH: 2 }),
+      item("c", 0, 8, 6, 2, { minH: 2 }),
+    ];
+    const oldA = item("a", 0, 0, 6, 6);
+    const newA = item("a", 0, 0, 6, 8);
+
+    // c would be pushed to y=10, bottom=12, exceeding maxRows=10
+    const result = resolveResizeCollisions(layout, "a", oldA, newA, 10, 12);
+
+    expect(result).toBeNull();
   });
 });
