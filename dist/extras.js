@@ -1,6 +1,6 @@
 'use strict';
 
-var chunkQ7HHXBLO_js = require('./chunk-Q7HHXBLO.js');
+var chunkIKBX4MEE_js = require('./chunk-IKBX4MEE.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 
@@ -18,7 +18,7 @@ function GridBackground({
   style
 }) {
   const dims = react.useMemo(
-    () => chunkQ7HHXBLO_js.calcGridCellDimensions({
+    () => chunkIKBX4MEE_js.calcGridCellDimensions({
       width,
       cols,
       rowHeight,
@@ -154,7 +154,7 @@ var fastVerticalCompactor = {
   type: "vertical",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkQ7HHXBLO_js.cloneLayout(layout);
+    const out = chunkIKBX4MEE_js.cloneLayout(layout);
     compactVerticalFast(out, cols, false);
     return out;
   }
@@ -163,7 +163,7 @@ var fastVerticalOverlapCompactor = {
   ...fastVerticalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkQ7HHXBLO_js.cloneLayout(layout);
+    const out = chunkIKBX4MEE_js.cloneLayout(layout);
     compactVerticalFast(out, cols, true);
     return out;
   }
@@ -292,7 +292,7 @@ var fastHorizontalCompactor = {
   type: "horizontal",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkQ7HHXBLO_js.cloneLayout(layout);
+    const out = chunkIKBX4MEE_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, false);
     return out;
   }
@@ -301,7 +301,7 @@ var fastHorizontalOverlapCompactor = {
   ...fastHorizontalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkQ7HHXBLO_js.cloneLayout(layout);
+    const out = chunkIKBX4MEE_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, true);
     return out;
   }
@@ -337,7 +337,7 @@ function compactWrap(layout, cols) {
   for (let i = 0; i < sorted.length; i++) {
     const sortedItem = sorted[i];
     if (sortedItem === void 0) continue;
-    const l = chunkQ7HHXBLO_js.cloneLayoutItem(sortedItem);
+    const l = chunkIKBX4MEE_js.cloneLayoutItem(sortedItem);
     if (l.static) {
       const originalIndex2 = layout.indexOf(sortedItem);
       out[originalIndex2] = l;
@@ -375,7 +375,7 @@ var wrapOverlapCompactor = {
   ...wrapCompactor,
   allowOverlap: true,
   compact(layout, _cols) {
-    return chunkQ7HHXBLO_js.cloneLayout(layout);
+    return chunkIKBX4MEE_js.cloneLayout(layout);
   }
 };
 

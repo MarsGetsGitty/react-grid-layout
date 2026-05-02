@@ -7,7 +7,7 @@
  * @module react/hooks/useGridLayoutDrag
  */
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { deepEqual } from "fast-equals";
 
 import type {
@@ -98,6 +98,8 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
     onLayoutChange,
   } = opts;
 
+  const latestDragLayoutRef = useRef<Layout | null>(null);
+
   const onDragStart = useCallback(
     (i: string, _x: number, _y: number, data: GridDragEvent) => {
       const currentLayout = layoutRef.current;
@@ -114,6 +116,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
 
       oldDragItemRef.current = cloneLayoutItem(l);
       oldLayoutRef.current = currentLayout;
+      latestDragLayoutRef.current = currentLayout;
       setActiveDrag(placeholder);
 
       onDragStartProp(currentLayout, l, l, null, data.e, data.node);
@@ -123,7 +126,8 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
 
   const onDrag = useCallback(
     (i: string, x: number, y: number, data: GridDragEvent) => {
-      const currentLayout = layoutRef.current;
+      // Use synchronous latest layout to prevent stale state bugs during rapid flicks
+      const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
       const l = getLayoutItem(currentLayout, i);
       if (!l) return;
@@ -169,7 +173,9 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
 
         if (resolved) {
           // Accept: use resolved layout
-          setLayout(compactor.compact(resolved, cols));
+          const compacted = compactor.compact(resolved, cols);
+          latestDragLayoutRef.current = compacted;
+          setLayout(compacted);
         }
         // Always update placeholder so it tracks cursor position.
         // On reject the layout stays at last valid state but the
@@ -202,7 +208,9 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       onDragProp(newLayout, oldDragItem, l, placeholder, data.e, data.node);
 
       // Use compactor.compact() - it handles allowOverlap internally (#2213)
-      setLayout(compactor.compact(newLayout, cols));
+      const compacted = compactor.compact(newLayout, cols);
+      latestDragLayoutRef.current = compacted;
+      setLayout(compacted);
       setActiveDrag(placeholder);
     },
     [layoutRef, oldDragItemRef, preventCollision, compactType, cols, allowOverlap, compactor, collisionResolver, setLayout, setActiveDrag, onDragProp]
@@ -212,7 +220,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
     (i: string, x: number, y: number, data: GridDragEvent) => {
       if (!activeDrag) return;
 
-      const currentLayout = layoutRef.current;
+      const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
       const l = getLayoutItem(currentLayout, i);
       if (!l) return;
@@ -246,6 +254,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       const oldLayout = oldLayoutRef.current;
       oldDragItemRef.current = null;
       oldLayoutRef.current = null;
+      latestDragLayoutRef.current = null;
       setActiveDrag(null);
       setLayout(finalLayout);
 

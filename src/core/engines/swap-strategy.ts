@@ -44,14 +44,19 @@ export function trySwap(
   const target = collisions[0];
   if (!target) return null;
 
-  // Rule 2: Exact dimension match
-  if (target.w !== dragged.w || target.h !== dragged.h) return null;
-
-  // Rule 3: Perform the swap — clone entire layout, mutate only the target
-  return layout.map(item => {
+  // Rule 2: Try the swap and verify it doesn't create cascading collisions
+  const tentativeLayout = layout.map(item => {
     if (item.i === target.i) {
       return { ...item, x: dragSlot.x, y: dragSlot.y };
     }
     return item;
   });
+
+  const swappedTarget = tentativeLayout.find(item => item.i === target.i)!;
+  const secondaryCollisions = getAllCollisions(tentativeLayout, swappedTarget)
+    .filter(item => item.i !== target.i && item.i !== draggedId);
+
+  if (secondaryCollisions.length > 0) return null;
+
+  return tentativeLayout;
 }
