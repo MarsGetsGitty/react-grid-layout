@@ -35,6 +35,7 @@ export type {
   // Callbacks
   EventCallback,
   OnLayoutChangeCallback,
+  CollisionResolver,
 
   // Composable interfaces
   Compactor,

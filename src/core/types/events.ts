@@ -100,3 +100,26 @@ export type EventCallback = (
  * Callback when layout changes for any reason.
  */
 export type OnLayoutChangeCallback = (layout: Layout) => void;
+
+/**
+ * Custom collision resolver for drag operations.
+ *
+ * Called on each drag tick instead of the default moveElement → compact pipeline.
+ * Receives the current layout, the item being dragged (at its new position),
+ * and the grid cell the dragged item originally occupied.
+ *
+ * Return a new layout to accept the move, or `null` to reject it
+ * (widget stays at its last valid position; ghost continues following cursor).
+ *
+ * @example
+ * ```ts
+ * const swapResolver: CollisionResolver = (layout, movedItem, origin) => {
+ *   return trySwap(layout, movedItem.i, origin);
+ * };
+ * ```
+ */
+export type CollisionResolver = (
+  layout: Layout,
+  movedItem: LayoutItem,
+  originalPosition: { x: number; y: number },
+) => Layout | null;

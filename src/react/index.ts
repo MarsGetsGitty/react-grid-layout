@@ -59,7 +59,8 @@ export type {
   ResizeHandleAxis,
   GridDragEvent,
   GridResizeEvent,
-  EventCallback
+  EventCallback,
+  CollisionResolver
 } from "../core/index.js";
 
 // =============================================================================

@@ -25,6 +25,29 @@
   will-change: transform;
 }
 
+/* Ghost drag — origin widget dimming
+ * When ghostDrag is enabled, the real widget stays at its grid position
+ * and dims while a ghost follows the cursor.
+ * Applied INSTEAD of react-draggable-dragging (see GridItem.tsx clsx logic).
+ */
+.react-grid-item.react-grid-item--drag-origin {
+  opacity: 0.3;
+  transition: opacity 150ms ease;
+  z-index: 1;
+  will-change: auto;
+}
+
+/* Ghost drag — cursor-following clone */
+.react-grid-layout > .react-grid-ghost {
+  transition: none;
+  will-change: transform;
+}
+
+.react-grid-ghost-content {
+  pointer-events: none;
+  user-select: none;
+}
+
 .react-grid-item.dropping {
   visibility: hidden;
 }
