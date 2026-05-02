@@ -11,7 +11,6 @@ import { useRef, useState, useCallback } from "react";
 import type { DraggableEventHandler } from "react-draggable";
 
 import type {
-  Position,
   LayoutConstraint,
   ConstraintContext,
   LayoutItem as LayoutItemType,

@@ -67,7 +67,7 @@ type EventCallback = (
   newItem: LayoutItem | null,
   placeholder: LayoutItem | null,
   event: Event,
-  element: HTMLElement
+  element: HTMLElement | null
 ) => void;
 
 export interface GridLayoutProps {
@@ -360,6 +360,8 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     () =>
       droppingItemProp ?? {
         i: "__dropping-elem__",
+        x: 0,
+        y: 0,
         ...defaultDropItem
       },
     [droppingItemProp, defaultDropItem]
