@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { G as GridCellConfig } from './calculate-Cniiweit.js';
-import { a as Compactor } from './layout-5DuzMw4J.js';
+import { G as GridCellConfig } from './calculate-Davk-z0Z.js';
+import { a as Compactor, f as CollisionResolver } from './layout-BOhCYNcp.js';
 
 /**
  * GridBackground component
@@ -205,4 +205,17 @@ declare const wrapCompactor: Compactor;
  */
 declare const wrapOverlapCompactor: Compactor;
 
-export { GridBackground, type GridBackgroundProps, fastHorizontalCompactor, fastHorizontalOverlapCompactor, fastVerticalCompactor, fastVerticalOverlapCompactor, wrapCompactor, wrapOverlapCompactor };
+/**
+ * A specialized drag collision resolver that orchestrates:
+ * 1. Try Swap (1:1 dimension match swap)
+ * 2. Try Push (fallback to moveElement with collision resolution)
+ * 3. Reject (returns null)
+ *
+ * The tentativeLayout passed by the caller already has the dragged item
+ * at its new position. We must account for this when falling back to
+ * moveElement, which requires the item to start at its original position
+ * so that it detects the move delta and resolves collisions.
+ */
+declare const pcdCollisionResolver: CollisionResolver;
+
+export { GridBackground, type GridBackgroundProps, fastHorizontalCompactor, fastHorizontalOverlapCompactor, fastVerticalCompactor, fastVerticalOverlapCompactor, pcdCollisionResolver, wrapCompactor, wrapOverlapCompactor };

@@ -1,4 +1,4 @@
-import { R as ResizeHandleAxis, L as Layout } from './layout-5DuzMw4J.js';
+import { R as ResizeHandleAxis, L as Layout } from './layout-BOhCYNcp.js';
 import * as React from 'react';
 
 /**

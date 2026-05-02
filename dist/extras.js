@@ -1,6 +1,6 @@
 'use strict';
 
-var chunkIKBX4MEE_js = require('./chunk-IKBX4MEE.js');
+var chunkXYPVO5ML_js = require('./chunk-XYPVO5ML.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 
@@ -18,7 +18,7 @@ function GridBackground({
   style
 }) {
   const dims = react.useMemo(
-    () => chunkIKBX4MEE_js.calcGridCellDimensions({
+    () => chunkXYPVO5ML_js.calcGridCellDimensions({
       width,
       cols,
       rowHeight,
@@ -154,7 +154,7 @@ var fastVerticalCompactor = {
   type: "vertical",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkIKBX4MEE_js.cloneLayout(layout);
+    const out = chunkXYPVO5ML_js.cloneLayout(layout);
     compactVerticalFast(out, cols, false);
     return out;
   }
@@ -163,7 +163,7 @@ var fastVerticalOverlapCompactor = {
   ...fastVerticalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkIKBX4MEE_js.cloneLayout(layout);
+    const out = chunkXYPVO5ML_js.cloneLayout(layout);
     compactVerticalFast(out, cols, true);
     return out;
   }
@@ -292,7 +292,7 @@ var fastHorizontalCompactor = {
   type: "horizontal",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkIKBX4MEE_js.cloneLayout(layout);
+    const out = chunkXYPVO5ML_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, false);
     return out;
   }
@@ -301,7 +301,7 @@ var fastHorizontalOverlapCompactor = {
   ...fastHorizontalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkIKBX4MEE_js.cloneLayout(layout);
+    const out = chunkXYPVO5ML_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, true);
     return out;
   }
@@ -337,7 +337,7 @@ function compactWrap(layout, cols) {
   for (let i = 0; i < sorted.length; i++) {
     const sortedItem = sorted[i];
     if (sortedItem === void 0) continue;
-    const l = chunkIKBX4MEE_js.cloneLayoutItem(sortedItem);
+    const l = chunkXYPVO5ML_js.cloneLayoutItem(sortedItem);
     if (l.static) {
       const originalIndex2 = layout.indexOf(sortedItem);
       out[originalIndex2] = l;
@@ -375,8 +375,47 @@ var wrapOverlapCompactor = {
   ...wrapCompactor,
   allowOverlap: true,
   compact(layout, _cols) {
-    return chunkIKBX4MEE_js.cloneLayout(layout);
+    return chunkXYPVO5ML_js.cloneLayout(layout);
   }
+};
+
+// src/extras/pcdCollisionResolver.ts
+var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, context) => {
+  const layoutArray = tentativeLayout;
+  const swapped = chunkXYPVO5ML_js.trySwap(layoutArray, movedItem.i, originalPosition);
+  if (swapped) {
+    return swapped;
+  }
+  const dragged = layoutArray.find((item) => item.i === movedItem.i);
+  if (!dragged) return null;
+  const collisions = chunkXYPVO5ML_js.getAllCollisions(layoutArray, dragged).filter((item) => item.i !== dragged.i);
+  if (collisions.length === 0) {
+    return layoutArray.map((item) => chunkXYPVO5ML_js.cloneLayoutItem(item));
+  }
+  const clonedLayout = layoutArray.map((item) => chunkXYPVO5ML_js.cloneLayoutItem(item));
+  const clonedPrevItem = clonedLayout.find((item) => item.i === movedItem.i);
+  if (clonedPrevItem) {
+    clonedPrevItem.x = originalPosition.x;
+    clonedPrevItem.y = originalPosition.y;
+    clonedPrevItem.moved = false;
+    const compactType = context?.compactType || "vertical";
+    const pushedLayout = chunkXYPVO5ML_js.moveElement(
+      clonedLayout,
+      clonedPrevItem,
+      movedItem.x,
+      movedItem.y,
+      true,
+      // isUserAction
+      false,
+      // preventCollision — let moveElement resolve collisions
+      compactType,
+      context?.cols ?? 12,
+      false
+      // allowOverlap — resolve collisions, don't ignore them
+    );
+    return pushedLayout;
+  }
+  return null;
 };
 
 exports.GridBackground = GridBackground;
@@ -384,5 +423,6 @@ exports.fastHorizontalCompactor = fastHorizontalCompactor;
 exports.fastHorizontalOverlapCompactor = fastHorizontalOverlapCompactor;
 exports.fastVerticalCompactor = fastVerticalCompactor;
 exports.fastVerticalOverlapCompactor = fastVerticalOverlapCompactor;
+exports.pcdCollisionResolver = pcdCollisionResolver;
 exports.wrapCompactor = wrapCompactor;
 exports.wrapOverlapCompactor = wrapOverlapCompactor;

@@ -1,4 +1,4 @@
-import { P as Position, R as ResizeHandleAxis } from './layout-5DuzMw4J.mjs';
+import { P as Position, R as ResizeHandleAxis } from './layout-BOhCYNcp.js';
 
 /**
  * Grid calculation utilities.

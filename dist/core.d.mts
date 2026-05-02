@@ -1,9 +1,9 @@
-import { c as LayoutItem, e as LayoutConstraint, g as ConstraintContext, R as ResizeHandleAxis, P as Position, L as Layout, a as Compactor } from './layout-5DuzMw4J.mjs';
-export { f as CollisionResolver, C as CompactType, h as DragOverEvent, D as DroppingPosition, E as EventCallback, G as GridDragEvent, b as GridResizeEvent, O as OnLayoutChangeCallback, i as PartialPosition, d as PositionStrategy, j as ReactDraggableCallbackData, S as Size } from './layout-5DuzMw4J.mjs';
-export { B as Breakpoint, d as BreakpointCols, a as Breakpoints, D as DragConfig, c as DropConfig, G as GridConfig, O as OnBreakpointChangeCallback, b as ResizeConfig, R as ResponsiveLayouts, e as defaultDragConfig, f as defaultDropConfig, g as defaultGridConfig, h as defaultResizeConfig } from './responsive-CxjomL95.mjs';
-export { c as collides, f as findOrGenerateResponsiveLayout, g as getAllCollisions, a as getBreakpointFromWidth, b as getColsFromBreakpoint, d as getFirstCollision, i as getIndentationValue, m as moveElement, j as moveElementAwayFromCollision, k as sortBreakpoints, s as sortLayoutItems, e as sortLayoutItemsByColRow, h as sortLayoutItemsByRowCol } from './responsive-Dm2h-pIW.mjs';
-export { i as absoluteStrategy, b as bottom, c as cloneLayout, a as cloneLayoutItem, j as compactItemHorizontal, k as compactItemVertical, l as createScaledStrategy, m as defaultPositionStrategy, g as getCompactor, d as getLayoutItem, o as getStatics, h as horizontalCompactor, p as horizontalOverlapCompactor, q as modifyLayout, n as noCompactor, r as noOverlapCompactor, t as perc, u as resolveCompactionCollision, s as setTopLeft, e as setTransform, w as transformStrategy, v as validateLayout, f as verticalCompactor, x as verticalOverlapCompactor, y as withLayoutItem } from './css-strategies-BECweDFf.mjs';
-export { G as GridCellConfig, d as GridCellDimensions, P as PositionParams, e as calcGridCellDimensions, f as calcGridColWidth, c as calcGridItemPosition, g as calcGridItemWHPx, a as calcWH, h as calcWHRaw, b as calcXY, i as calcXYRaw, j as clamp } from './calculate-CnnpdMNf.mjs';
+import { c as LayoutItem, e as LayoutConstraint, g as ConstraintContext, R as ResizeHandleAxis, P as Position, L as Layout, a as Compactor } from './layout-BOhCYNcp.mjs';
+export { f as CollisionResolver, C as CompactType, h as DragOverEvent, D as DroppingPosition, E as EventCallback, G as GridDragEvent, b as GridResizeEvent, O as OnLayoutChangeCallback, i as PartialPosition, d as PositionStrategy, j as ReactDraggableCallbackData, S as Size } from './layout-BOhCYNcp.mjs';
+export { B as Breakpoint, d as BreakpointCols, a as Breakpoints, D as DragConfig, c as DropConfig, G as GridConfig, O as OnBreakpointChangeCallback, b as ResizeConfig, R as ResponsiveLayouts, e as defaultDragConfig, f as defaultDropConfig, g as defaultGridConfig, h as defaultResizeConfig } from './responsive-UKWMyaIm.mjs';
+export { c as collides, f as findOrGenerateResponsiveLayout, g as getAllCollisions, a as getBreakpointFromWidth, b as getColsFromBreakpoint, d as getFirstCollision, i as getIndentationValue, m as moveElement, j as moveElementAwayFromCollision, k as sortBreakpoints, s as sortLayoutItems, e as sortLayoutItemsByColRow, h as sortLayoutItemsByRowCol } from './responsive-BzxwDBOa.mjs';
+export { i as absoluteStrategy, b as bottom, c as cloneLayout, a as cloneLayoutItem, j as compactItemHorizontal, k as compactItemVertical, l as createScaledStrategy, m as defaultPositionStrategy, g as getCompactor, d as getLayoutItem, o as getStatics, h as horizontalCompactor, p as horizontalOverlapCompactor, q as modifyLayout, n as noCompactor, r as noOverlapCompactor, t as perc, u as resolveCompactionCollision, s as setTopLeft, e as setTransform, w as transformStrategy, v as validateLayout, f as verticalCompactor, x as verticalOverlapCompactor, y as withLayoutItem } from './css-strategies-DOJeI8ye.mjs';
+export { G as GridCellConfig, d as GridCellDimensions, P as PositionParams, e as calcGridCellDimensions, f as calcGridColWidth, c as calcGridItemPosition, g as calcGridItemWHPx, a as calcWH, h as calcWHRaw, b as calcXY, i as calcXYRaw, j as clamp } from './calculate-CqzO4I17.mjs';
 import 'react';
 
 /**
@@ -408,11 +408,20 @@ declare function trySwap(layout: LayoutItem[], draggedId: string, dragSlot: Drag
  * Algorithm:
  *  1. Infer resize direction from oldItem vs newItem deltas
  *  2. For each axis with a delta, run recursive collision resolution:
- *     a. Calculate overlap between resized widget and each collider
- *     b. SQUASH: reduce collider size toward its min, absorbing overlap
- *     c. PUSH: slide collider along the axis for remaining overlap
- *     d. BOUNDARY CHECK: reject if collider exits viewport
+ *     a. Calculate directional penetration depth (minimum displacement
+ *        in the push direction to fully separate source and target)
+ *     b. SQUASH: reduce target size toward its min, absorbing penetration
+ *     c. PUSH: slide target along the axis for remaining penetration
+ *     d. BOUNDARY CHECK: reject if target exits viewport
  *     e. RECURSE: if pushing created new collisions, repeat for those
+ *
+ * Collision filtering uses swept active-edge interval overlap to ensure
+ * only targets in the path of the expanding/moving edge are processed.
+ * This prevents "backfire" — accidentally pushing wrong-side widgets.
+ *
+ * Cycle prevention relies on monotonic push direction under the
+ * directional separation invariant, with depth and work-budget guards
+ * as safety valves for malformed layouts or zero/invalid dimensions.
  *
  * @see smart_physics_engine_design.md §3
  * @module core/engines/squash-push-strategy

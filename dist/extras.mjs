@@ -1,4 +1,4 @@
-import { calcGridCellDimensions, cloneLayout, cloneLayoutItem } from './chunk-ANJBEZY6.mjs';
+import { calcGridCellDimensions, cloneLayout, trySwap, getAllCollisions, cloneLayoutItem, moveElement } from './chunk-WJ7JWLRQ.mjs';
 import { useMemo } from 'react';
 import { jsx } from 'react/jsx-runtime';
 
@@ -377,4 +377,43 @@ var wrapOverlapCompactor = {
   }
 };
 
-export { GridBackground, fastHorizontalCompactor, fastHorizontalOverlapCompactor, fastVerticalCompactor, fastVerticalOverlapCompactor, wrapCompactor, wrapOverlapCompactor };
+// src/extras/pcdCollisionResolver.ts
+var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, context) => {
+  const layoutArray = tentativeLayout;
+  const swapped = trySwap(layoutArray, movedItem.i, originalPosition);
+  if (swapped) {
+    return swapped;
+  }
+  const dragged = layoutArray.find((item) => item.i === movedItem.i);
+  if (!dragged) return null;
+  const collisions = getAllCollisions(layoutArray, dragged).filter((item) => item.i !== dragged.i);
+  if (collisions.length === 0) {
+    return layoutArray.map((item) => cloneLayoutItem(item));
+  }
+  const clonedLayout = layoutArray.map((item) => cloneLayoutItem(item));
+  const clonedPrevItem = clonedLayout.find((item) => item.i === movedItem.i);
+  if (clonedPrevItem) {
+    clonedPrevItem.x = originalPosition.x;
+    clonedPrevItem.y = originalPosition.y;
+    clonedPrevItem.moved = false;
+    const compactType = context?.compactType || "vertical";
+    const pushedLayout = moveElement(
+      clonedLayout,
+      clonedPrevItem,
+      movedItem.x,
+      movedItem.y,
+      true,
+      // isUserAction
+      false,
+      // preventCollision — let moveElement resolve collisions
+      compactType,
+      context?.cols ?? 12,
+      false
+      // allowOverlap — resolve collisions, don't ignore them
+    );
+    return pushedLayout;
+  }
+  return null;
+};
+
+export { GridBackground, fastHorizontalCompactor, fastHorizontalOverlapCompactor, fastVerticalCompactor, fastVerticalOverlapCompactor, pcdCollisionResolver, wrapCompactor, wrapOverlapCompactor };

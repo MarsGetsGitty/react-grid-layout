@@ -101,10 +101,14 @@ type OnLayoutChangeCallback = (layout: Layout) => void;
  * };
  * ```
  */
+interface CollisionResolverContext {
+    cols: number;
+    compactType?: CompactType;
+}
 type CollisionResolver = (layout: Layout, movedItem: LayoutItem, originalPosition: {
     x: number;
     y: number;
-}) => Layout | null;
+}, context?: CollisionResolverContext) => Layout | null;
 
 /**
  * Type of compaction to apply to the layout.
