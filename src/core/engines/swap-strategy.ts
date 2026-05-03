@@ -44,7 +44,13 @@ export function trySwap(
   const target = collisions[0];
   if (!target) return null;
 
-  // Rule 2: Try the swap and verify it doesn't create cascading collisions
+  // Rule 2: Dimension match — both widgets must have the same w and h.
+  // Without this guard, dragging a small widget onto a large one (or vice
+  // versa) would "teleport" the target into a slot that doesn't fit,
+  // causing the "absorb" bug where widgets overlap and appear stuck.
+  if (target.w !== dragged.w || target.h !== dragged.h) return null;
+
+  // Rule 3: Try the swap and verify it doesn't create cascading collisions
   const tentativeLayout = layout.map(item => {
     if (item.i === target.i) {
       return { ...item, x: dragSlot.x, y: dragSlot.y };
