@@ -115,8 +115,8 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       };
 
       oldDragItemRef.current = cloneLayoutItem(l);
-      oldLayoutRef.current = currentLayout;
-      latestDragLayoutRef.current = currentLayout;
+      oldLayoutRef.current = currentLayout.map(item => cloneLayoutItem(item));
+      latestDragLayoutRef.current = currentLayout.map(item => cloneLayoutItem(item));
       setActiveDrag(placeholder);
 
       onDragStartProp(currentLayout, l, l, null, data.e, data.node);
@@ -139,9 +139,13 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       // a resolved layout (accept) or null (reject — widget stays put).
       if (collisionResolver) {
         // Build a tentative layout with the item at its new position
+        const tentativeBase = currentLayout.map(item => cloneLayoutItem(item));
+        const tentativeItem = getLayoutItem(tentativeBase, i);
+        if (!tentativeItem) return;
+
         const tentative = moveElement(
-          currentLayout,
-          l,
+          tentativeBase,
+          tentativeItem,
           x,
           y,
           true,
@@ -156,8 +160,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
         const originPos = oldDragItem
           ? { x: oldDragItem.x, y: oldDragItem.y }
           : { x: l.x, y: l.y };
-
-        const resolved = collisionResolver(tentative, movedItem, originPos);
+        const resolved = collisionResolver(tentative, movedItem, originPos, { cols, compactType });
 
         // Placeholder tracks the proposed grid position so the user
         // always sees where the widget WOULD land, even when rejected.
@@ -169,14 +172,20 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
           i
         };
 
-        onDragProp(tentative, oldDragItem, l, placeholder, data.e, data.node);
-
         if (resolved) {
           // Accept: use resolved layout
           const compacted = compactor.compact(resolved, cols);
           latestDragLayoutRef.current = compacted;
           setLayout(compacted);
+
+          const acceptedItem = getLayoutItem(compacted, i) ?? movedItem;
+          onDragProp(compacted, oldDragItem, acceptedItem, placeholder, data.e, data.node);
+        } else {
+          // Reject: report last valid layout, not the tentative invalid one
+          const eventItem = getLayoutItem(currentLayout, i) ?? l;
+          onDragProp(currentLayout, oldDragItem, eventItem, placeholder, data.e, data.node);
         }
+
         // Always update placeholder so it tracks cursor position.
         // On reject the layout stays at last valid state but the
         // placeholder still shows where the widget is being dragged.
