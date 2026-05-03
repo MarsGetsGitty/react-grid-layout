@@ -18,3 +18,4 @@ export {
   fastHorizontalOverlapCompactor
 } from "./fastHorizontalCompactor.js";
 export { wrapCompactor, wrapOverlapCompactor } from "./wrapCompactor.js";
+export { pcdCollisionResolver } from "./pcdCollisionResolver.js";

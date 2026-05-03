@@ -1,4 +1,5 @@
 import type { Layout, LayoutItem, ResizeHandleAxis } from "./layout.js";
+import type { CompactType } from "./strategies.js";
 
 /**
  * Pixel position and size of an element.
@@ -118,8 +119,14 @@ export type OnLayoutChangeCallback = (layout: Layout) => void;
  * };
  * ```
  */
+export interface CollisionResolverContext {
+  cols: number;
+  compactType?: CompactType;
+}
+
 export type CollisionResolver = (
   layout: Layout,
   movedItem: LayoutItem,
   originalPosition: { x: number; y: number },
+  context?: CollisionResolverContext
 ) => Layout | null;
