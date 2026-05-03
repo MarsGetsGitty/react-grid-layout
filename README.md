@@ -3,6 +3,11 @@
 [![npm package](https://img.shields.io/npm/v/react-grid-layout.svg?style=flat-square)](https://www.npmjs.org/package/react-grid-layout)
 [![npm downloads](https://img.shields.io/npm/dt/react-grid-layout.svg?maxAge=2592000)]()
 
+> [!IMPORTANT]
+> **This is the PCD fork** of react-grid-layout, maintained on the `pcd-stable` branch.
+> It adds collision resolution engines, ghost drag, and hook lifecycle hardening
+> on top of upstream v2.2.3. See [`PCD_FORK.md`](./PCD_FORK.md) for the full changelog.
+
 React-Grid-Layout is a grid layout system much like [Packery](http://packery.metafizzy.co/) or
 [Gridster](http://dsmorse.github.io/gridster.js/), for React.
 
@@ -31,6 +36,7 @@ RGL is React-only and does not require jQuery.
 - [API Reference](#api-reference)
 - [Extending: Custom Compactors & Position Strategies](#extending-custom-compactors--position-strategies)
 - [Extras](#extras)
+- [PCD Fork Additions](#pcd-fork-additions)
 - [Performance](#performance)
 - [Contribute](#contribute)
 
@@ -50,7 +56,7 @@ Version 2 is a complete TypeScript rewrite with a modernized API:
   - `react-grid-layout` - React components and hooks (v2 API)
   - `react-grid-layout/core` - Pure layout algorithms (framework-agnostic)
   - `react-grid-layout/legacy` - v1 flat props API for migration
-  - `react-grid-layout/extras` - Optional components like `GridBackground`
+  - `react-grid-layout/extras` - Optional add-ons: `GridBackground`, `pcdCollisionResolver`
 - **Smaller bundle** - Tree-shakeable ESM and CJS builds
 
 ### Breaking Changes
@@ -657,6 +663,10 @@ interface ReactGridLayoutProps {
   onResizeStart?: EventCallback;
   onResize?: EventCallback;
   onResizeStop?: EventCallback;
+
+  // PCD Fork Additions
+  collisionResolver?: CollisionResolver; // Custom drag collision resolver (see PCD Fork Additions)
+  ghostDrag?: boolean;                   // Ghost follows cursor, widget stays at grid position
   onDrop?: (layout: Layout, item: LayoutItem | undefined, e: Event) => void;
   onDropDragOver?: (e: DragEvent) => { w?: number; h?: number } | false | void;
 }
@@ -1082,6 +1092,8 @@ const create3DStrategy = (
 
 The `react-grid-layout/extras` entry point provides optional components that extend react-grid-layout. These are tree-shakeable and won't be included in your bundle unless explicitly imported.
 
+> **PCD Fork:** This entry point also exports [`pcdCollisionResolver`](#pcd-fork-additions) — a swap-then-push collision resolver for freeform drag layouts.
+
 ### GridBackground
 
 Renders an SVG grid background that aligns with GridLayout cells. Use this to visualize the grid structure behind your layout.
@@ -1222,6 +1234,118 @@ const dims = calcGridCellDimensions({
 ```
 
 This is useful for building custom visualizations, snap-to-grid functionality, or integrating with canvas/WebGL renderers.
+
+## PCD Fork Additions
+
+This fork adds capabilities that upstream does not provide. All additions are **additive** — upstream's default behaviour is preserved when these features are not used.
+
+> For the full changelog with commit references and design rationale, see [`PCD_FORK.md`](./PCD_FORK.md).
+
+### Fork vs Upstream
+
+| Feature | Upstream | PCD Fork |
+|---------|----------|----------|
+| Drag collision | Push only (gravity-based) | Swap → Push → Reject pipeline |
+| Ghost drag | ❌ | ✅ `ghostDrag` prop |
+| Resize collision engine | Block or overlap | Squash → Push → Reject (recursive) |
+| `CollisionResolver` API | ❌ | ✅ Pluggable resolver prop |
+| Module decomposition | Flat source tree | `core/` · `react/` · `extras/` · `legacy/` |
+| Compactor moved-flag safety | Inconsistent | All 6 variants normalize |
+| Hook lifecycle immutability | Partial | Deep-clone at drag start |
+
+### Collision Resolver API
+
+The `collisionResolver` prop lets you replace the default drag collision pipeline entirely. When provided, the resolver receives the tentative layout (with the dragged item at its new position) and returns a resolved layout or `null` to reject.
+
+```ts
+import type { CollisionResolver, CollisionResolverContext } from "react-grid-layout";
+
+type CollisionResolver = (
+  tentativeLayout: Layout,
+  movedItem: LayoutItem,
+  originalPosition: { x: number; y: number },
+  context?: CollisionResolverContext
+) => Layout | null;
+
+interface CollisionResolverContext {
+  cols: number;
+  compactType?: CompactType;
+}
+```
+
+**Contract:**
+- Return a valid `Layout` → **accept** (committed to state)
+- Return `null` → **reject** (layout stays at last valid state, placeholder still tracks cursor)
+
+### pcdCollisionResolver
+
+A ready-to-use collision resolver implementing a 3-phase pipeline:
+
+1. **Try Swap** — dimension-matched 1:1 swap (same `w` and `h`)
+2. **Try Push** — `moveElement` with collision resolution
+3. **Reject** — return `null`
+
+Both swap and push results are validated with `hasAnyCollisions()` before acceptance.
+
+```tsx
+import { GridLayout, useContainerWidth } from "react-grid-layout";
+import { getCompactor } from "react-grid-layout/core";
+import { pcdCollisionResolver } from "react-grid-layout/extras";
+
+const freeformCompactor = getCompactor(null, true, false);
+
+function MyGrid() {
+  const { width, containerRef } = useContainerWidth();
+
+  return (
+    <div ref={containerRef}>
+      <GridLayout
+        layout={layout}
+        width={width}
+        compactor={freeformCompactor}
+        collisionResolver={pcdCollisionResolver}
+        ghostDrag
+      >
+        {children}
+      </GridLayout>
+    </div>
+  );
+}
+```
+
+### Ghost Drag
+
+When `ghostDrag` is enabled, the real widget stays at its committed grid position while a translucent ghost element follows the cursor. This eliminates visual jank from the widget teleporting between grid cells during drag.
+
+```tsx
+<GridLayout ghostDrag>
+  {children}
+</GridLayout>
+```
+
+### Swap & Squash-Push Engines
+
+For advanced use, the underlying engines are importable directly:
+
+```ts
+import { trySwap, resolveResizeCollisions } from "react-grid-layout/core";
+```
+
+- **`trySwap(layout, draggedId, dragSlot)`** — Attempts a dimension-matched swap. Returns a new layout or `null`.
+- **`resolveResizeCollisions(layout, resizedItem, ...)`** — Recursive squash-push engine for resize operations. See [`PCD_FORK.md`](./PCD_FORK.md) for algorithm details.
+
+### Test Coverage
+
+| Suite | Tests | Covers |
+|-------|-------|--------|
+| `pcd-collision-resolver.test.ts` | 12 | Context validation, swap, push, immutability |
+| `compactor-moved-flag.test.ts` | 11 | All 6 compactors clear `moved` flags |
+| `use-grid-layout-drag-resolver.test.ts` | 7 | Reject/accept callbacks, snapshot immutability |
+| `collision-strategies.test.ts` | 28 | Squash-push boundaries, chain reactions, budgets |
+
+```bash
+npx jest --testPathPatterns "pcd-collision-resolver|compactor-moved-flag|use-grid-layout-drag-resolver|collision-strategies"
+```
 
 ## Performance
 
