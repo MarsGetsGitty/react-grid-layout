@@ -1,4 +1,4 @@
-import { defaultConstraints, setTransform, setTopLeft, perc, calcGridItemPosition, calcGridColWidth, calcGridItemWHPx, defaultPositionStrategy, defaultGridConfig, defaultDragConfig, defaultResizeConfig, defaultDropConfig, getCompactor, bottom, getLayoutItem, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout, cloneLayout, getIndentationValue, calcXYRaw, applyPositionConstraints, clamp, resizeItemInDirection, calcWHRaw, applySizeConstraints, cloneLayoutItem, correctBounds, moveElement, withLayoutItem, getAllCollisions, calcXY } from './chunk-WJ7JWLRQ.mjs';
+import { defaultConstraints, setTransform, setTopLeft, perc, calcGridItemPosition, calcGridColWidth, calcGridItemWHPx, defaultPositionStrategy, defaultGridConfig, defaultDragConfig, defaultResizeConfig, defaultDropConfig, getCompactor, bottom, getLayoutItem, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout, cloneLayout, getIndentationValue, calcXYRaw, applyPositionConstraints, clamp, resizeItemInDirection, calcWHRaw, applySizeConstraints, cloneLayoutItem, correctBounds, moveElement, withLayoutItem, getAllCollisions, calcXY } from './chunk-U4RG4KDN.mjs';
 import React3, { useRef, useMemo, useCallback, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { DraggableCore } from 'react-draggable';
@@ -716,8 +716,8 @@ function useGridLayoutDrag(opts) {
         i
       };
       oldDragItemRef.current = cloneLayoutItem(l);
-      oldLayoutRef.current = currentLayout;
-      latestDragLayoutRef.current = currentLayout;
+      oldLayoutRef.current = currentLayout.map((item) => cloneLayoutItem(item));
+      latestDragLayoutRef.current = currentLayout.map((item) => cloneLayoutItem(item));
       setActiveDrag(placeholder);
       onDragStartProp(currentLayout, l, l, null, data.e, data.node);
     },
@@ -730,9 +730,12 @@ function useGridLayoutDrag(opts) {
       const l = getLayoutItem(currentLayout, i);
       if (!l) return;
       if (collisionResolver) {
+        const tentativeBase = currentLayout.map((item) => cloneLayoutItem(item));
+        const tentativeItem = getLayoutItem(tentativeBase, i);
+        if (!tentativeItem) return;
         const tentative = moveElement(
-          currentLayout,
-          l,
+          tentativeBase,
+          tentativeItem,
           x,
           y,
           true,
@@ -754,11 +757,15 @@ function useGridLayoutDrag(opts) {
           y,
           i
         };
-        onDragProp(tentative, oldDragItem, l, placeholder2, data.e, data.node);
         if (resolved) {
           const compacted2 = compactor.compact(resolved, cols);
           latestDragLayoutRef.current = compacted2;
           setLayout(compacted2);
+          const acceptedItem = getLayoutItem(compacted2, i) ?? movedItem;
+          onDragProp(compacted2, oldDragItem, acceptedItem, placeholder2, data.e, data.node);
+        } else {
+          const eventItem = getLayoutItem(currentLayout, i) ?? l;
+          onDragProp(currentLayout, oldDragItem, eventItem, placeholder2, data.e, data.node);
         }
         setActiveDrag(placeholder2);
         return;

@@ -1,5 +1,3 @@
-'use strict';
-
 // src/core/types/config.ts
 var defaultGridConfig = {
   cols: 12,
@@ -439,14 +437,24 @@ var verticalOverlapCompactor = {
   ...verticalCompactor,
   allowOverlap: true,
   compact(layout, _cols) {
-    return cloneLayout(layout);
+    const out = cloneLayout(layout);
+    for (let i = 0; i < out.length; i++) {
+      const item = out[i];
+      if (item) item.moved = false;
+    }
+    return out;
   }
 };
 var horizontalOverlapCompactor = {
   ...horizontalCompactor,
   allowOverlap: true,
   compact(layout, _cols) {
-    return cloneLayout(layout);
+    const out = cloneLayout(layout);
+    for (let i = 0; i < out.length; i++) {
+      const item = out[i];
+      if (item) item.moved = false;
+    }
+    return out;
   }
 };
 var noOverlapCompactor = {
@@ -1109,6 +1117,7 @@ function trySwap(layout, draggedId, dragSlot) {
   if (collisions.length !== 1) return null;
   const target = collisions[0];
   if (!target) return null;
+  if (target.w !== dragged.w || target.h !== dragged.h) return null;
   const tentativeLayout = layout.map((item) => {
     if (item.i === target.i) {
       return { ...item, x: dragSlot.x, y: dragSlot.y };
@@ -1310,72 +1319,4 @@ function resolveResizeCollisions(layout, resizedId, oldItem, newItem, maxRows, c
   return cloned;
 }
 
-exports.absoluteStrategy = absoluteStrategy;
-exports.applyPositionConstraints = applyPositionConstraints;
-exports.applySizeConstraints = applySizeConstraints;
-exports.aspectRatio = aspectRatio;
-exports.bottom = bottom;
-exports.boundedX = boundedX;
-exports.boundedY = boundedY;
-exports.calcGridCellDimensions = calcGridCellDimensions;
-exports.calcGridColWidth = calcGridColWidth;
-exports.calcGridItemPosition = calcGridItemPosition;
-exports.calcGridItemWHPx = calcGridItemWHPx;
-exports.calcWH = calcWH;
-exports.calcWHRaw = calcWHRaw;
-exports.calcXY = calcXY;
-exports.calcXYRaw = calcXYRaw;
-exports.clamp = clamp2;
-exports.cloneLayout = cloneLayout;
-exports.cloneLayoutItem = cloneLayoutItem;
-exports.collides = collides;
-exports.compactItemHorizontal = compactItemHorizontal;
-exports.compactItemVertical = compactItemVertical;
-exports.containerBounds = containerBounds;
-exports.correctBounds = correctBounds;
-exports.createPhysicsEngine = createPhysicsEngine;
-exports.createScaledStrategy = createScaledStrategy;
-exports.defaultConstraints = defaultConstraints;
-exports.defaultDragConfig = defaultDragConfig;
-exports.defaultDropConfig = defaultDropConfig;
-exports.defaultGridConfig = defaultGridConfig;
-exports.defaultPositionStrategy = defaultPositionStrategy;
-exports.defaultResizeConfig = defaultResizeConfig;
-exports.findOrGenerateResponsiveLayout = findOrGenerateResponsiveLayout;
-exports.getAllCollisions = getAllCollisions;
-exports.getBreakpointFromWidth = getBreakpointFromWidth;
-exports.getColsFromBreakpoint = getColsFromBreakpoint;
-exports.getCompactor = getCompactor;
-exports.getFirstCollision = getFirstCollision;
-exports.getIndentationValue = getIndentationValue;
-exports.getLayoutItem = getLayoutItem;
-exports.getStatics = getStatics;
-exports.gridBounds = gridBounds;
-exports.horizontalCompactor = horizontalCompactor;
-exports.horizontalOverlapCompactor = horizontalOverlapCompactor;
-exports.inferResizeHandles = inferResizeHandles;
-exports.maxSize = maxSize;
-exports.minMaxSize = minMaxSize;
-exports.minSize = minSize;
-exports.modifyLayout = modifyLayout;
-exports.moveElement = moveElement;
-exports.moveElementAwayFromCollision = moveElementAwayFromCollision;
-exports.noCompactor = noCompactor;
-exports.noOverlapCompactor = noOverlapCompactor;
-exports.perc = perc;
-exports.resizeItemInDirection = resizeItemInDirection;
-exports.resolveCompactionCollision = resolveCompactionCollision;
-exports.resolveResizeCollisions = resolveResizeCollisions;
-exports.setTopLeft = setTopLeft;
-exports.setTransform = setTransform;
-exports.snapToGrid = snapToGrid;
-exports.sortBreakpoints = sortBreakpoints;
-exports.sortLayoutItems = sortLayoutItems;
-exports.sortLayoutItemsByColRow = sortLayoutItemsByColRow;
-exports.sortLayoutItemsByRowCol = sortLayoutItemsByRowCol;
-exports.transformStrategy = transformStrategy;
-exports.trySwap = trySwap;
-exports.validateLayout = validateLayout;
-exports.verticalCompactor = verticalCompactor;
-exports.verticalOverlapCompactor = verticalOverlapCompactor;
-exports.withLayoutItem = withLayoutItem;
+export { absoluteStrategy, applyPositionConstraints, applySizeConstraints, aspectRatio, bottom, boundedX, boundedY, calcGridCellDimensions, calcGridColWidth, calcGridItemPosition, calcGridItemWHPx, calcWH, calcWHRaw, calcXY, calcXYRaw, clamp2 as clamp, cloneLayout, cloneLayoutItem, collides, compactItemHorizontal, compactItemVertical, containerBounds, correctBounds, createPhysicsEngine, createScaledStrategy, defaultConstraints, defaultDragConfig, defaultDropConfig, defaultGridConfig, defaultPositionStrategy, defaultResizeConfig, findOrGenerateResponsiveLayout, getAllCollisions, getBreakpointFromWidth, getColsFromBreakpoint, getCompactor, getFirstCollision, getIndentationValue, getLayoutItem, getStatics, gridBounds, horizontalCompactor, horizontalOverlapCompactor, inferResizeHandles, maxSize, minMaxSize, minSize, modifyLayout, moveElement, moveElementAwayFromCollision, noCompactor, noOverlapCompactor, perc, resizeItemInDirection, resolveCompactionCollision, resolveResizeCollisions, setTopLeft, setTransform, snapToGrid, sortBreakpoints, sortLayoutItems, sortLayoutItemsByColRow, sortLayoutItemsByRowCol, transformStrategy, trySwap, validateLayout, verticalCompactor, verticalOverlapCompactor, withLayoutItem };

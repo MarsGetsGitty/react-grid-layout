@@ -1,4 +1,4 @@
-import { calcGridCellDimensions, cloneLayout, trySwap, getAllCollisions, cloneLayoutItem, moveElement } from './chunk-WJ7JWLRQ.mjs';
+import { calcGridCellDimensions, cloneLayout, trySwap, getAllCollisions, cloneLayoutItem, moveElement } from './chunk-U4RG4KDN.mjs';
 import { useMemo } from 'react';
 import { jsx } from 'react/jsx-runtime';
 
@@ -378,11 +378,19 @@ var wrapOverlapCompactor = {
 };
 
 // src/extras/pcdCollisionResolver.ts
+function hasAnyCollisions(layout) {
+  return layout.some(
+    (item) => getAllCollisions(layout, item).some((other) => other.i !== item.i)
+  );
+}
 var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, context) => {
   const layoutArray = tentativeLayout;
+  if (typeof context?.cols !== "number") {
+    return null;
+  }
   const swapped = trySwap(layoutArray, movedItem.i, originalPosition);
   if (swapped) {
-    return swapped;
+    return hasAnyCollisions(swapped) ? null : swapped;
   }
   const dragged = layoutArray.find((item) => item.i === movedItem.i);
   if (!dragged) return null;
@@ -391,12 +399,14 @@ var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, contex
     return layoutArray.map((item) => cloneLayoutItem(item));
   }
   const clonedLayout = layoutArray.map((item) => cloneLayoutItem(item));
+  for (const item of clonedLayout) {
+    item.moved = false;
+  }
   const clonedPrevItem = clonedLayout.find((item) => item.i === movedItem.i);
   if (clonedPrevItem) {
     clonedPrevItem.x = originalPosition.x;
     clonedPrevItem.y = originalPosition.y;
-    clonedPrevItem.moved = false;
-    const compactType = context?.compactType || "vertical";
+    const pushCompactType = context.compactType === "horizontal" ? "horizontal" : "vertical";
     const pushedLayout = moveElement(
       clonedLayout,
       clonedPrevItem,
@@ -406,12 +416,12 @@ var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, contex
       // isUserAction
       false,
       // preventCollision — let moveElement resolve collisions
-      compactType,
-      context?.cols ?? 12,
+      pushCompactType,
+      context.cols,
       false
       // allowOverlap — resolve collisions, don't ignore them
     );
-    return pushedLayout;
+    return hasAnyCollisions(pushedLayout) ? null : pushedLayout;
   }
   return null;
 };

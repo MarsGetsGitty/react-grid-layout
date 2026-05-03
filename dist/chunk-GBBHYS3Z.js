@@ -1,6 +1,6 @@
 'use strict';
 
-var chunkXYPVO5ML_js = require('./chunk-XYPVO5ML.js');
+var chunk62PT2CTZ_js = require('./chunk-62PT2CTZ.js');
 var react = require('react');
 var fastEquals = require('fast-equals');
 
@@ -70,11 +70,11 @@ function useGridLayout(options) {
     cols,
     preventCollision = false,
     onLayoutChange,
-    compactor = chunkXYPVO5ML_js.verticalCompactor
+    compactor = chunk62PT2CTZ_js.verticalCompactor
   } = options;
   const isDraggingRef = react.useRef(false);
   const [layout, setLayoutState] = react.useState(() => {
-    const corrected = chunkXYPVO5ML_js.correctBounds(chunkXYPVO5ML_js.cloneLayout(propsLayout), { cols });
+    const corrected = chunk62PT2CTZ_js.correctBounds(chunk62PT2CTZ_js.cloneLayout(propsLayout), { cols });
     return compactor.compact(corrected, cols);
   });
   const [dragState, setDragState] = react.useState({
@@ -94,7 +94,7 @@ function useGridLayout(options) {
   const prevLayoutRef = react.useRef(layout);
   const setLayout = react.useCallback(
     (newLayout) => {
-      const corrected = chunkXYPVO5ML_js.correctBounds(chunkXYPVO5ML_js.cloneLayout(newLayout), { cols });
+      const corrected = chunk62PT2CTZ_js.correctBounds(chunk62PT2CTZ_js.cloneLayout(newLayout), { cols });
       const compacted = compactor.compact(corrected, cols);
       setLayoutState(compacted);
     },
@@ -114,11 +114,11 @@ function useGridLayout(options) {
   }, [layout, onLayoutChange]);
   const onDragStart = react.useCallback(
     (itemId, x, y) => {
-      const item = chunkXYPVO5ML_js.getLayoutItem(layout, itemId);
+      const item = chunk62PT2CTZ_js.getLayoutItem(layout, itemId);
       if (!item) return null;
       isDraggingRef.current = true;
       const placeholder = {
-        ...chunkXYPVO5ML_js.cloneLayoutItem(item),
+        ...chunk62PT2CTZ_js.cloneLayoutItem(item),
         x,
         y,
         static: false,
@@ -126,8 +126,8 @@ function useGridLayout(options) {
       };
       setDragState({
         activeDrag: placeholder,
-        oldDragItem: chunkXYPVO5ML_js.cloneLayoutItem(item),
-        oldLayout: chunkXYPVO5ML_js.cloneLayout(layout)
+        oldDragItem: chunk62PT2CTZ_js.cloneLayoutItem(item),
+        oldLayout: chunk62PT2CTZ_js.cloneLayout(layout)
       });
       return placeholder;
     },
@@ -135,13 +135,13 @@ function useGridLayout(options) {
   );
   const onDrag = react.useCallback(
     (itemId, x, y) => {
-      const item = chunkXYPVO5ML_js.getLayoutItem(layout, itemId);
+      const item = chunk62PT2CTZ_js.getLayoutItem(layout, itemId);
       if (!item) return;
       setDragState((prev) => ({
         ...prev,
         activeDrag: prev.activeDrag ? { ...prev.activeDrag, x, y } : null
       }));
-      const newLayout = chunkXYPVO5ML_js.moveElement(
+      const newLayout = chunk62PT2CTZ_js.moveElement(
         layout,
         item,
         x,
@@ -160,9 +160,9 @@ function useGridLayout(options) {
   );
   const onDragStop = react.useCallback(
     (itemId, x, y) => {
-      const item = chunkXYPVO5ML_js.getLayoutItem(layout, itemId);
+      const item = chunk62PT2CTZ_js.getLayoutItem(layout, itemId);
       if (!item) return;
-      const newLayout = chunkXYPVO5ML_js.moveElement(
+      const newLayout = chunk62PT2CTZ_js.moveElement(
         layout,
         item,
         x,
@@ -186,12 +186,12 @@ function useGridLayout(options) {
   );
   const onResizeStart = react.useCallback(
     (itemId) => {
-      const item = chunkXYPVO5ML_js.getLayoutItem(layout, itemId);
+      const item = chunk62PT2CTZ_js.getLayoutItem(layout, itemId);
       if (!item) return null;
       setResizeState({
         resizing: true,
-        oldResizeItem: chunkXYPVO5ML_js.cloneLayoutItem(item),
-        oldLayout: chunkXYPVO5ML_js.cloneLayout(layout)
+        oldResizeItem: chunk62PT2CTZ_js.cloneLayoutItem(item),
+        oldLayout: chunk62PT2CTZ_js.cloneLayout(layout)
       });
       return item;
     },
@@ -212,7 +212,7 @@ function useGridLayout(options) {
         }
         return item;
       });
-      const corrected = chunkXYPVO5ML_js.correctBounds(newLayout, { cols });
+      const corrected = chunk62PT2CTZ_js.correctBounds(newLayout, { cols });
       const compacted = compactor.compact(corrected, cols);
       setLayoutState(compacted);
     },
@@ -231,10 +231,10 @@ function useGridLayout(options) {
   );
   const onDropDragOver = react.useCallback(
     (droppingItem, position) => {
-      const existingItem = chunkXYPVO5ML_js.getLayoutItem(layout, droppingItem.i);
+      const existingItem = chunk62PT2CTZ_js.getLayoutItem(layout, droppingItem.i);
       if (!existingItem) {
         const newLayout = [...layout, droppingItem];
-        const corrected = chunkXYPVO5ML_js.correctBounds(newLayout, { cols });
+        const corrected = chunk62PT2CTZ_js.correctBounds(newLayout, { cols });
         const compacted = compactor.compact(corrected, cols);
         setLayoutState(compacted);
       }
@@ -266,7 +266,7 @@ function useGridLayout(options) {
         }
         return item;
       });
-      const corrected = chunkXYPVO5ML_js.correctBounds(newLayout, { cols });
+      const corrected = chunk62PT2CTZ_js.correctBounds(newLayout, { cols });
       const compacted = compactor.compact(corrected, cols);
       setLayoutState(compacted);
       setDropState({
@@ -276,7 +276,7 @@ function useGridLayout(options) {
     },
     [layout, cols, compactor]
   );
-  const containerHeight = react.useMemo(() => chunkXYPVO5ML_js.bottom(layout), [layout]);
+  const containerHeight = react.useMemo(() => chunk62PT2CTZ_js.bottom(layout), [layout]);
   const isInteracting = dragState.activeDrag !== null || resizeState.resizing || dropState.droppingPosition !== null;
   return {
     layout,
@@ -318,23 +318,23 @@ function useResponsiveLayout(options) {
     breakpoints = DEFAULT_BREAKPOINTS,
     cols: colsConfig = DEFAULT_COLS,
     layouts: propsLayouts = {},
-    compactor = chunkXYPVO5ML_js.verticalCompactor,
+    compactor = chunk62PT2CTZ_js.verticalCompactor,
     onBreakpointChange,
     onLayoutChange,
     onWidthChange
   } = options;
   const sortedBreakpoints = react.useMemo(
-    () => chunkXYPVO5ML_js.sortBreakpoints(breakpoints),
+    () => chunk62PT2CTZ_js.sortBreakpoints(breakpoints),
     [breakpoints]
   );
   const initialBreakpoint = react.useMemo(
-    () => chunkXYPVO5ML_js.getBreakpointFromWidth(breakpoints, width),
+    () => chunk62PT2CTZ_js.getBreakpointFromWidth(breakpoints, width),
     // Only calculate on mount, not on width changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   const initialCols = react.useMemo(
-    () => chunkXYPVO5ML_js.getColsFromBreakpoint(initialBreakpoint, colsConfig),
+    () => chunk62PT2CTZ_js.getColsFromBreakpoint(initialBreakpoint, colsConfig),
     [initialBreakpoint, colsConfig]
   );
   const [breakpoint, setBreakpoint] = react.useState(initialBreakpoint);
@@ -344,7 +344,7 @@ function useResponsiveLayout(options) {
     for (const bp of sortedBreakpoints) {
       const layout2 = propsLayouts[bp];
       if (layout2) {
-        cloned[bp] = chunkXYPVO5ML_js.cloneLayout(layout2);
+        cloned[bp] = chunk62PT2CTZ_js.cloneLayout(layout2);
       }
     }
     return cloned;
@@ -354,7 +354,7 @@ function useResponsiveLayout(options) {
   const prevPropsLayoutsRef = react.useRef(propsLayouts);
   const prevLayoutsRef = react.useRef(layouts);
   const layout = react.useMemo(() => {
-    return chunkXYPVO5ML_js.findOrGenerateResponsiveLayout(
+    return chunk62PT2CTZ_js.findOrGenerateResponsiveLayout(
       layouts,
       breakpoints,
       breakpoint,
@@ -366,7 +366,7 @@ function useResponsiveLayout(options) {
   const setLayoutForBreakpoint = react.useCallback((bp, newLayout) => {
     setLayoutsState((prev) => ({
       ...prev,
-      [bp]: chunkXYPVO5ML_js.cloneLayout(newLayout)
+      [bp]: chunk62PT2CTZ_js.cloneLayout(newLayout)
     }));
   }, []);
   const setLayouts = react.useCallback((newLayouts) => {
@@ -374,7 +374,7 @@ function useResponsiveLayout(options) {
     for (const bp of Object.keys(newLayouts)) {
       const layoutForBp = newLayouts[bp];
       if (layoutForBp) {
-        cloned[bp] = chunkXYPVO5ML_js.cloneLayout(layoutForBp);
+        cloned[bp] = chunk62PT2CTZ_js.cloneLayout(layoutForBp);
       }
     }
     setLayoutsState(cloned);
@@ -382,11 +382,11 @@ function useResponsiveLayout(options) {
   react.useEffect(() => {
     if (prevWidthRef.current === width) return;
     prevWidthRef.current = width;
-    const newBreakpoint = chunkXYPVO5ML_js.getBreakpointFromWidth(breakpoints, width);
-    const newCols = chunkXYPVO5ML_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
+    const newBreakpoint = chunk62PT2CTZ_js.getBreakpointFromWidth(breakpoints, width);
+    const newCols = chunk62PT2CTZ_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
     onWidthChange?.(width, [10, 10], newCols, null);
     if (newBreakpoint !== breakpoint) {
-      const newLayout = chunkXYPVO5ML_js.findOrGenerateResponsiveLayout(
+      const newLayout = chunk62PT2CTZ_js.findOrGenerateResponsiveLayout(
         layouts,
         breakpoints,
         newBreakpoint,
