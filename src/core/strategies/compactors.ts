@@ -260,7 +260,13 @@ export const noCompactor: Compactor = {
 
   compact(layout: Layout, _cols: number): Layout {
     // No compaction - just clone to maintain immutability
-    return cloneLayout(layout);
+    // MUST clear the moved flag so items can be pushed again in subsequent drag frames
+    const out = cloneLayout(layout);
+    for (let i = 0; i < out.length; i++) {
+      const item = out[i];
+      if (item) item.moved = false;
+    }
+    return out;
   }
 };
 
@@ -280,7 +286,13 @@ export const verticalOverlapCompactor: Compactor = {
 
   compact(layout: Layout, _cols: number): Layout {
     // With overlap allowed, just clone without moving
-    return cloneLayout(layout);
+    // MUST clear moved flags for drag-frame consistency (see noCompactor)
+    const out = cloneLayout(layout);
+    for (let i = 0; i < out.length; i++) {
+      const item = out[i];
+      if (item) item.moved = false;
+    }
+    return out;
   }
 };
 
@@ -292,7 +304,13 @@ export const horizontalOverlapCompactor: Compactor = {
   allowOverlap: true,
 
   compact(layout: Layout, _cols: number): Layout {
-    return cloneLayout(layout);
+    // MUST clear moved flags for drag-frame consistency (see noCompactor)
+    const out = cloneLayout(layout);
+    for (let i = 0; i < out.length; i++) {
+      const item = out[i];
+      if (item) item.moved = false;
+    }
+    return out;
   }
 };
 
