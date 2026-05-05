@@ -2,7 +2,7 @@ import * as React from 'react';
 import { G as GridCellConfig } from './calculate-DX3KSdw7.mjs';
 import { a as Compactor } from './config-CJDJz-fI.mjs';
 export { p as pcdCollisionResolver } from './pcd-collision-resolver-DKCVVVhF.mjs';
-export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-C4z_GwfC.mjs';
+export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-_fPHRAsM.mjs';
 import 'react/jsx-runtime';
 
 /**

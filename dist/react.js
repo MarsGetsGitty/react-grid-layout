@@ -1,11 +1,126 @@
 'use strict';
 
 var chunkOW5CUJOF_js = require('./chunk-OW5CUJOF.js');
-var chunkYLHCQXMH_js = require('./chunk-YLHCQXMH.js');
-var chunkAMC7K4RO_js = require('./chunk-AMC7K4RO.js');
+var chunkVUJJDXAE_js = require('./chunk-VUJJDXAE.js');
+var chunkCA5HQNMP_js = require('./chunk-CA5HQNMP.js');
 var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
+var react = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
-
+var ResizeHandle = react.forwardRef(({ handleAxis, ...props }, ref) => /* @__PURE__ */ jsxRuntime.jsx(
+  "div",
+  {
+    ref,
+    className: `react-resizable-handle react-resizable-handle-${handleAxis}`,
+    ...props
+  }
+));
+ResizeHandle.displayName = "ResizeHandle";
+var resizeConfig = {
+  enabled: true,
+  handles: ["s", "w", "e", "n", "sw", "nw", "se", "ne"],
+  handleComponent: /* @__PURE__ */ jsxRuntime.jsx(ResizeHandle, { handleAxis: "" })
+};
+var freeformCompactor = chunkQIPLLMCP_js.getCompactor(null, true, false);
+function ContainerGrid({
+  layout,
+  onLayoutChange,
+  onLayoutSettled,
+  isEditMode = false,
+  cols = 12,
+  rowHeight = 30,
+  margin = [6, 6],
+  containerPadding = null,
+  children
+}) {
+  const { containerRef, width } = chunkOW5CUJOF_js.useContainerWidth();
+  const [maxRows, setMaxRows] = react.useState(20);
+  react.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      const rows = Math.floor(
+        (entry.contentRect.height + margin[1]) / (rowHeight + margin[1])
+      );
+      setMaxRows(Math.max(rows, 4));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [containerRef, rowHeight, margin]);
+  const { isRglInteracting, collisionResolver, handlers } = chunkCA5HQNMP_js.useGridArrangement({
+    layout,
+    onLayoutChange,
+    maxRows,
+    cols
+  });
+  const dragConfig = react.useMemo(() => ({
+    enabled: isEditMode,
+    bounded: true,
+    handle: ".widget-drag-handle",
+    cancel: "button, a, input, textarea, select, [data-no-drag]"
+  }), [isEditMode]);
+  const editResizeConfig = react.useMemo(() => ({
+    ...resizeConfig,
+    enabled: isEditMode
+  }), [isEditMode]);
+  const wrappedHandlers = react.useMemo(() => {
+    return {
+      ...handlers,
+      onDragStop: (...args) => {
+        handlers.onDragStop(...args);
+        if (onLayoutSettled) {
+          onLayoutSettled(args[0]);
+        }
+      },
+      onResizeStop: (...args) => {
+        handlers.onResizeStop(...args);
+        if (onLayoutSettled) {
+          onLayoutSettled(args[0]);
+        }
+      }
+    };
+  }, [handlers, onLayoutSettled]);
+  const gridConfig = react.useMemo(() => ({
+    cols,
+    rowHeight,
+    margin,
+    containerPadding,
+    maxRows: Infinity
+    // Enforced internally by squashPushEngine
+  }), [cols, rowHeight, margin, containerPadding]);
+  const { gutterElements, isDraggingGutter } = chunkCA5HQNMP_js.useGutterHandles(
+    layout,
+    onLayoutChange,
+    width,
+    gridConfig,
+    isRglInteracting,
+    isEditMode
+  );
+  const containerClass = [
+    "react-grid-container",
+    isDraggingGutter && "gutter-dragging"
+  ].filter(Boolean).join(" ");
+  return /* @__PURE__ */ jsxRuntime.jsx("div", { ref: containerRef, className: containerClass, style: { height: "100%", width: "100%" }, children: width > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntime.jsx(
+      chunkVUJJDXAE_js.GridLayout,
+      {
+        layout,
+        width,
+        autoSize: false,
+        gridConfig,
+        dragConfig,
+        resizeConfig: editResizeConfig,
+        compactor: freeformCompactor,
+        collisionResolver,
+        ghostDrag: true,
+        ...wrappedHandlers,
+        children
+      }
+    ),
+    isEditMode && gutterElements
+  ] }) });
+}
 
 Object.defineProperty(exports, "DEFAULT_BREAKPOINTS", {
   enumerable: true,
@@ -29,27 +144,27 @@ Object.defineProperty(exports, "useResponsiveLayout", {
 });
 Object.defineProperty(exports, "GridItem", {
   enumerable: true,
-  get: function () { return chunkYLHCQXMH_js.GridItem; }
+  get: function () { return chunkVUJJDXAE_js.GridItem; }
 });
 Object.defineProperty(exports, "GridLayout", {
   enumerable: true,
-  get: function () { return chunkYLHCQXMH_js.GridLayout; }
+  get: function () { return chunkVUJJDXAE_js.GridLayout; }
 });
 Object.defineProperty(exports, "ResponsiveGridLayout", {
   enumerable: true,
-  get: function () { return chunkYLHCQXMH_js.ResponsiveGridLayout; }
+  get: function () { return chunkVUJJDXAE_js.ResponsiveGridLayout; }
 });
 Object.defineProperty(exports, "GutterHandle", {
   enumerable: true,
-  get: function () { return chunkAMC7K4RO_js.GutterHandle; }
+  get: function () { return chunkCA5HQNMP_js.GutterHandle; }
 });
 Object.defineProperty(exports, "useGridArrangement", {
   enumerable: true,
-  get: function () { return chunkAMC7K4RO_js.useGridArrangement; }
+  get: function () { return chunkCA5HQNMP_js.useGridArrangement; }
 });
 Object.defineProperty(exports, "useGutterHandles", {
   enumerable: true,
-  get: function () { return chunkAMC7K4RO_js.useGutterHandles; }
+  get: function () { return chunkCA5HQNMP_js.useGutterHandles; }
 });
 Object.defineProperty(exports, "bottom", {
   enumerable: true,
@@ -103,3 +218,4 @@ Object.defineProperty(exports, "verticalCompactor", {
   enumerable: true,
   get: function () { return chunkQIPLLMCP_js.verticalCompactor; }
 });
+exports.ContainerGrid = ContainerGrid;

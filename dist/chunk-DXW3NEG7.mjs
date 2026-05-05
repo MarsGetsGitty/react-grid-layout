@@ -1,18 +1,11 @@
-'use strict';
-
-var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
-var React3 = require('react');
-var reactDom = require('react-dom');
-var reactDraggable = require('react-draggable');
-var reactResizable = require('react-resizable');
-var clsx = require('clsx');
-var jsxRuntime = require('react/jsx-runtime');
-var fastEquals = require('fast-equals');
-
-function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
-
-var React3__default = /*#__PURE__*/_interopDefault(React3);
-var clsx__default = /*#__PURE__*/_interopDefault(clsx);
+import { defaultConstraints, setTransform, setTopLeft, perc, calcGridItemPosition, calcGridColWidth, calcGridItemWHPx, defaultPositionStrategy, defaultGridConfig, defaultDragConfig, defaultResizeConfig, defaultDropConfig, getCompactor, bottom, getLayoutItem, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout, cloneLayout, getIndentationValue, calcXYRaw, applyPositionConstraints, clamp, resizeItemInDirection, calcWHRaw, applySizeConstraints, cloneLayoutItem, correctBounds, moveElement, withLayoutItem, getAllCollisions, calcXY } from './chunk-73AP6TWJ.mjs';
+import React3, { useRef, useMemo, useCallback, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { DraggableCore } from 'react-draggable';
+import { Resizable } from 'react-resizable';
+import clsx from 'clsx';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
+import { deepEqual } from 'fast-equals';
 
 function useGridItemDrag(opts) {
   const {
@@ -34,14 +27,14 @@ function useGridItemDrag(opts) {
     onDragProp,
     onDragStopProp
   } = opts;
-  const [dragging, setDragging] = React3.useState(false);
-  const dragPositionRef = React3.useRef({ left: 0, top: 0 });
-  const dragPendingRef = React3.useRef(false);
-  const initialDragClientRef = React3.useRef({ x: 0, y: 0 });
-  const thresholdExceededRef = React3.useRef(false);
-  const onDragStartRef = React3.useRef(null);
-  const onDragRef = React3.useRef(null);
-  const onDragStart = React3.useCallback(
+  const [dragging, setDragging] = useState(false);
+  const dragPositionRef = useRef({ left: 0, top: 0 });
+  const dragPendingRef = useRef(false);
+  const initialDragClientRef = useRef({ x: 0, y: 0 });
+  const thresholdExceededRef = useRef(false);
+  const onDragStartRef = useRef(null);
+  const onDragRef = useRef(null);
+  const onDragStart = useCallback(
     (e, { node }) => {
       if (!onDragStartProp) return;
       const { offsetParent } = node;
@@ -80,8 +73,8 @@ function useGridItemDrag(opts) {
         return;
       }
       setDragging(true);
-      const rawPos = chunkQIPLLMCP_js.calcXYRaw(positionParams, newPosition.top, newPosition.left);
-      const { x: newX, y: newY } = chunkQIPLLMCP_js.applyPositionConstraints(
+      const rawPos = calcXYRaw(positionParams, newPosition.top, newPosition.left);
+      const { x: newX, y: newY } = applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -106,7 +99,7 @@ function useGridItemDrag(opts) {
       i
     ]
   );
-  const onDrag = React3.useCallback(
+  const onDrag = useCallback(
     (e, { node, deltaX, deltaY }) => {
       if (!onDragProp || !dragging) return;
       const mouseEvent = e;
@@ -120,12 +113,12 @@ function useGridItemDrag(opts) {
         thresholdExceededRef.current = true;
         dragPendingRef.current = false;
         if (onDragStartProp) {
-          const rawPos2 = chunkQIPLLMCP_js.calcXYRaw(
+          const rawPos2 = calcXYRaw(
             positionParams,
             dragPositionRef.current.top,
             dragPositionRef.current.left
           );
-          const { x: startX, y: startY } = chunkQIPLLMCP_js.applyPositionConstraints(
+          const { x: startX, y: startY } = applyPositionConstraints(
             constraints,
             effectiveLayoutItem,
             rawPos2.x,
@@ -144,17 +137,17 @@ function useGridItemDrag(opts) {
       if (isBounded) {
         const { offsetParent } = node;
         if (offsetParent) {
-          const bottomBoundary = offsetParent.clientHeight - chunkQIPLLMCP_js.calcGridItemWHPx(h, rowHeight, margin[1]);
-          top = chunkQIPLLMCP_js.clamp(top, 0, bottomBoundary);
-          const colWidth = chunkQIPLLMCP_js.calcGridColWidth(positionParams);
-          const rightBoundary = containerWidth - chunkQIPLLMCP_js.calcGridItemWHPx(w, colWidth, margin[0]);
-          left = chunkQIPLLMCP_js.clamp(left, 0, rightBoundary);
+          const bottomBoundary = offsetParent.clientHeight - calcGridItemWHPx(h, rowHeight, margin[1]);
+          top = clamp(top, 0, bottomBoundary);
+          const colWidth = calcGridColWidth(positionParams);
+          const rightBoundary = containerWidth - calcGridItemWHPx(w, colWidth, margin[0]);
+          left = clamp(left, 0, rightBoundary);
         }
       }
       const newPosition = { top, left };
       dragPositionRef.current = newPosition;
-      const rawPos = chunkQIPLLMCP_js.calcXYRaw(positionParams, top, left);
-      const { x: newX, y: newY } = chunkQIPLLMCP_js.applyPositionConstraints(
+      const rawPos = calcXYRaw(positionParams, top, left);
+      const { x: newX, y: newY } = applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -185,7 +178,7 @@ function useGridItemDrag(opts) {
       getConstraintContext
     ]
   );
-  const onDragStop = React3.useCallback(
+  const onDragStop = useCallback(
     (e, { node }) => {
       if (!onDragStopProp || !dragging) return;
       const wasPending = dragPendingRef.current;
@@ -201,8 +194,8 @@ function useGridItemDrag(opts) {
       const newPosition = { top, left };
       setDragging(false);
       dragPositionRef.current = { left: 0, top: 0 };
-      const rawPos = chunkQIPLLMCP_js.calcXYRaw(positionParams, top, left);
-      const { x: newX, y: newY } = chunkQIPLLMCP_js.applyPositionConstraints(
+      const rawPos = calcXYRaw(positionParams, top, left);
+      const { x: newX, y: newY } = applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -253,20 +246,20 @@ function useGridItemResize(opts) {
     onResizeProp,
     onResizeStopProp
   } = opts;
-  const [resizing, setResizing] = React3.useState(false);
-  const resizePositionRef = React3.useRef({
+  const [resizing, setResizing] = useState(false);
+  const resizePositionRef = useRef({
     top: 0,
     left: 0,
     width: 0,
     height: 0
   });
-  const onResizeHandler = React3.useCallback(
+  const onResizeHandler = useCallback(
     (e, { node, size, handle: resizeHandle }, position, handlerName) => {
       const handler = handlerName === "onResizeStart" ? onResizeStartProp : handlerName === "onResize" ? onResizeProp : onResizeStopProp;
       if (!handler) return;
       let updatedSize;
       if (node) {
-        updatedSize = chunkQIPLLMCP_js.resizeItemInDirection(
+        updatedSize = resizeItemInDirection(
           resizeHandle,
           position,
           size,
@@ -280,8 +273,8 @@ function useGridItemResize(opts) {
         };
       }
       resizePositionRef.current = updatedSize;
-      const rawSize = chunkQIPLLMCP_js.calcWHRaw(positionParams, updatedSize.width, updatedSize.height);
-      const { w: newW, h: newH } = chunkQIPLLMCP_js.applySizeConstraints(
+      const rawSize = calcWHRaw(positionParams, updatedSize.width, updatedSize.height);
+      const { w: newW, h: newH } = applySizeConstraints(
         constraints,
         effectiveLayoutItem,
         rawSize.w,
@@ -308,10 +301,10 @@ function useGridItemResize(opts) {
       getConstraintContext
     ]
   );
-  const handleResizeStart = React3.useCallback(
+  const handleResizeStart = useCallback(
     (e, data) => {
       setResizing(true);
-      const pos = chunkQIPLLMCP_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -320,9 +313,9 @@ function useGridItemResize(opts) {
     },
     [onResizeHandler, positionParams, x, y, w, h]
   );
-  const handleResize = React3.useCallback(
+  const handleResize = useCallback(
     (e, data) => {
-      const pos = chunkQIPLLMCP_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -331,11 +324,11 @@ function useGridItemResize(opts) {
     },
     [onResizeHandler, positionParams, x, y, w, h]
   );
-  const handleResizeStop = React3.useCallback(
+  const handleResizeStop = useCallback(
     (e, data) => {
       setResizing(false);
       resizePositionRef.current = { top: 0, left: 0, width: 0, height: 0 };
-      const pos = chunkQIPLLMCP_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -362,8 +355,8 @@ function useGridItemDrop(opts) {
     onDragRef,
     elementRef
   } = opts;
-  const prevDroppingPositionRef = React3.useRef(void 0);
-  React3.useEffect(() => {
+  const prevDroppingPositionRef = useRef(void 0);
+  useEffect(() => {
     if (!droppingPosition) return;
     const node = elementRef.current;
     if (!node) return;
@@ -440,7 +433,7 @@ function GridItem(props) {
     i,
     resizeHandles,
     resizeHandle,
-    constraints = chunkQIPLLMCP_js.defaultConstraints,
+    constraints = defaultConstraints,
     layoutItem,
     layout = [],
     onDragStart: onDragStartProp,
@@ -452,10 +445,10 @@ function GridItem(props) {
     ghostDrag,
     gridContainerRef
   } = props;
-  const elementRef = React3.useRef(null);
-  const layoutRef = React3.useRef(layout);
+  const elementRef = useRef(null);
+  const layoutRef = useRef(layout);
   layoutRef.current = layout;
-  const positionParams = React3.useMemo(
+  const positionParams = useMemo(
     () => ({
       cols,
       containerPadding,
@@ -466,7 +459,7 @@ function GridItem(props) {
     }),
     [cols, containerPadding, containerWidth, margin, maxRows, rowHeight]
   );
-  const constraintContext = React3.useMemo(
+  const constraintContext = useMemo(
     () => ({
       cols,
       maxRows,
@@ -478,14 +471,14 @@ function GridItem(props) {
     }),
     [cols, maxRows, containerWidth, rowHeight, margin]
   );
-  const getConstraintContext = React3.useCallback(
+  const getConstraintContext = useCallback(
     () => ({
       ...constraintContext,
       layout: layoutRef.current
     }),
     [constraintContext]
   );
-  const effectiveLayoutItem = React3.useMemo(
+  const effectiveLayoutItem = useMemo(
     () => layoutItem ?? {
       i,
       x,
@@ -556,27 +549,27 @@ function GridItem(props) {
     onDragRef,
     elementRef
   });
-  const createStyle = React3.useCallback(
+  const createStyle = useCallback(
     (pos2) => {
       if (positionStrategy?.calcStyle) {
         return positionStrategy.calcStyle(pos2);
       }
       if (useCSSTransforms) {
-        return chunkQIPLLMCP_js.setTransform(pos2);
+        return setTransform(pos2);
       }
-      const styleObj = chunkQIPLLMCP_js.setTopLeft(pos2);
+      const styleObj = setTopLeft(pos2);
       if (usePercentages) {
         return {
           ...styleObj,
-          left: chunkQIPLLMCP_js.perc(pos2.left / containerWidth),
-          width: chunkQIPLLMCP_js.perc(pos2.width / containerWidth)
+          left: perc(pos2.left / containerWidth),
+          width: perc(pos2.width / containerWidth)
         };
       }
       return styleObj;
     },
     [positionStrategy, useCSSTransforms, usePercentages, containerWidth]
   );
-  const pos = chunkQIPLLMCP_js.calcGridItemPosition(
+  const pos = calcGridItemPosition(
     positionParams,
     x,
     y,
@@ -587,22 +580,22 @@ function GridItem(props) {
     dragging && !ghostDrag ? dragPositionRef.current : null,
     resizing ? resizePositionRef.current : null
   );
-  const child = React3__default.default.Children.only(children);
-  const colWidth = chunkQIPLLMCP_js.calcGridColWidth(positionParams);
+  const child = React3.Children.only(children);
+  const colWidth = calcGridColWidth(positionParams);
   const minConstraints = [
-    chunkQIPLLMCP_js.calcGridItemWHPx(minW, colWidth, margin[0]),
-    chunkQIPLLMCP_js.calcGridItemWHPx(minH, rowHeight, margin[1])
+    calcGridItemWHPx(minW, colWidth, margin[0]),
+    calcGridItemWHPx(minH, rowHeight, margin[1])
   ];
   const maxConstraints = [
-    chunkQIPLLMCP_js.calcGridItemWHPx(maxW, colWidth, margin[0]),
-    chunkQIPLLMCP_js.calcGridItemWHPx(maxH, rowHeight, margin[1])
+    calcGridItemWHPx(maxW, colWidth, margin[0]),
+    calcGridItemWHPx(maxH, rowHeight, margin[1])
   ];
   const childProps = child.props;
   const childClassName = childProps["className"];
   const childStyle = childProps["style"];
-  let newChild = React3__default.default.cloneElement(child, {
+  let newChild = React3.cloneElement(child, {
     ref: elementRef,
-    className: clsx__default.default("react-grid-item", childClassName, className, {
+    className: clsx("react-grid-item", childClassName, className, {
       static: isStatic,
       resizing,
       "react-draggable": isDraggable,
@@ -619,7 +612,7 @@ function GridItem(props) {
   });
   let ghostPortal = null;
   if (ghostDrag && dragging && gridContainerRef?.current) {
-    const ghostPos = chunkQIPLLMCP_js.calcGridItemPosition(
+    const ghostPos = calcGridItemPosition(
       positionParams,
       x,
       y,
@@ -629,8 +622,8 @@ function GridItem(props) {
       // cursor pixel position
       null
     );
-    ghostPortal = reactDom.createPortal(
-      /* @__PURE__ */ jsxRuntime.jsx(
+    ghostPortal = createPortal(
+      /* @__PURE__ */ jsx(
         "div",
         {
           className: "react-grid-ghost",
@@ -643,9 +636,9 @@ function GridItem(props) {
             willChange: "transform",
             boxShadow: "0 8px 32px rgba(0,0,0,0.25)"
           },
-          children: React3__default.default.cloneElement(child, {
+          children: React3.cloneElement(child, {
             style: { ...childStyle, width: "100%", height: "100%" },
-            className: clsx__default.default(childClassName, "react-grid-ghost-content")
+            className: clsx(childClassName, "react-grid-ghost-content")
           })
         }
       ),
@@ -653,8 +646,8 @@ function GridItem(props) {
     );
   }
   const resizableHandle = resizeHandle;
-  newChild = /* @__PURE__ */ jsxRuntime.jsx(
-    reactResizable.Resizable,
+  newChild = /* @__PURE__ */ jsx(
+    Resizable,
     {
       draggableOpts: { disabled: !isResizable },
       className: isResizable ? void 0 : "react-resizable-hide",
@@ -671,8 +664,8 @@ function GridItem(props) {
       children: newChild
     }
   );
-  newChild = /* @__PURE__ */ jsxRuntime.jsx(
-    reactDraggable.DraggableCore,
+  newChild = /* @__PURE__ */ jsx(
+    DraggableCore,
     {
       disabled: !isDraggable,
       onStart: onDragStart,
@@ -685,7 +678,7 @@ function GridItem(props) {
       children: newChild
     }
   );
-  return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
     newChild,
     ghostPortal
   ] });
@@ -702,18 +695,18 @@ function useGridLayoutDrag(opts) {
     allowOverlap,
     preventCollision,
     collisionResolver,
-    setLayout,
+    onLayoutMutation,
     setActiveDrag,
     onDragStartProp,
     onDragProp,
     onDragStopProp,
     onLayoutChange
   } = opts;
-  const latestDragLayoutRef = React3.useRef(null);
-  const onDragStart = React3.useCallback(
+  const latestDragLayoutRef = useRef(null);
+  const onDragStart = useCallback(
     (i, _x, _y, data) => {
       const currentLayout = layoutRef.current;
-      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
+      const l = getLayoutItem(currentLayout, i);
       if (!l) return;
       const placeholder = {
         w: l.w,
@@ -722,25 +715,25 @@ function useGridLayoutDrag(opts) {
         y: l.y,
         i
       };
-      oldDragItemRef.current = chunkQIPLLMCP_js.cloneLayoutItem(l);
-      oldLayoutRef.current = currentLayout.map((item) => chunkQIPLLMCP_js.cloneLayoutItem(item));
-      latestDragLayoutRef.current = currentLayout.map((item) => chunkQIPLLMCP_js.cloneLayoutItem(item));
+      oldDragItemRef.current = cloneLayoutItem(l);
+      oldLayoutRef.current = currentLayout.map((item) => cloneLayoutItem(item));
+      latestDragLayoutRef.current = currentLayout.map((item) => cloneLayoutItem(item));
       setActiveDrag(placeholder);
       onDragStartProp(currentLayout, l, l, null, data.e, data.node);
     },
     [layoutRef, oldDragItemRef, oldLayoutRef, setActiveDrag, onDragStartProp]
   );
-  const onDrag = React3.useCallback(
+  const onDrag = useCallback(
     (i, x, y, data) => {
       const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
-      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
+      const l = getLayoutItem(currentLayout, i);
       if (!l) return;
       if (collisionResolver) {
-        const tentativeBase = currentLayout.map((item) => chunkQIPLLMCP_js.cloneLayoutItem(item));
-        const tentativeItem = chunkQIPLLMCP_js.getLayoutItem(tentativeBase, i);
+        const tentativeBase = currentLayout.map((item) => cloneLayoutItem(item));
+        const tentativeItem = getLayoutItem(tentativeBase, i);
         if (!tentativeItem) return;
-        const tentative = chunkQIPLLMCP_js.moveElement(
+        const tentative = moveElement(
           tentativeBase,
           tentativeItem,
           x,
@@ -753,7 +746,7 @@ function useGridLayoutDrag(opts) {
           true
           // allowOverlap — let resolver see the raw position
         );
-        const movedItem = chunkQIPLLMCP_js.getLayoutItem(tentative, i);
+        const movedItem = getLayoutItem(tentative, i);
         if (!movedItem) return;
         const originPos = oldDragItem ? { x: oldDragItem.x, y: oldDragItem.y } : { x: l.x, y: l.y };
         const resolved = collisionResolver(tentative, movedItem, originPos, { cols, compactType });
@@ -767,11 +760,11 @@ function useGridLayoutDrag(opts) {
         if (resolved) {
           const compacted2 = compactor.compact(resolved, cols);
           latestDragLayoutRef.current = compacted2;
-          setLayout(compacted2);
-          const acceptedItem = chunkQIPLLMCP_js.getLayoutItem(compacted2, i) ?? movedItem;
+          onLayoutMutation(compacted2);
+          const acceptedItem = getLayoutItem(compacted2, i) ?? movedItem;
           onDragProp(compacted2, oldDragItem, acceptedItem, placeholder2, data.e, data.node);
         } else {
-          const eventItem = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i) ?? l;
+          const eventItem = getLayoutItem(currentLayout, i) ?? l;
           onDragProp(currentLayout, oldDragItem, eventItem, placeholder2, data.e, data.node);
         }
         setActiveDrag(placeholder2);
@@ -784,7 +777,7 @@ function useGridLayoutDrag(opts) {
         y: l.y,
         i
       };
-      const newLayout = chunkQIPLLMCP_js.moveElement(
+      const newLayout = moveElement(
         currentLayout,
         l,
         x,
@@ -798,23 +791,23 @@ function useGridLayoutDrag(opts) {
       onDragProp(newLayout, oldDragItem, l, placeholder, data.e, data.node);
       const compacted = compactor.compact(newLayout, cols);
       latestDragLayoutRef.current = compacted;
-      setLayout(compacted);
+      onLayoutMutation(compacted);
       setActiveDrag(placeholder);
     },
-    [layoutRef, oldDragItemRef, preventCollision, compactType, cols, allowOverlap, compactor, collisionResolver, setLayout, setActiveDrag, onDragProp]
+    [layoutRef, oldDragItemRef, preventCollision, compactType, cols, allowOverlap, compactor, collisionResolver, onLayoutMutation, setActiveDrag, onDragProp]
   );
-  const onDragStop = React3.useCallback(
+  const onDragStop = useCallback(
     (i, x, y, data) => {
       if (!activeDrag) return;
       const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
-      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
+      const l = getLayoutItem(currentLayout, i);
       if (!l) return;
       let finalLayout;
       if (collisionResolver) {
         finalLayout = compactor.compact(currentLayout, cols);
       } else {
-        const newLayout = chunkQIPLLMCP_js.moveElement(
+        const newLayout = moveElement(
           currentLayout,
           l,
           x,
@@ -833,8 +826,8 @@ function useGridLayoutDrag(opts) {
       oldLayoutRef.current = null;
       latestDragLayoutRef.current = null;
       setActiveDrag(null);
-      setLayout(finalLayout);
-      if (oldLayout && !fastEquals.deepEqual(oldLayout, finalLayout)) {
+      onLayoutMutation(finalLayout);
+      if (oldLayout && !deepEqual(oldLayout, finalLayout)) {
         onLayoutChange(finalLayout);
       }
     },
@@ -849,7 +842,7 @@ function useGridLayoutDrag(opts) {
       allowOverlap,
       compactor,
       collisionResolver,
-      setLayout,
+      onLayoutMutation,
       setActiveDrag,
       onDragStopProp,
       onLayoutChange
@@ -867,7 +860,7 @@ function useGridLayoutResize(opts) {
     cols,
     allowOverlap,
     preventCollision,
-    setLayout,
+    onLayoutMutation,
     setActiveDrag,
     setResizing,
     onResizeStartProp,
@@ -875,19 +868,19 @@ function useGridLayoutResize(opts) {
     onResizeStopProp,
     onLayoutChange
   } = opts;
-  const onResizeStart = React3.useCallback(
+  const onResizeStart = useCallback(
     (i, _w, _h, data) => {
       const currentLayout = layoutRef.current;
-      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
+      const l = getLayoutItem(currentLayout, i);
       if (!l) return;
-      oldResizeItemRef.current = chunkQIPLLMCP_js.cloneLayoutItem(l);
+      oldResizeItemRef.current = cloneLayoutItem(l);
       oldLayoutRef.current = currentLayout;
       setResizing(true);
       onResizeStartProp(currentLayout, l, l, null, data.e, data.node);
     },
     [layoutRef, oldResizeItemRef, oldLayoutRef, setResizing, onResizeStartProp]
   );
-  const onResize = React3.useCallback(
+  const onResize = useCallback(
     (i, w, h, data) => {
       const currentLayout = layoutRef.current;
       const oldResizeItem = oldResizeItemRef.current;
@@ -895,7 +888,7 @@ function useGridLayoutResize(opts) {
       let shouldMoveItem = false;
       let newX;
       let newY;
-      const [newLayout, l] = chunkQIPLLMCP_js.withLayoutItem(currentLayout, i, (item) => {
+      const [newLayout, l] = withLayoutItem(currentLayout, i, (item) => {
         newX = item.x;
         newY = item.y;
         if (["sw", "w", "nw", "n", "ne"].includes(handle)) {
@@ -912,7 +905,7 @@ function useGridLayoutResize(opts) {
           shouldMoveItem = true;
         }
         if (preventCollision && !allowOverlap) {
-          const collisions = chunkQIPLLMCP_js.getAllCollisions(currentLayout, {
+          const collisions = getAllCollisions(currentLayout, {
             ...item,
             w,
             h,
@@ -934,7 +927,7 @@ function useGridLayoutResize(opts) {
       if (!l) return;
       let finalLayout = newLayout;
       if (shouldMoveItem && newX !== void 0 && newY !== void 0) {
-        finalLayout = chunkQIPLLMCP_js.moveElement(
+        finalLayout = moveElement(
           newLayout,
           l,
           newX,
@@ -962,16 +955,16 @@ function useGridLayoutResize(opts) {
         data.e,
         data.node
       );
-      setLayout(compactor.compact(finalLayout, cols));
+      onLayoutMutation(compactor.compact(finalLayout, cols));
       setActiveDrag(placeholder);
     },
-    [layoutRef, oldResizeItemRef, preventCollision, compactType, cols, allowOverlap, compactor, setLayout, setActiveDrag, onResizeProp]
+    [layoutRef, oldResizeItemRef, preventCollision, compactType, cols, allowOverlap, compactor, onLayoutMutation, setActiveDrag, onResizeProp]
   );
-  const onResizeStop = React3.useCallback(
+  const onResizeStop = useCallback(
     (i, _w, _h, data) => {
       const currentLayout = layoutRef.current;
       const oldResizeItem = oldResizeItemRef.current;
-      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
+      const l = getLayoutItem(currentLayout, i);
       const finalLayout = compactor.compact(currentLayout, cols);
       onResizeStopProp(
         finalLayout,
@@ -986,12 +979,12 @@ function useGridLayoutResize(opts) {
       oldLayoutRef.current = null;
       setActiveDrag(null);
       setResizing(false);
-      setLayout(finalLayout);
-      if (oldLayout && !fastEquals.deepEqual(oldLayout, finalLayout)) {
+      onLayoutMutation(finalLayout);
+      if (oldLayout && !deepEqual(oldLayout, finalLayout)) {
         onLayoutChange(finalLayout);
       }
     },
-    [layoutRef, oldResizeItemRef, oldLayoutRef, cols, compactor, setLayout, setActiveDrag, setResizing, onResizeStopProp, onLayoutChange]
+    [layoutRef, oldResizeItemRef, oldLayoutRef, cols, compactor, onLayoutMutation, setActiveDrag, setResizing, onResizeStopProp, onLayoutChange]
   );
   return { onResizeStart, onResize, onResizeStop };
 }
@@ -1018,13 +1011,13 @@ function useGridLayoutDrop(opts) {
     dropConfigOnDragOver,
     onDropDragOverProp,
     onDropProp,
-    setLayout,
+    onLayoutMutation,
     setDroppingDOMNode,
     setDroppingPosition,
     setActiveDrag
   } = opts;
-  const dragEnterCounterRef = React3__default.default.useRef(0);
-  const removeDroppingPlaceholder = React3.useCallback(() => {
+  const dragEnterCounterRef = React3.useRef(0);
+  const removeDroppingPlaceholder = useCallback(() => {
     const currentLayout = layoutRef.current;
     const hasDroppingItem = currentLayout.some((l) => l.i === droppingItem.i);
     if (!hasDroppingItem) {
@@ -1037,12 +1030,12 @@ function useGridLayoutDrop(opts) {
       currentLayout.filter((l) => l.i !== droppingItem.i),
       cols
     );
-    setLayout(newLayout);
+    onLayoutMutation(newLayout);
     setDroppingDOMNode(null);
     setActiveDrag(null);
     setDroppingPosition(void 0);
-  }, [layoutRef, droppingItem.i, cols, compactor, setLayout, setDroppingDOMNode, setActiveDrag, setDroppingPosition]);
-  const handleDragOver = React3.useCallback(
+  }, [layoutRef, droppingItem.i, cols, compactor, onLayoutMutation, setDroppingDOMNode, setActiveDrag, setDroppingPosition]);
+  const handleDragOver = useCallback(
     (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1073,13 +1066,13 @@ function useGridLayoutDrop(opts) {
         containerWidth: width,
         containerPadding: effectiveContainerPadding
       };
-      const actualColWidth = chunkQIPLLMCP_js.calcGridColWidth(positionParams);
-      const itemPixelWidth = chunkQIPLLMCP_js.calcGridItemWHPx(
+      const actualColWidth = calcGridColWidth(positionParams);
+      const itemPixelWidth = calcGridItemWHPx(
         finalDroppingItem.w,
         actualColWidth,
         margin[0]
       );
-      const itemPixelHeight = chunkQIPLLMCP_js.calcGridItemWHPx(
+      const itemPixelHeight = calcGridItemWHPx(
         finalDroppingItem.h,
         rowHeight,
         margin[1]
@@ -1096,19 +1089,19 @@ function useGridLayoutDrop(opts) {
         e: e.nativeEvent
       };
       if (!droppingDOMNode) {
-        const calculatedPosition = chunkQIPLLMCP_js.calcXY(
+        const calculatedPosition = calcXY(
           positionParams,
           clampedGridY,
           clampedGridX,
           finalDroppingItem.w,
           finalDroppingItem.h
         );
-        setDroppingDOMNode(/* @__PURE__ */ jsxRuntime.jsx("div", {}, finalDroppingItem.i));
+        setDroppingDOMNode(/* @__PURE__ */ jsx("div", {}, finalDroppingItem.i));
         setDroppingPosition(newDroppingPosition);
         const baseLayout = layoutRef.current.filter(
           (l) => l.i !== finalDroppingItem.i
         );
-        setLayout([
+        onLayoutMutation([
           ...baseLayout,
           {
             ...finalDroppingItem,
@@ -1140,12 +1133,12 @@ function useGridLayoutDrop(opts) {
       width,
       effectiveContainerPadding,
       layoutRef,
-      setLayout,
+      onLayoutMutation,
       setDroppingDOMNode,
       setDroppingPosition
     ]
   );
-  const handleDragLeave = React3.useCallback(
+  const handleDragLeave = useCallback(
     (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1159,12 +1152,12 @@ function useGridLayoutDrop(opts) {
     },
     [removeDroppingPlaceholder]
   );
-  const handleDragEnter = React3.useCallback((e) => {
+  const handleDragEnter = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     dragEnterCounterRef.current++;
   }, []);
-  const handleDrop = React3.useCallback(
+  const handleDrop = useCallback(
     (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1188,25 +1181,14 @@ function useGridLayoutDrop(opts) {
 var noop = () => {
 };
 var layoutClassName2 = "react-grid-layout";
-function childrenEqual(a, b) {
-  const aArr = React3__default.default.Children.toArray(a);
-  const bArr = React3__default.default.Children.toArray(b);
-  if (aArr.length !== bArr.length) return false;
-  for (let i = 0; i < aArr.length; i++) {
-    const aChild = aArr[i];
-    const bChild = bArr[i];
-    if (aChild?.key !== bChild?.key) return false;
-  }
-  return true;
-}
 function synchronizeLayoutWithChildren(initialLayout, children, cols, compactor) {
   const layout = [];
-  React3__default.default.Children.forEach(children, (child) => {
-    if (!React3__default.default.isValidElement(child) || child.key === null) return;
+  React3.Children.forEach(children, (child) => {
+    if (!React3.isValidElement(child) || child.key === null) return;
     const key = String(child.key);
     const existingItem = initialLayout.find((l) => l.i === key);
     if (existingItem) {
-      layout.push(chunkQIPLLMCP_js.cloneLayoutItem(existingItem));
+      layout.push(cloneLayoutItem(existingItem));
     } else {
       const childProps = child.props;
       const dataGrid = childProps["data-grid"];
@@ -1231,14 +1213,14 @@ function synchronizeLayoutWithChildren(initialLayout, children, cols, compactor)
         layout.push({
           i: key,
           x: 0,
-          y: chunkQIPLLMCP_js.bottom(layout),
+          y: bottom(layout),
           w: 1,
           h: 1
         });
       }
     }
   });
-  const corrected = chunkQIPLLMCP_js.correctBounds(layout, { cols });
+  const corrected = correctBounds(layout, { cols });
   return compactor.compact(corrected, cols);
 }
 function GridLayout(props) {
@@ -1251,9 +1233,9 @@ function GridLayout(props) {
     dragConfig: dragConfigProp,
     resizeConfig: resizeConfigProp,
     dropConfig: dropConfigProp,
-    positionStrategy = chunkQIPLLMCP_js.defaultPositionStrategy,
+    positionStrategy = defaultPositionStrategy,
     compactor: compactorProp,
-    constraints = chunkQIPLLMCP_js.defaultConstraints,
+    constraints = defaultConstraints,
     collisionResolver,
     ghostDrag,
     // Layout data
@@ -1275,20 +1257,20 @@ function GridLayout(props) {
     onDrop: onDropProp = noop,
     onDropDragOver: onDropDragOverProp = noop
   } = props;
-  const gridConfig = React3.useMemo(
-    () => ({ ...chunkQIPLLMCP_js.defaultGridConfig, ...gridConfigProp }),
+  const gridConfig = useMemo(
+    () => ({ ...defaultGridConfig, ...gridConfigProp }),
     [gridConfigProp]
   );
-  const dragConfig = React3.useMemo(
-    () => ({ ...chunkQIPLLMCP_js.defaultDragConfig, ...dragConfigProp }),
+  const dragConfig = useMemo(
+    () => ({ ...defaultDragConfig, ...dragConfigProp }),
     [dragConfigProp]
   );
-  const resizeConfig = React3.useMemo(
-    () => ({ ...chunkQIPLLMCP_js.defaultResizeConfig, ...resizeConfigProp }),
+  const resizeConfig = useMemo(
+    () => ({ ...defaultResizeConfig, ...resizeConfigProp }),
     [resizeConfigProp]
   );
-  const dropConfig = React3.useMemo(
-    () => ({ ...chunkQIPLLMCP_js.defaultDropConfig, ...dropConfigProp }),
+  const dropConfig = useMemo(
+    () => ({ ...defaultDropConfig, ...dropConfigProp }),
     [dropConfigProp]
   );
   const { cols, rowHeight, maxRows, margin, containerPadding } = gridConfig;
@@ -1309,11 +1291,11 @@ function GridLayout(props) {
     defaultItem: defaultDropItem,
     onDragOver: dropConfigOnDragOver
   } = dropConfig;
-  const compactor = compactorProp ?? chunkQIPLLMCP_js.getCompactor("vertical");
+  const compactor = compactorProp ?? getCompactor("vertical");
   const compactType = compactor.type;
   const allowOverlap = compactor.allowOverlap;
   const preventCollision = compactor.preventCollision ?? false;
-  const droppingItem = React3.useMemo(
+  const droppingItem = useMemo(
     () => droppingItemProp ?? {
       i: "__dropping-elem__",
       x: 0,
@@ -1325,25 +1307,14 @@ function GridLayout(props) {
   const useCSSTransforms = positionStrategy.type === "transform";
   const transformScale = positionStrategy.scale;
   const effectiveContainerPadding = containerPadding ?? margin;
-  const [mounted, setMounted] = React3.useState(false);
-  const [layout, setLayout] = React3.useState(
-    () => synchronizeLayoutWithChildren(propsLayout, children, cols, compactor)
+  const layout = useMemo(
+    () => synchronizeLayoutWithChildren(propsLayout, children, cols, compactor),
+    [propsLayout, children, cols, compactor]
   );
-  const [activeDrag, setActiveDrag] = React3.useState(null);
-  const [resizing, setResizing] = React3.useState(false);
-  const [droppingDOMNode, setDroppingDOMNode] = React3.useState(null);
-  const [droppingPosition, setDroppingPosition] = React3.useState();
-  const oldDragItemRef = React3.useRef(null);
-  const oldResizeItemRef = React3.useRef(null);
-  const oldLayoutRef = React3.useRef(null);
-  const prevLayoutRef = React3.useRef(layout);
-  const prevPropsLayoutRef = React3.useRef(propsLayout);
-  const prevChildrenRef = React3.useRef(children);
-  const prevCompactTypeRef = React3.useRef(compactType);
-  const layoutRef = React3.useRef(layout);
+  const layoutRef = useRef(layout);
   layoutRef.current = layout;
-  const containerNodeRef = React3.useRef(null);
-  const setContainerRef = React3.useCallback((node) => {
+  const containerNodeRef = useRef(null);
+  const setContainerRef = useCallback((node) => {
     containerNodeRef.current = node;
     if (typeof innerRef === "function") {
       innerRef(node);
@@ -1351,42 +1322,24 @@ function GridLayout(props) {
       innerRef.current = node;
     }
   }, [innerRef]);
-  React3.useEffect(() => {
+  const [mounted, setMounted] = useState(false);
+  const [activeDrag, setActiveDrag] = useState(null);
+  const [resizing, setResizing] = useState(false);
+  const [droppingDOMNode, setDroppingDOMNode] = useState(null);
+  const [droppingPosition, setDroppingPosition] = useState();
+  const oldDragItemRef = useRef(null);
+  const oldResizeItemRef = useRef(null);
+  const oldLayoutRef = useRef(null);
+  useEffect(() => {
     setMounted(true);
-    if (!fastEquals.deepEqual(layout, propsLayout)) {
-      onLayoutChange(layout);
-    }
+    onLayoutChange(layout);
   }, []);
-  if (!droppingDOMNode) {
-    const layoutChanged = !fastEquals.deepEqual(propsLayout, prevPropsLayoutRef.current);
-    const childrenChanged = !childrenEqual(children, prevChildrenRef.current);
-    const compactTypeChanged = compactType !== prevCompactTypeRef.current;
-    if (layoutChanged || childrenChanged || compactTypeChanged) {
-      const baseLayout = layoutChanged ? propsLayout : layout;
-      const newLayout = synchronizeLayoutWithChildren(
-        baseLayout,
-        children,
-        cols,
-        compactor
-      );
-      if (!fastEquals.deepEqual(newLayout, layout)) {
-        setLayout(newLayout);
-      }
-    }
-    prevPropsLayoutRef.current = propsLayout;
-    prevChildrenRef.current = children;
-    prevCompactTypeRef.current = compactType;
-  }
-  React3.useEffect(() => {
-    if (!activeDrag && !fastEquals.deepEqual(layout, prevLayoutRef.current)) {
-      prevLayoutRef.current = layout;
-      const publicLayout = layout.filter((l) => l.i !== droppingItem.i);
-      onLayoutChange(publicLayout);
-    }
-  }, [layout, activeDrag, onLayoutChange, droppingItem.i]);
-  const containerHeight = React3.useMemo(() => {
+  const handleLayoutMutation = useCallback((newLayout) => {
+    onLayoutChange(newLayout);
+  }, [onLayoutChange]);
+  const containerHeight = useMemo(() => {
     if (!autoSize) return void 0;
-    const nbRow = chunkQIPLLMCP_js.bottom(layout);
+    const nbRow = bottom(layout);
     const containerPaddingY = effectiveContainerPadding[1];
     return nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPaddingY * 2 + "px";
   }, [autoSize, layout, rowHeight, margin, effectiveContainerPadding]);
@@ -1401,7 +1354,7 @@ function GridLayout(props) {
     allowOverlap,
     preventCollision,
     collisionResolver,
-    setLayout,
+    onLayoutMutation: handleLayoutMutation,
     setActiveDrag,
     onDragStartProp,
     onDragProp,
@@ -1417,7 +1370,7 @@ function GridLayout(props) {
     cols,
     allowOverlap,
     preventCollision,
-    setLayout,
+    onLayoutMutation: handleLayoutMutation,
     setActiveDrag,
     setResizing,
     onResizeStartProp,
@@ -1446,22 +1399,22 @@ function GridLayout(props) {
     dropConfigOnDragOver,
     onDropDragOverProp,
     onDropProp,
-    setLayout,
+    onLayoutMutation: handleLayoutMutation,
     setDroppingDOMNode,
     setDroppingPosition,
     setActiveDrag
   });
-  const processGridItem = React3.useCallback(
+  const processGridItem = useCallback(
     (child, isDroppingItem) => {
       if (!child || !child.key) return null;
-      const l = chunkQIPLLMCP_js.getLayoutItem(layout, String(child.key));
+      const l = getLayoutItem(layout, String(child.key));
       if (!l) return null;
       const draggable = typeof l.isDraggable === "boolean" ? l.isDraggable : !l.static && isDraggable;
       const resizable = typeof l.isResizable === "boolean" ? l.isResizable : !l.static && isResizable;
       const resizeHandlesOptions = l.resizeHandles || [...resizeHandles];
       const bounded = draggable && isBounded && l.isBounded !== false;
       const resizeHandleElement = resizeHandle;
-      return /* @__PURE__ */ jsxRuntime.jsx(
+      return /* @__PURE__ */ jsx(
         GridItem,
         {
           containerWidth: width,
@@ -1542,7 +1495,7 @@ function GridLayout(props) {
   );
   const renderPlaceholder = () => {
     if (!activeDrag) return null;
-    return /* @__PURE__ */ jsxRuntime.jsx(
+    return /* @__PURE__ */ jsx(
       GridItem,
       {
         w: activeDrag.w,
@@ -1564,18 +1517,18 @@ function GridLayout(props) {
         transformScale,
         constraints,
         layout,
-        children: /* @__PURE__ */ jsxRuntime.jsx("div", {})
+        children: /* @__PURE__ */ jsx("div", {})
       }
     );
   };
-  const mergedClassName = clsx__default.default(layoutClassName2, className, {
+  const mergedClassName = clsx(layoutClassName2, className, {
     "react-grid-layout--ghost-active": ghostDrag && activeDrag != null
   });
   const mergedStyle = {
     height: containerHeight,
     ...style
   };
-  return /* @__PURE__ */ jsxRuntime.jsxs(
+  return /* @__PURE__ */ jsxs(
     "div",
     {
       ref: setContainerRef,
@@ -1586,8 +1539,8 @@ function GridLayout(props) {
       onDragEnter: isDroppable ? handleDragEnter : void 0,
       onDragOver: isDroppable ? handleDragOver : void 0,
       children: [
-        React3__default.default.Children.map(children, (child) => {
-          if (!React3__default.default.isValidElement(child)) return null;
+        React3.Children.map(children, (child) => {
+          if (!React3.isValidElement(child)) return null;
           return processGridItem(child);
         }),
         isDroppable && droppingDOMNode && processGridItem(droppingDOMNode, true),
@@ -1614,8 +1567,8 @@ var noop2 = () => {
 };
 function synchronizeLayoutWithChildren2(initialLayout, children, cols, compactor) {
   const layout = [];
-  React3__default.default.Children.forEach(children, (child) => {
-    if (!React3__default.default.isValidElement(child) || child.key === null) return;
+  React3.Children.forEach(children, (child) => {
+    if (!React3.isValidElement(child) || child.key === null) return;
     const key = String(child.key);
     const existingItem = initialLayout.find((l) => l.i === key);
     if (existingItem) {
@@ -1647,14 +1600,14 @@ function synchronizeLayoutWithChildren2(initialLayout, children, cols, compactor
         layout.push({
           i: key,
           x: 0,
-          y: chunkQIPLLMCP_js.bottom(layout),
+          y: bottom(layout),
           w: 1,
           h: 1
         });
       }
     }
   });
-  const corrected = chunkQIPLLMCP_js.correctBounds(layout, { cols });
+  const corrected = correctBounds(layout, { cols });
   return compactor.compact(corrected, cols);
 }
 function ResponsiveGridLayout(props) {
@@ -1675,17 +1628,17 @@ function ResponsiveGridLayout(props) {
     onWidthChange = noop2,
     ...restProps
   } = props;
-  const compactor = compactorProp ?? chunkQIPLLMCP_js.getCompactor("vertical");
+  const compactor = compactorProp ?? getCompactor("vertical");
   const compactType = compactor.type;
   const allowOverlap = compactor.allowOverlap;
-  const initialBreakpoint = React3.useMemo(() => {
-    return propBreakpoint ?? chunkQIPLLMCP_js.getBreakpointFromWidth(breakpoints, width);
+  const initialBreakpoint = useMemo(() => {
+    return propBreakpoint ?? getBreakpointFromWidth(breakpoints, width);
   }, []);
-  const initialCols = React3.useMemo(() => {
-    return chunkQIPLLMCP_js.getColsFromBreakpoint(initialBreakpoint, colsConfig);
+  const initialCols = useMemo(() => {
+    return getColsFromBreakpoint(initialBreakpoint, colsConfig);
   }, [initialBreakpoint, colsConfig]);
-  const initialLayout = React3.useMemo(() => {
-    return chunkQIPLLMCP_js.findOrGenerateResponsiveLayout(
+  const initialLayout = useMemo(() => {
+    return findOrGenerateResponsiveLayout(
       propsLayouts,
       breakpoints,
       initialBreakpoint,
@@ -1694,23 +1647,23 @@ function ResponsiveGridLayout(props) {
       compactType
     );
   }, []);
-  const [breakpoint, setBreakpoint] = React3.useState(initialBreakpoint);
-  const [cols, setCols] = React3.useState(initialCols);
-  const [layout, setLayout] = React3.useState(initialLayout);
-  const [layouts, setLayouts] = React3.useState(propsLayouts);
-  const prevWidthRef = React3.useRef(width);
-  const prevBreakpointRef = React3.useRef(propBreakpoint);
-  const prevBreakpointsRef = React3.useRef(breakpoints);
-  const prevColsRef = React3.useRef(colsConfig);
-  const prevLayoutsRef = React3.useRef(propsLayouts);
-  const prevCompactTypeRef = React3.useRef(compactType);
-  const layoutsRef = React3.useRef(layouts);
-  React3.useEffect(() => {
+  const [breakpoint, setBreakpoint] = useState(initialBreakpoint);
+  const [cols, setCols] = useState(initialCols);
+  const [layout, setLayout] = useState(initialLayout);
+  const [layouts, setLayouts] = useState(propsLayouts);
+  const prevWidthRef = useRef(width);
+  const prevBreakpointRef = useRef(propBreakpoint);
+  const prevBreakpointsRef = useRef(breakpoints);
+  const prevColsRef = useRef(colsConfig);
+  const prevLayoutsRef = useRef(propsLayouts);
+  const prevCompactTypeRef = useRef(compactType);
+  const layoutsRef = useRef(layouts);
+  useEffect(() => {
     layoutsRef.current = layouts;
   }, [layouts]);
-  const derivedLayout = React3.useMemo(() => {
-    if (!fastEquals.deepEqual(propsLayouts, prevLayoutsRef.current)) {
-      return chunkQIPLLMCP_js.findOrGenerateResponsiveLayout(
+  const derivedLayout = useMemo(() => {
+    if (!deepEqual(propsLayouts, prevLayoutsRef.current)) {
+      return findOrGenerateResponsiveLayout(
         propsLayouts,
         breakpoints,
         breakpoint,
@@ -1722,7 +1675,7 @@ function ResponsiveGridLayout(props) {
     return null;
   }, [propsLayouts, breakpoints, breakpoint, cols, compactor]);
   const effectiveLayout = derivedLayout ?? layout;
-  React3.useEffect(() => {
+  useEffect(() => {
     if (derivedLayout !== null) {
       setLayout(derivedLayout);
       setLayouts(propsLayouts);
@@ -1730,9 +1683,9 @@ function ResponsiveGridLayout(props) {
       prevLayoutsRef.current = propsLayouts;
     }
   }, [derivedLayout, propsLayouts]);
-  React3.useEffect(() => {
+  useEffect(() => {
     if (compactType !== prevCompactTypeRef.current) {
-      const newLayout = compactor.compact(chunkQIPLLMCP_js.cloneLayout(effectiveLayout), cols);
+      const newLayout = compactor.compact(cloneLayout(effectiveLayout), cols);
       const newLayouts = {
         ...layoutsRef.current,
         [breakpoint]: newLayout
@@ -1752,24 +1705,24 @@ function ResponsiveGridLayout(props) {
     breakpoint,
     onLayoutChange
   ]);
-  React3.useEffect(() => {
+  useEffect(() => {
     const widthChanged = width !== prevWidthRef.current;
     const breakpointPropChanged = propBreakpoint !== prevBreakpointRef.current;
-    const breakpointsChanged = !fastEquals.deepEqual(
+    const breakpointsChanged = !deepEqual(
       breakpoints,
       prevBreakpointsRef.current
     );
-    const colsChanged = !fastEquals.deepEqual(colsConfig, prevColsRef.current);
+    const colsChanged = !deepEqual(colsConfig, prevColsRef.current);
     if (widthChanged || breakpointPropChanged || breakpointsChanged || colsChanged) {
-      const newBreakpoint = propBreakpoint ?? chunkQIPLLMCP_js.getBreakpointFromWidth(breakpoints, width);
-      const newCols = chunkQIPLLMCP_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
+      const newBreakpoint = propBreakpoint ?? getBreakpointFromWidth(breakpoints, width);
+      const newCols = getColsFromBreakpoint(newBreakpoint, colsConfig);
       const lastBreakpoint = breakpoint;
       if (lastBreakpoint !== newBreakpoint || breakpointsChanged || colsChanged) {
         const newLayouts = { ...layoutsRef.current };
         if (!newLayouts[lastBreakpoint]) {
-          newLayouts[lastBreakpoint] = chunkQIPLLMCP_js.cloneLayout(layout);
+          newLayouts[lastBreakpoint] = cloneLayout(layout);
         }
-        let newLayout = chunkQIPLLMCP_js.findOrGenerateResponsiveLayout(
+        let newLayout = findOrGenerateResponsiveLayout(
           newLayouts,
           breakpoints,
           newBreakpoint,
@@ -1792,11 +1745,11 @@ function ResponsiveGridLayout(props) {
         onBreakpointChange(newBreakpoint, newCols);
         onLayoutChange(newLayout, newLayouts);
       }
-      const currentMargin2 = chunkQIPLLMCP_js.getIndentationValue(
+      const currentMargin2 = getIndentationValue(
         propMargin,
         newBreakpoint
       );
-      const currentPadding = propContainerPadding ? chunkQIPLLMCP_js.getIndentationValue(
+      const currentPadding = propContainerPadding ? getIndentationValue(
         propContainerPadding,
         newBreakpoint
       ) : null;
@@ -1824,7 +1777,7 @@ function ResponsiveGridLayout(props) {
     onLayoutChange,
     onWidthChange
   ]);
-  const handleLayoutChange = React3.useCallback(
+  const handleLayoutChange = useCallback(
     (newLayout) => {
       const currentLayouts = layoutsRef.current;
       const newLayouts = {
@@ -1838,20 +1791,20 @@ function ResponsiveGridLayout(props) {
     },
     [breakpoint, onLayoutChange]
   );
-  const currentMargin = React3.useMemo(() => {
-    return chunkQIPLLMCP_js.getIndentationValue(
+  const currentMargin = useMemo(() => {
+    return getIndentationValue(
       propMargin,
       breakpoint
     );
   }, [propMargin, breakpoint]);
-  const currentContainerPadding = React3.useMemo(() => {
+  const currentContainerPadding = useMemo(() => {
     if (propContainerPadding === null) return null;
-    return chunkQIPLLMCP_js.getIndentationValue(
+    return getIndentationValue(
       propContainerPadding,
       breakpoint
     );
   }, [propContainerPadding, breakpoint]);
-  const gridConfig = React3.useMemo(
+  const gridConfig = useMemo(
     () => ({
       cols,
       rowHeight,
@@ -1861,7 +1814,7 @@ function ResponsiveGridLayout(props) {
     }),
     [cols, rowHeight, maxRows, currentMargin, currentContainerPadding]
   );
-  return /* @__PURE__ */ jsxRuntime.jsx(
+  return /* @__PURE__ */ jsx(
     GridLayout,
     {
       ...restProps,
@@ -1875,6 +1828,4 @@ function ResponsiveGridLayout(props) {
   );
 }
 
-exports.GridItem = GridItem;
-exports.GridLayout = GridLayout;
-exports.ResponsiveGridLayout = ResponsiveGridLayout;
+export { GridItem, GridLayout, ResponsiveGridLayout };
