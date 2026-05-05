@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var chunkVUJJDXAE_js = require('./chunk-VUJJDXAE.js');
+var chunk6DOUB4G3_js = require('./chunk-6DOUB4G3.js');
 var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
@@ -105,7 +105,7 @@ function ReactGridLayout(props) {
   const compactor = chunkQIPLLMCP_js.getCompactor(compactType, allowOverlap, preventCollision);
   const constraints = isBounded ? [...chunkQIPLLMCP_js.defaultConstraints, chunkQIPLLMCP_js.containerBounds] : chunkQIPLLMCP_js.defaultConstraints;
   return /* @__PURE__ */ jsxRuntime.jsx(
-    chunkVUJJDXAE_js.GridLayout,
+    chunk6DOUB4G3_js.GridLayout,
     {
       width,
       gridConfig,
@@ -223,7 +223,7 @@ function ResponsiveReactGridLayout(props) {
   }
   const compactor = chunkQIPLLMCP_js.getCompactor(compactType, allowOverlap, preventCollision);
   return /* @__PURE__ */ jsxRuntime.jsx(
-    chunkVUJJDXAE_js.ResponsiveGridLayout,
+    chunk6DOUB4G3_js.ResponsiveGridLayout,
     {
       width,
       breakpoint,

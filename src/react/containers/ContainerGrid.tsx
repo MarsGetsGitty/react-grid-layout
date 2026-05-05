@@ -39,6 +39,16 @@ export interface ContainerGridProps {
   onLayoutSettled?: (layout: readonly LayoutItem[]) => void;
   /** When true, drag, resize, and gutters are enabled. */
   isEditMode?: boolean;
+
+  // ── Multi-Container Drop Config ──────────────────────────
+  /** When true, external elements can be dropped on the grid. Defaults to isEditMode if not provided. */
+  isDroppable?: boolean;
+  /** Called when an item is dropped onto the grid */
+  onDrop?: (layout: readonly LayoutItem[], item: LayoutItem | undefined, e: Event) => void;
+  /** Called when dragging over the grid. Return dimensions or false to reject. */
+  onDropDragOver?: (e: DragEvent) => { w?: number; h?: number; dragOffsetX?: number; dragOffsetY?: number } | false | void;
+  /** Default size for dropped items. */
+  droppingItem?: { i: string; w: number; h: number };
   
   // Grid config defaults
   cols?: number;
@@ -54,6 +64,10 @@ export function ContainerGrid({
   onLayoutChange,
   onLayoutSettled,
   isEditMode = false,
+  isDroppable,
+  onDrop,
+  onDropDragOver,
+  droppingItem,
   cols = 12,
   rowHeight = 30,
   margin = [6, 6],
@@ -102,6 +116,13 @@ export function ContainerGrid({
     ...resizeConfig,
     enabled: isEditMode,
   }), [isEditMode]);
+
+  // Drop config — supports multi-container interactions
+  const dropConfig = useMemo(() => ({
+    enabled: isDroppable ?? isEditMode,
+    defaultItem: droppingItem ?? { w: 1, h: 1 },
+    onDragOver: onDropDragOver
+  }), [isDroppable, isEditMode, droppingItem, onDropDragOver]);
 
   // Persistence bridge
   const wrappedHandlers = useMemo(() => {
@@ -156,9 +177,11 @@ export function ContainerGrid({
             gridConfig={gridConfig}
             dragConfig={dragConfig}
             resizeConfig={editResizeConfig}
+            dropConfig={dropConfig}
             compactor={freeformCompactor}
             collisionResolver={collisionResolver}
             ghostDrag
+            onDrop={onDrop}
             {...wrappedHandlers}
           >
             {children}

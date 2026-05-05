@@ -1,7 +1,7 @@
 'use strict';
 
 var chunkOW5CUJOF_js = require('./chunk-OW5CUJOF.js');
-var chunkVUJJDXAE_js = require('./chunk-VUJJDXAE.js');
+var chunk6DOUB4G3_js = require('./chunk-6DOUB4G3.js');
 var chunkCA5HQNMP_js = require('./chunk-CA5HQNMP.js');
 var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
 var react = require('react');
@@ -27,6 +27,10 @@ function ContainerGrid({
   onLayoutChange,
   onLayoutSettled,
   isEditMode = false,
+  isDroppable,
+  onDrop,
+  onDropDragOver,
+  droppingItem,
   cols = 12,
   rowHeight = 30,
   margin = [6, 6],
@@ -64,6 +68,11 @@ function ContainerGrid({
     ...resizeConfig,
     enabled: isEditMode
   }), [isEditMode]);
+  const dropConfig = react.useMemo(() => ({
+    enabled: isDroppable ?? isEditMode,
+    defaultItem: droppingItem ?? { w: 1, h: 1 },
+    onDragOver: onDropDragOver
+  }), [isDroppable, isEditMode, droppingItem, onDropDragOver]);
   const wrappedHandlers = react.useMemo(() => {
     return {
       ...handlers,
@@ -103,7 +112,7 @@ function ContainerGrid({
   ].filter(Boolean).join(" ");
   return /* @__PURE__ */ jsxRuntime.jsx("div", { ref: containerRef, className: containerClass, style: { height: "100%", width: "100%" }, children: width > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
     /* @__PURE__ */ jsxRuntime.jsx(
-      chunkVUJJDXAE_js.GridLayout,
+      chunk6DOUB4G3_js.GridLayout,
       {
         layout,
         width,
@@ -111,9 +120,11 @@ function ContainerGrid({
         gridConfig,
         dragConfig,
         resizeConfig: editResizeConfig,
+        dropConfig,
         compactor: freeformCompactor,
         collisionResolver,
         ghostDrag: true,
+        onDrop,
         ...wrappedHandlers,
         children
       }
@@ -144,15 +155,15 @@ Object.defineProperty(exports, "useResponsiveLayout", {
 });
 Object.defineProperty(exports, "GridItem", {
   enumerable: true,
-  get: function () { return chunkVUJJDXAE_js.GridItem; }
+  get: function () { return chunk6DOUB4G3_js.GridItem; }
 });
 Object.defineProperty(exports, "GridLayout", {
   enumerable: true,
-  get: function () { return chunkVUJJDXAE_js.GridLayout; }
+  get: function () { return chunk6DOUB4G3_js.GridLayout; }
 });
 Object.defineProperty(exports, "ResponsiveGridLayout", {
   enumerable: true,
-  get: function () { return chunkVUJJDXAE_js.ResponsiveGridLayout; }
+  get: function () { return chunk6DOUB4G3_js.ResponsiveGridLayout; }
 });
 Object.defineProperty(exports, "GutterHandle", {
   enumerable: true,

@@ -18,12 +18,29 @@ interface ContainerGridProps {
     onLayoutSettled?: (layout: readonly LayoutItem[]) => void;
     /** When true, drag, resize, and gutters are enabled. */
     isEditMode?: boolean;
+    /** When true, external elements can be dropped on the grid. Defaults to isEditMode if not provided. */
+    isDroppable?: boolean;
+    /** Called when an item is dropped onto the grid */
+    onDrop?: (layout: readonly LayoutItem[], item: LayoutItem | undefined, e: Event) => void;
+    /** Called when dragging over the grid. Return dimensions or false to reject. */
+    onDropDragOver?: (e: DragEvent) => {
+        w?: number;
+        h?: number;
+        dragOffsetX?: number;
+        dragOffsetY?: number;
+    } | false | void;
+    /** Default size for dropped items. */
+    droppingItem?: {
+        i: string;
+        w: number;
+        h: number;
+    };
     cols?: number;
     rowHeight?: number;
     margin?: [number, number];
     containerPadding?: [number, number] | null;
     children: React__default.ReactNode;
 }
-declare function ContainerGrid({ layout, onLayoutChange, onLayoutSettled, isEditMode, cols, rowHeight, margin, containerPadding, children }: ContainerGridProps): react_jsx_runtime.JSX.Element;
+declare function ContainerGrid({ layout, onLayoutChange, onLayoutSettled, isEditMode, isDroppable, onDrop, onDropDragOver, droppingItem, cols, rowHeight, margin, containerPadding, children }: ContainerGridProps): react_jsx_runtime.JSX.Element;
 
 export { ContainerGrid, type ContainerGridProps, LayoutItem };

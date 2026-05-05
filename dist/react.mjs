@@ -1,7 +1,7 @@
 import { useContainerWidth } from './chunk-7YJFNXF6.mjs';
 export { DEFAULT_BREAKPOINTS, DEFAULT_COLS, useContainerWidth, useGridLayout, useResponsiveLayout } from './chunk-7YJFNXF6.mjs';
-import { GridLayout } from './chunk-DXW3NEG7.mjs';
-export { GridItem, GridLayout, ResponsiveGridLayout } from './chunk-DXW3NEG7.mjs';
+import { GridLayout } from './chunk-G57SG3DI.mjs';
+export { GridItem, GridLayout, ResponsiveGridLayout } from './chunk-G57SG3DI.mjs';
 import { useGridArrangement, useGutterHandles } from './chunk-ZBKAF3DV.mjs';
 export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-ZBKAF3DV.mjs';
 import { getCompactor } from './chunk-73AP6TWJ.mjs';
@@ -29,6 +29,10 @@ function ContainerGrid({
   onLayoutChange,
   onLayoutSettled,
   isEditMode = false,
+  isDroppable,
+  onDrop,
+  onDropDragOver,
+  droppingItem,
   cols = 12,
   rowHeight = 30,
   margin = [6, 6],
@@ -66,6 +70,11 @@ function ContainerGrid({
     ...resizeConfig,
     enabled: isEditMode
   }), [isEditMode]);
+  const dropConfig = useMemo(() => ({
+    enabled: isDroppable ?? isEditMode,
+    defaultItem: droppingItem ?? { w: 1, h: 1 },
+    onDragOver: onDropDragOver
+  }), [isDroppable, isEditMode, droppingItem, onDropDragOver]);
   const wrappedHandlers = useMemo(() => {
     return {
       ...handlers,
@@ -113,9 +122,11 @@ function ContainerGrid({
         gridConfig,
         dragConfig,
         resizeConfig: editResizeConfig,
+        dropConfig,
         compactor: freeformCompactor,
         collisionResolver,
         ghostDrag: true,
+        onDrop,
         ...wrappedHandlers,
         children
       }
