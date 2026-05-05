@@ -122,11 +122,7 @@ export {
   verticalOverlapCompactor,
   horizontalOverlapCompactor,
   noOverlapCompactor,
-  getCompactor,
-  // Helpers for custom compactors
-  resolveCompactionCollision,
-  compactItemVertical,
-  compactItemHorizontal
+  getCompactor
 } from "./strategies/compactors.js";
 
 export {
@@ -218,5 +214,6 @@ export type {
 export {
   trySwap,
   resolveResizeCollisions,
-  inferResizeHandles
+  inferResizeHandles,
+  pcdCollisionResolver
 } from "./engines/index.js";

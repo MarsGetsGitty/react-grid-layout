@@ -620,10 +620,10 @@ describe("compact horizontal", () => {
     ];
 
     expect(compact(layout, "horizontal", cols)).toEqual([
-      { y: 0, x: 2, h: 2, w: 2, i: "1", moved: false, static: false },
+      { y: 0, x: 0, h: 2, w: 2, i: "1", moved: false, static: false },
       { y: 0, x: 4, h: 2, w: 2, i: "2", moved: false, static: false },
       { y: 2, x: 0, h: 2, w: 2, i: "3", moved: false, static: false },
-      { y: 0, x: 0, h: 2, w: 2, i: "4", moved: false, static: false }
+      { y: 0, x: 2, h: 2, w: 2, i: "4", moved: false, static: false }
     ]);
   });
 });
