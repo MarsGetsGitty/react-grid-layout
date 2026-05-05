@@ -419,10 +419,11 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync layout from props
-  useEffect(() => {
-    if (droppingDOMNode) return;
+  // ============================================================================
+  // Derived State (Sync during render to prevent flickering)
+  // ============================================================================
 
+  if (!droppingDOMNode) {
     const layoutChanged = !deepEqual(propsLayout, prevPropsLayoutRef.current);
     const childrenChanged = !childrenEqual(children, prevChildrenRef.current);
     const compactTypeChanged = compactType !== prevCompactTypeRef.current;
@@ -435,6 +436,8 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
         cols,
         compactor
       );
+
+      // Only set state if the calculated layout differs from what we currently have
       if (!deepEqual(newLayout, layout)) {
         setLayout(newLayout);
       }
@@ -443,16 +446,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     prevPropsLayoutRef.current = propsLayout;
     prevChildrenRef.current = children;
     prevCompactTypeRef.current = compactType;
-  }, [
-    propsLayout,
-    children,
-    cols,
-    compactType,
-    compactor,
-    activeDrag,
-    droppingDOMNode,
-    layout
-  ]);
+  }
 
   // Layout change callback
   useEffect(() => {
