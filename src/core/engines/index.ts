@@ -17,3 +17,4 @@ export {
   resolveResizeCollisions,
   inferResizeHandles
 } from "./squash-push-strategy.js";
+export { pcdCollisionResolver } from "./pcd-collision-resolver.js";

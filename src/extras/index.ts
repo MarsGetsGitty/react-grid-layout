@@ -18,4 +18,16 @@ export {
   fastHorizontalOverlapCompactor
 } from "./fastHorizontalCompactor.js";
 export { wrapCompactor, wrapOverlapCompactor } from "./wrapCompactor.js";
-export { pcdCollisionResolver } from "./pcdCollisionResolver.js";
+export { pcdCollisionResolver } from "../core/engines/pcd-collision-resolver.js";
+
+// =============================================================================
+// Hooks & Components
+// =============================================================================
+
+export { useGridArrangement } from "./hooks/useGridArrangement.js";
+export type { UseGridArrangementParams } from "./hooks/useGridArrangement.js";
+
+export { useGutterHandles } from "./hooks/useGutterHandles.js";
+
+export { GutterHandle } from "./components/GutterHandle.js";
+export type { GutterHandleProps } from "./components/GutterHandle.js";

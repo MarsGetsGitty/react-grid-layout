@@ -7,7 +7,7 @@
  */
 
 import type { LayoutItem } from "../../src/core/types/index";
-import { pcdCollisionResolver } from "../../src/extras/pcdCollisionResolver";
+import { pcdCollisionResolver } from "../../src/core/index";
 
 // =============================================================================
 // Helpers
