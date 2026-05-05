@@ -5,13 +5,14 @@
  * "gutter" handles in the margin gap between them. Dragging a gutter
  * resizes both widgets simultaneously (one grows, one shrinks).
  *
- * This system is independent of RGL's resize — it manipulates layout
- * state directly via setLayout(). RGL accepts the new layout through
- * its prop sync effect (guarded by activeDrag, which is null during
- * gutter drag).
+ * This hook calls `onGutterResize(nextLayout)` with the computed layout
+ * after each grid-snapped drag step. The consumer is responsible for
+ * updating their own layout state.
+ *
+ * @module react/hooks/useGutterHandles
  */
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import type { MouseEvent } from "react";
 import { calcGridCellDimensions } from "../../core/math/calculate.js";
 import type { GridCellDimensions } from "../../core/math/calculate.js";
@@ -41,8 +42,10 @@ interface GutterPixelPos {
 }
 
 // ── Custom Collision Detection ───────────────────────────
-// RGL's internal `collides` may treat flush edges as collisions.
-// We strictly want to prevent OVERLAPPING elements, so we write our own.
+// RGL's internal `collides` treats flush edges as collisions.
+// For gutter detection, we strictly want to prevent OVERLAPPING
+// elements, not flush-touching ones. This is intentionally different
+// from core's `collides()`.
 function strictOverlap(l1: LayoutItem, l2: LayoutItem): boolean {
   if (l1.i === l2.i) return false;
   if (l1.x + l1.w <= l2.x) return false; // l1 is strictly left of l2
@@ -102,7 +105,7 @@ function findAdjacentPairs(layout: LayoutItem[]): AdjacentPair[] {
 }
 
 // ── Pixel Position Calculation ───────────────────────────
-// Uses the same formula as RGL's GridBackground (extras.mjs line 47):
+// Uses the same formula as RGL's GridBackground:
 //   x = offsetX + col * (cellWidth + gapX)
 //   y = offsetY + row * (cellHeight + gapY)
 
@@ -133,7 +136,7 @@ function calcGutterPixelPos(
 
 export function useGutterHandles(
   layout: LayoutItem[],
-  setLayout: React.Dispatch<React.SetStateAction<LayoutItem[]>>,
+  onGutterResize: (layout: LayoutItem[]) => void,
   containerWidth: number,
   gridConfig: GridConfig,
   isRglInteracting: boolean,
@@ -145,6 +148,18 @@ export function useGutterHandles(
     cellStep: number;           // Pixels per grid unit step
     appliedDelta: number;       // Grid units already applied
   } | null>(null);
+
+  // Stable ref for the callback
+  const onGutterResizeRef = useRef(onGutterResize);
+  useEffect(() => {
+    onGutterResizeRef.current = onGutterResize;
+  }, [onGutterResize]);
+
+  // Stable ref for layout (for use in mouse event handlers)
+  const layoutRef = useRef(layout);
+  useEffect(() => {
+    layoutRef.current = layout;
+  }, [layout]);
 
   // Compute grid cell dimensions (same math RGL uses internally)
   const dims = useMemo(
@@ -184,7 +199,8 @@ export function useGutterHandles(
     const seamPos = isH ? pair.a.x + pair.a.w : pair.a.y + pair.a.h;
 
     // Find all pairs that share this exact seam line
-    const seamPairs = pairs.filter(p => 
+    const currentPairs = findAdjacentPairs(layoutRef.current);
+    const seamPairs = currentPairs.filter(p => 
       p.type === pair.type && 
       (isH ? p.a.x + p.a.w === seamPos : p.a.y + p.a.h === seamPos)
     );
@@ -229,58 +245,57 @@ export function useGutterHandles(
     const clampedDelta = Math.max(minD, Math.min(maxD, rawGridDelta));
     if (clampedDelta === drag.appliedDelta) return;
 
-    // Build test items and check for collisions with other widgets
-    setLayout(prev => {
-      const incrementalDelta = clampedDelta - drag.appliedDelta;
-      if (incrementalDelta === 0) return prev;
+    // Compute new layout from current state
+    const prev = layoutRef.current;
+    const incrementalDelta = clampedDelta - drag.appliedDelta;
+    if (incrementalDelta === 0) return;
 
-      const nextLayout = [...prev];
-      const modifiedIds = new Set<string>();
+    const nextLayout = [...prev];
+    const modifiedIds = new Set<string>();
 
-      // Apply delta to all widgets touching the seam
-      for (const cp of connectedPairs) {
-        const idxA = nextLayout.findIndex(l => l.i === cp.a.i);
-        const idxB = nextLayout.findIndex(l => l.i === cp.b.i);
-        if (idxA === -1 || idxB === -1) continue;
+    // Apply delta to all widgets touching the seam
+    for (const cp of connectedPairs) {
+      const idxA = nextLayout.findIndex(l => l.i === cp.a.i);
+      const idxB = nextLayout.findIndex(l => l.i === cp.b.i);
+      if (idxA === -1 || idxB === -1) continue;
 
-        if (!modifiedIds.has(cp.a.i)) {
-          const ca = nextLayout[idxA]!;
-          nextLayout[idxA] = isH
-            ? { ...ca, w: ca.w + incrementalDelta }
-            : { ...ca, h: ca.h + incrementalDelta };
-          modifiedIds.add(cp.a.i);
-        }
-
-        if (!modifiedIds.has(cp.b.i)) {
-          const cb = nextLayout[idxB]!;
-          nextLayout[idxB] = isH
-            ? { ...cb, x: cb.x + incrementalDelta, w: cb.w - incrementalDelta }
-            : { ...cb, y: cb.y + incrementalDelta, h: cb.h - incrementalDelta };
-          modifiedIds.add(cp.b.i);
-        }
+      if (!modifiedIds.has(cp.a.i)) {
+        const ca = nextLayout[idxA]!;
+        nextLayout[idxA] = isH
+          ? { ...ca, w: ca.w + incrementalDelta }
+          : { ...ca, h: ca.h + incrementalDelta };
+        modifiedIds.add(cp.a.i);
       }
 
-      // Final constraint safety check
-      for (const id of modifiedIds) {
-        const item = nextLayout.find(l => l.i === id)!;
-        if (item.w < (item.minW ?? 1) || item.h < (item.minH ?? 1)) return prev;
+      if (!modifiedIds.has(cp.b.i)) {
+        const cb = nextLayout[idxB]!;
+        nextLayout[idxB] = isH
+          ? { ...cb, x: cb.x + incrementalDelta, w: cb.w - incrementalDelta }
+          : { ...cb, y: cb.y + incrementalDelta, h: cb.h - incrementalDelta };
+        modifiedIds.add(cp.b.i);
       }
+    }
 
-      // Collision check against unmodified widgets
-      const unmodified = nextLayout.filter(l => !modifiedIds.has(l.i));
-      const modified = nextLayout.filter(l => modifiedIds.has(l.i));
+    // Final constraint safety check
+    for (const id of modifiedIds) {
+      const item = nextLayout.find(l => l.i === id)!;
+      if (item.w < (item.minW ?? 1) || item.h < (item.minH ?? 1)) return;
+    }
 
-      for (const mod of modified) {
-        if (unmodified.some(u => strictOverlap(mod, u))) {
-          console.log('[GUTTER] Multi-widget collision detected, blocking layout update');
-          return prev;
-        }
+    // Collision check against unmodified widgets
+    const unmodified = nextLayout.filter(l => !modifiedIds.has(l.i));
+    const modified = nextLayout.filter(l => modifiedIds.has(l.i));
+
+    for (const mod of modified) {
+      if (unmodified.some(u => strictOverlap(mod, u))) {
+        console.log('[GUTTER] Multi-widget collision detected, blocking layout update');
+        return;
       }
+    }
 
-      drag.appliedDelta = clampedDelta;
-      return nextLayout;
-    });
-  }, [pairs, setLayout, gridConfig.cols]);
+    drag.appliedDelta = clampedDelta;
+    onGutterResizeRef.current(nextLayout);
+  }, [gridConfig.cols]);
 
   // Mouse up handler — cleanup
   const handleMouseUp = useCallback(() => {

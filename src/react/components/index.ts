@@ -18,3 +18,6 @@ export {
   ResponsiveGridLayout,
   type ResponsiveGridLayoutProps
 } from "./ResponsiveGridLayout.js";
+
+// GutterHandle (shared-edge resize)
+export { GutterHandle, type GutterHandleProps } from "./GutterHandle.js";

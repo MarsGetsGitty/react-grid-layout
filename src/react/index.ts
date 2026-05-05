@@ -13,11 +13,13 @@ export {
   GridItem,
   GridLayout,
   ResponsiveGridLayout,
+  GutterHandle,
   type GridItemProps,
   type GridItemCallback,
   type ResizeHandle,
   type GridLayoutProps,
-  type ResponsiveGridLayoutProps
+  type ResponsiveGridLayoutProps,
+  type GutterHandleProps
 } from "./components/index.js";
 
 // =============================================================================
@@ -28,6 +30,8 @@ export {
   useContainerWidth,
   useGridLayout,
   useResponsiveLayout,
+  useGridArrangement,
+  useGutterHandles,
   type UseContainerWidthOptions,
   type UseContainerWidthResult,
   type UseGridLayoutOptions,
@@ -38,6 +42,7 @@ export {
   type UseResponsiveLayoutOptions,
   type UseResponsiveLayoutResult,
   type DefaultBreakpoints,
+  type UseGridArrangementParams,
   DEFAULT_BREAKPOINTS,
   DEFAULT_COLS
 } from "./hooks/index.js";

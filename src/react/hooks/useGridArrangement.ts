@@ -1,17 +1,37 @@
+/**
+ * useGridArrangement — Orchestrates drag/resize collision resolution.
+ *
+ * Provides a complete set of RGL event handlers that integrate the
+ * pcdCollisionResolver (swap-then-push) for drags and the
+ * squash-push engine for resizes.
+ *
+ * This hook is pure library code — it does NOT mutate state directly.
+ * Instead, it calls optional callback props so the consumer decides
+ * what to do with the resolved layouts.
+ *
+ * @module react/hooks/useGridArrangement
+ */
+
 import { useState, useRef, useEffect, useCallback } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
 import type { Layout, LayoutItem, CollisionResolver, DragSlot } from '../../core/index.js';
 import { resolveResizeCollisions } from '../../core/index.js';
 import { pcdCollisionResolver } from '../../core/engines/pcd-collision-resolver.js';
 
 export interface UseGridArrangementParams {
+  /** Current layout state (read-only input). */
   layout: LayoutItem[];
-  setLayout: Dispatch<SetStateAction<LayoutItem[]>>;
+  /** Maximum visible rows (for resize boundary enforcement). */
   maxRows: number;
+  /** Number of grid columns. */
   cols: number;
+  /**
+   * Called whenever the layout changes (drag, resize, or RGL internal sync).
+   * The consumer is responsible for updating their own state.
+   */
+  onLayoutChange?: (layout: LayoutItem[]) => void;
 }
 
-export function useGridArrangement({ layout, setLayout, maxRows, cols }: UseGridArrangementParams) {
+export function useGridArrangement({ layout, maxRows, cols, onLayoutChange }: UseGridArrangementParams) {
   // Interaction state
   const [isRglInteracting, setIsRglInteracting] = useState(false);
   
@@ -19,15 +39,21 @@ export function useGridArrangement({ layout, setLayout, maxRows, cols }: UseGrid
   const isRglInteractingRef = useRef(false);
   const layoutRef = useRef(layout);
   const dragSlotRef = useRef<DragSlot | null>(null);
+  // Stable ref for the callback to avoid stale closures
+  const onLayoutChangeRef = useRef(onLayoutChange);
 
   useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
 
+  useEffect(() => {
+    onLayoutChangeRef.current = onLayoutChange;
+  }, [onLayoutChange]);
+
   // ── Layout Change Handler ──────────────────────────────
   const handleLayoutChange = useCallback((newLayout: Layout) => {
-    setLayout(newLayout as LayoutItem[]);
-  }, [setLayout]);
+    onLayoutChangeRef.current?.(newLayout as LayoutItem[]);
+  }, []);
 
   // ── Collision Resolver ─────────────────────────────────
   const collisionResolver: CollisionResolver = useCallback(
@@ -88,23 +114,23 @@ export function useGridArrangement({ layout, setLayout, maxRows, cols }: UseGrid
   const handleResize = useCallback(
     (newLayout: Layout, oldItem: LayoutItem | null, newItem: LayoutItem | null) => {
       if (!oldItem || !newItem) {
-        setLayout(newLayout as LayoutItem[]);
+        onLayoutChangeRef.current?.(newLayout as LayoutItem[]);
         return;
       }
 
-      setLayout(prev => {
-        const resolved = resolveResizeCollisions(
-          newLayout as LayoutItem[],
-          newItem.i,
-          oldItem,
-          newItem,
-          maxRows,
-          cols
-        );
-        return resolved ?? prev;
-      });
+      const resolved = resolveResizeCollisions(
+        newLayout as LayoutItem[],
+        newItem.i,
+        oldItem,
+        newItem,
+        maxRows,
+        cols
+      );
+      if (resolved) {
+        onLayoutChangeRef.current?.(resolved);
+      }
     },
-    [maxRows, cols, setLayout]
+    [maxRows, cols]
   );
 
   const handleResizeStop = useCallback(
@@ -113,7 +139,7 @@ export function useGridArrangement({ layout, setLayout, maxRows, cols }: UseGrid
       setIsRglInteracting(false);
 
       if (!oldItem || !newItem) {
-        setLayout(newLayout as LayoutItem[]);
+        onLayoutChangeRef.current?.(newLayout as LayoutItem[]);
         return;
       }
 
@@ -126,9 +152,9 @@ export function useGridArrangement({ layout, setLayout, maxRows, cols }: UseGrid
         cols
       );
 
-      setLayout(resolved ?? (newLayout as LayoutItem[]));
+      onLayoutChangeRef.current?.(resolved ?? (newLayout as LayoutItem[]));
     },
-    [maxRows, cols, setLayout]
+    [maxRows, cols]
   );
 
   return {

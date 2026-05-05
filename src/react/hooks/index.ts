@@ -68,3 +68,11 @@ export {
   type UseGridLayoutDropOptions,
   type UseGridLayoutDropResult
 } from "./useGridLayoutDrop.js";
+
+// PCD collision resolution & gutter resize hooks
+export {
+  useGridArrangement,
+  type UseGridArrangementParams
+} from "./useGridArrangement.js";
+
+export { useGutterHandles } from "./useGutterHandles.js";

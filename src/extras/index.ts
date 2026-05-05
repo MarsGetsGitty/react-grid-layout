@@ -21,13 +21,14 @@ export { wrapCompactor, wrapOverlapCompactor } from "./wrapCompactor.js";
 export { pcdCollisionResolver } from "../core/engines/pcd-collision-resolver.js";
 
 // =============================================================================
-// Hooks & Components
+// Hooks & Components (promoted to react/ — re-exported for backward compat)
 // =============================================================================
 
-export { useGridArrangement } from "./hooks/useGridArrangement.js";
-export type { UseGridArrangementParams } from "./hooks/useGridArrangement.js";
+export { useGridArrangement } from "../react/hooks/useGridArrangement.js";
+export type { UseGridArrangementParams } from "../react/hooks/useGridArrangement.js";
 
-export { useGutterHandles } from "./hooks/useGutterHandles.js";
+export { useGutterHandles } from "../react/hooks/useGutterHandles.js";
 
-export { GutterHandle } from "./components/GutterHandle.js";
-export type { GutterHandleProps } from "./components/GutterHandle.js";
+export { GutterHandle } from "../react/components/GutterHandle.js";
+export type { GutterHandleProps } from "../react/components/GutterHandle.js";
+

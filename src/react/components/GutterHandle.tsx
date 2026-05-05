@@ -6,6 +6,8 @@
  * for usability. On hover, a subtle highlight bar appears.
  *
  * This component is purely visual — all drag logic lives in useGutterHandles.
+ *
+ * @module react/components/GutterHandle
  */
 
 import type { MouseEvent } from "react";
