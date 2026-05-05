@@ -55,7 +55,36 @@ export const pcdCollisionResolver: CollisionResolver = (
     .filter(item => item.i !== dragged.i);
 
   if (collisions.length === 0) {
-    // No collision — accept move (clone to prevent mutation of caller's array)
+    // No collision at current size — but if autoResize previously shrunk
+    // the widget during this drag, try restoring toward original width.
+    if (context.dragConfig?.autoResize && context.oldDragItem) {
+      const origW = context.oldDragItem.w;
+      if (dragged.w < origW) {
+        // Find max available width by scanning for the nearest obstacle
+        // to the right within the same vertical span.
+        let maxW = context.cols - dragged.x;
+        for (const obs of layoutArray) {
+          if (obs.i === movedItem.i) continue;
+          // Skip items outside the vertical span
+          if (obs.y >= dragged.y + dragged.h || obs.y + obs.h <= dragged.y) continue;
+          // Only obstacles whose left edge is at or beyond our right edge
+          if (obs.x >= dragged.x + dragged.w) {
+            maxW = Math.min(maxW, obs.x - dragged.x);
+          }
+        }
+        const targetW = Math.min(origW, maxW);
+        if (targetW > dragged.w) {
+          const restored = layoutArray.map(item => cloneLayoutItem(item));
+          const restoredItem = restored.find(item => item.i === movedItem.i);
+          if (restoredItem) {
+            (restoredItem as Mutable<LayoutItem>).w = targetW;
+            return restored;
+          }
+        }
+      }
+    }
+
+    // No restoration needed — accept as-is (clone to prevent mutation)
     return layoutArray.map(item => cloneLayoutItem(item));
   }
 

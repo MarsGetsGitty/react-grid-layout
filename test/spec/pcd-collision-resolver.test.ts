@@ -272,6 +272,91 @@ describe("pcdCollisionResolver", () => {
       expect(resultA.w).toBe(12);
       expect(resultB.y).not.toBe(2);
     });
+
+    // -----------------------------------------------------------------------
+    // Size restoration (revert toward original when space allows)
+    // -----------------------------------------------------------------------
+
+    it("restores to original width when dragged back to open space", () => {
+      // "a" was originally 6 wide, but currently shrunk to 3.
+      // Dragged to open area with no obstacles — should restore to 6.
+      const tentative = [
+        item("a", 0, 0, 3, 2),  // currently shrunk
+        item("b", 6, 4, 2, 2),  // not in the same row, no conflict
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative,
+        tentative[0],
+        { x: 0, y: 0 },
+        { ...smartCtx, oldDragItem: item("a", 0, 0, 6, 2) }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      expect(resultA.w).toBe(6); // Restored to original
+      expect(hasAnyCollisions(result as LayoutItem[])).toBe(false);
+    });
+
+    it("partially restores width when obstacle limits available space", () => {
+      // "a" was originally 6 wide, currently shrunk to 3.
+      // "b" is at x=5, so max width is 5 (not full 6).
+      const tentative = [
+        item("a", 0, 0, 3, 2),  // currently shrunk
+        item("b", 5, 0, 2, 2),  // obstacle in same row at x=5
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative,
+        tentative[0],
+        { x: 0, y: 0 },
+        { ...smartCtx, oldDragItem: item("a", 0, 0, 6, 2) }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      expect(resultA.w).toBe(5); // Partially restored (capped by obstacle)
+      expect(hasAnyCollisions(result as LayoutItem[])).toBe(false);
+    });
+
+    it("does not restore when widget is already at original size", () => {
+      // "a" at original size 6, no shrinking happened.
+      const tentative = [
+        item("a", 0, 0, 6, 2),
+        item("b", 8, 0, 2, 2),
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative,
+        tentative[0],
+        { x: 0, y: 0 },
+        { ...smartCtx, oldDragItem: item("a", 0, 0, 6, 2) }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      expect(resultA.w).toBe(6); // Unchanged
+    });
+
+    it("does not grow beyond grid boundary", () => {
+      // "a" was originally 6, shrunk to 3, now at x=10.
+      // Grid is 12 cols, so max width at x=10 is 2.
+      const tentative = [
+        item("a", 10, 0, 2, 2),  // shrunk, near right edge
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative,
+        tentative[0],
+        { x: 0, y: 0 },
+        { ...smartCtx, oldDragItem: item("a", 0, 0, 6, 2) }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      // cols(12) - x(10) = 2, which equals current width. No growth possible.
+      expect(resultA.w).toBe(2);
+    });
   });
 
   // ===========================================================================
