@@ -1,3 +1,5 @@
+'use strict';
+
 // src/core/types/config.ts
 var defaultGridConfig = {
   cols: 12,
@@ -9,7 +11,8 @@ var defaultGridConfig = {
 var defaultDragConfig = {
   enabled: true,
   bounded: false,
-  threshold: 3
+  threshold: 3,
+  autoResize: false
 };
 var defaultResizeConfig = {
   enabled: true,
@@ -1464,6 +1467,51 @@ var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, contex
   if (collisions.length === 0) {
     return layoutArray.map((item) => cloneLayoutItem(item));
   }
+  const cursorPosition = context.cursorPosition;
+  if (context.dragConfig?.autoResize && cursorPosition) {
+    const cursorOverObstacle = layoutArray.some(
+      (item) => item.i !== movedItem.i && cursorPosition.x >= item.x && cursorPosition.x < item.x + item.w && cursorPosition.y >= item.y && cursorPosition.y < item.y + item.h
+    );
+    if (!cursorOverObstacle) {
+      const verticalIntersections = layoutArray.filter(
+        (item) => item.i !== movedItem.i && item.y < movedItem.y + movedItem.h && item.y + item.h > movedItem.y
+      );
+      const cursorBlockedByVerticalIntersection = verticalIntersections.some(
+        (obs) => obs.x <= cursorPosition.x && obs.x + obs.w > cursorPosition.x
+      );
+      if (!cursorBlockedByVerticalIntersection) {
+        let gapStart = 0;
+        let gapEnd = context.cols;
+        for (const obs of verticalIntersections) {
+          if (obs.x + obs.w <= cursorPosition.x) {
+            gapStart = Math.max(gapStart, obs.x + obs.w);
+          }
+          if (obs.x > cursorPosition.x) {
+            gapEnd = Math.min(gapEnd, obs.x);
+          }
+        }
+        const minW = movedItem.minW ?? 1;
+        const originalW = context.oldDragItem?.w ?? movedItem.w;
+        const gapW = gapEnd - gapStart;
+        if (gapW >= minW) {
+          const targetW = Math.max(minW, Math.min(originalW, gapW));
+          let targetX = clamp2(movedItem.x, gapStart, gapEnd - targetW);
+          if (targetX > cursorPosition.x) targetX = cursorPosition.x;
+          if (targetX + targetW <= cursorPosition.x) targetX = cursorPosition.x - targetW + 1;
+          const shrinkLayout = layoutArray.map((item) => cloneLayoutItem(item));
+          const shrinkItem = shrinkLayout.find((item) => item.i === movedItem.i);
+          if (shrinkItem) {
+            shrinkItem.w = targetW;
+            shrinkItem.x = targetX;
+            const remainingCollisions = getAllCollisions(shrinkLayout, shrinkItem).filter((item) => item.i !== shrinkItem.i);
+            if (remainingCollisions.length === 0) {
+              return shrinkLayout;
+            }
+          }
+        }
+      }
+    }
+  }
   const clonedLayout = layoutArray.map((item) => cloneLayoutItem(item));
   for (const item of clonedLayout) {
     item.moved = false;
@@ -1492,4 +1540,70 @@ var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, contex
   return null;
 };
 
-export { absoluteStrategy, applyPositionConstraints, applySizeConstraints, aspectRatio, bottom, boundedX, boundedY, calcGridCellDimensions, calcGridColWidth, calcGridItemPosition, calcGridItemWHPx, calcWH, calcWHRaw, calcXY, calcXYRaw, clamp2 as clamp, cloneLayout, cloneLayoutItem, collides, containerBounds, correctBounds, createPhysicsEngine, createScaledStrategy, defaultConstraints, defaultDragConfig, defaultDropConfig, defaultGridConfig, defaultPositionStrategy, defaultResizeConfig, findOrGenerateResponsiveLayout, getAllCollisions, getBreakpointFromWidth, getColsFromBreakpoint, getCompactor, getFirstCollision, getIndentationValue, getLayoutItem, getStatics, gridBounds, horizontalCompactor, horizontalOverlapCompactor, inferResizeHandles, maxSize, minMaxSize, minSize, modifyLayout, moveElement, moveElementAwayFromCollision, noCompactor, noOverlapCompactor, pcdCollisionResolver, perc, resizeItemInDirection, resolveResizeCollisions, setTopLeft, setTransform, snapToGrid, sortBreakpoints, sortLayoutItems, sortLayoutItemsByColRow, sortLayoutItemsByRowCol, transformStrategy, trySwap, validateLayout, verticalCompactor, verticalOverlapCompactor, withLayoutItem };
+exports.absoluteStrategy = absoluteStrategy;
+exports.applyPositionConstraints = applyPositionConstraints;
+exports.applySizeConstraints = applySizeConstraints;
+exports.aspectRatio = aspectRatio;
+exports.bottom = bottom;
+exports.boundedX = boundedX;
+exports.boundedY = boundedY;
+exports.calcGridCellDimensions = calcGridCellDimensions;
+exports.calcGridColWidth = calcGridColWidth;
+exports.calcGridItemPosition = calcGridItemPosition;
+exports.calcGridItemWHPx = calcGridItemWHPx;
+exports.calcWH = calcWH;
+exports.calcWHRaw = calcWHRaw;
+exports.calcXY = calcXY;
+exports.calcXYRaw = calcXYRaw;
+exports.clamp = clamp2;
+exports.cloneLayout = cloneLayout;
+exports.cloneLayoutItem = cloneLayoutItem;
+exports.collides = collides;
+exports.containerBounds = containerBounds;
+exports.correctBounds = correctBounds;
+exports.createPhysicsEngine = createPhysicsEngine;
+exports.createScaledStrategy = createScaledStrategy;
+exports.defaultConstraints = defaultConstraints;
+exports.defaultDragConfig = defaultDragConfig;
+exports.defaultDropConfig = defaultDropConfig;
+exports.defaultGridConfig = defaultGridConfig;
+exports.defaultPositionStrategy = defaultPositionStrategy;
+exports.defaultResizeConfig = defaultResizeConfig;
+exports.findOrGenerateResponsiveLayout = findOrGenerateResponsiveLayout;
+exports.getAllCollisions = getAllCollisions;
+exports.getBreakpointFromWidth = getBreakpointFromWidth;
+exports.getColsFromBreakpoint = getColsFromBreakpoint;
+exports.getCompactor = getCompactor;
+exports.getFirstCollision = getFirstCollision;
+exports.getIndentationValue = getIndentationValue;
+exports.getLayoutItem = getLayoutItem;
+exports.getStatics = getStatics;
+exports.gridBounds = gridBounds;
+exports.horizontalCompactor = horizontalCompactor;
+exports.horizontalOverlapCompactor = horizontalOverlapCompactor;
+exports.inferResizeHandles = inferResizeHandles;
+exports.maxSize = maxSize;
+exports.minMaxSize = minMaxSize;
+exports.minSize = minSize;
+exports.modifyLayout = modifyLayout;
+exports.moveElement = moveElement;
+exports.moveElementAwayFromCollision = moveElementAwayFromCollision;
+exports.noCompactor = noCompactor;
+exports.noOverlapCompactor = noOverlapCompactor;
+exports.pcdCollisionResolver = pcdCollisionResolver;
+exports.perc = perc;
+exports.resizeItemInDirection = resizeItemInDirection;
+exports.resolveResizeCollisions = resolveResizeCollisions;
+exports.setTopLeft = setTopLeft;
+exports.setTransform = setTransform;
+exports.snapToGrid = snapToGrid;
+exports.sortBreakpoints = sortBreakpoints;
+exports.sortLayoutItems = sortLayoutItems;
+exports.sortLayoutItemsByColRow = sortLayoutItemsByColRow;
+exports.sortLayoutItemsByRowCol = sortLayoutItemsByRowCol;
+exports.transformStrategy = transformStrategy;
+exports.trySwap = trySwap;
+exports.validateLayout = validateLayout;
+exports.verticalCompactor = verticalCompactor;
+exports.verticalOverlapCompactor = verticalOverlapCompactor;
+exports.withLayoutItem = withLayoutItem;

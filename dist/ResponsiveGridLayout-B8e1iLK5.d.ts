@@ -1,6 +1,6 @@
 import React__default, { CSSProperties, ReactElement } from 'react';
-import { e as GridConfig, f as DragConfig, g as ResizeConfig, h as DropConfig, i as PositionStrategy, a as Compactor, j as LayoutConstraint, d as CollisionResolver, L as Layout, c as LayoutItem } from './config-CJDJz-fI.mjs';
-import { B as Breakpoint, a as Breakpoints, R as ResponsiveLayouts } from './responsive-DnuY7vut.mjs';
+import { e as GridConfig, f as DragConfig, g as ResizeConfig, h as DropConfig, i as PositionStrategy, a as Compactor, j as LayoutConstraint, d as CollisionResolver, L as Layout, c as LayoutItem } from './layout-o8aKmB_k.js';
+import { B as Breakpoint, a as Breakpoints, R as ResponsiveLayouts } from './responsive-mro_mD_l.js';
 
 /**
  * GridLayout component

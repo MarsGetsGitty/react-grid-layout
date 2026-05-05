@@ -2,8 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var chunk6DOUB4G3_js = require('./chunk-6DOUB4G3.js');
-var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
+var chunkOWG7KLIC_js = require('./chunk-OWG7KLIC.js');
+var chunk6GGFG2WJ_js = require('./chunk-6GGFG2WJ.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 var clsx = require('clsx');
@@ -96,16 +96,16 @@ function ReactGridLayout(props) {
   };
   let positionStrategy;
   if (!useCSSTransforms) {
-    positionStrategy = chunkQIPLLMCP_js.absoluteStrategy;
+    positionStrategy = chunk6GGFG2WJ_js.absoluteStrategy;
   } else if (transformScale !== 1) {
-    positionStrategy = chunkQIPLLMCP_js.createScaledStrategy(transformScale);
+    positionStrategy = chunk6GGFG2WJ_js.createScaledStrategy(transformScale);
   } else {
-    positionStrategy = chunkQIPLLMCP_js.transformStrategy;
+    positionStrategy = chunk6GGFG2WJ_js.transformStrategy;
   }
-  const compactor = chunkQIPLLMCP_js.getCompactor(compactType, allowOverlap, preventCollision);
-  const constraints = isBounded ? [...chunkQIPLLMCP_js.defaultConstraints, chunkQIPLLMCP_js.containerBounds] : chunkQIPLLMCP_js.defaultConstraints;
+  const compactor = chunk6GGFG2WJ_js.getCompactor(compactType, allowOverlap, preventCollision);
+  const constraints = isBounded ? [...chunk6GGFG2WJ_js.defaultConstraints, chunk6GGFG2WJ_js.containerBounds] : chunk6GGFG2WJ_js.defaultConstraints;
   return /* @__PURE__ */ jsxRuntime.jsx(
-    chunk6DOUB4G3_js.GridLayout,
+    chunkOWG7KLIC_js.GridLayout,
     {
       width,
       gridConfig,
@@ -215,15 +215,15 @@ function ResponsiveReactGridLayout(props) {
   };
   let positionStrategy;
   if (!useCSSTransforms) {
-    positionStrategy = chunkQIPLLMCP_js.absoluteStrategy;
+    positionStrategy = chunk6GGFG2WJ_js.absoluteStrategy;
   } else if (transformScale !== 1) {
-    positionStrategy = chunkQIPLLMCP_js.createScaledStrategy(transformScale);
+    positionStrategy = chunk6GGFG2WJ_js.createScaledStrategy(transformScale);
   } else {
-    positionStrategy = chunkQIPLLMCP_js.transformStrategy;
+    positionStrategy = chunk6GGFG2WJ_js.transformStrategy;
   }
-  const compactor = chunkQIPLLMCP_js.getCompactor(compactType, allowOverlap, preventCollision);
+  const compactor = chunk6GGFG2WJ_js.getCompactor(compactType, allowOverlap, preventCollision);
   return /* @__PURE__ */ jsxRuntime.jsx(
-    chunk6DOUB4G3_js.ResponsiveGridLayout,
+    chunkOWG7KLIC_js.ResponsiveGridLayout,
     {
       width,
       breakpoint,

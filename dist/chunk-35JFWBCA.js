@@ -1,6 +1,6 @@
 'use strict';
 
-var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
+var chunk6GGFG2WJ_js = require('./chunk-6GGFG2WJ.js');
 var jsxRuntime = require('react/jsx-runtime');
 var react = require('react');
 
@@ -51,7 +51,7 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
   const collisionResolver = react.useCallback(
     (tentativeLayout, movedItem, originalPosition, context) => {
       const activeSlot = dragSlotRef.current || originalPosition;
-      const resolved = chunkQIPLLMCP_js.pcdCollisionResolver(
+      const resolved = chunk6GGFG2WJ_js.pcdCollisionResolver(
         tentativeLayout,
         movedItem,
         activeSlot,
@@ -97,7 +97,7 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
         onLayoutChangeRef.current?.(newLayout);
         return;
       }
-      const resolved = chunkQIPLLMCP_js.resolveResizeCollisions(
+      const resolved = chunk6GGFG2WJ_js.resolveResizeCollisions(
         newLayout,
         newItem.i,
         oldItem,
@@ -119,7 +119,7 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
         onLayoutChangeRef.current?.(newLayout);
         return;
       }
-      const resolved = chunkQIPLLMCP_js.resolveResizeCollisions(
+      const resolved = chunk6GGFG2WJ_js.resolveResizeCollisions(
         newLayout,
         newItem.i,
         oldItem,
@@ -216,7 +216,7 @@ function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, is
     layoutRef.current = layout;
   }, [layout]);
   const dims = react.useMemo(
-    () => chunkQIPLLMCP_js.calcGridCellDimensions({
+    () => chunk6GGFG2WJ_js.calcGridCellDimensions({
       width: containerWidth,
       cols: gridConfig.cols,
       rowHeight: gridConfig.rowHeight,

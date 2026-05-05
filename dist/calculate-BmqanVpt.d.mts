@@ -1,4 +1,4 @@
-import { P as Position, R as ResizeHandleAxis } from './config-CJDJz-fI.js';
+import { P as Position, R as ResizeHandleAxis } from './layout-o8aKmB_k.mjs';
 
 /**
  * Grid calculation utilities.

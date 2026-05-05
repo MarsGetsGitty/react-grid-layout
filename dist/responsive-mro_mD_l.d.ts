@@ -1,4 +1,4 @@
-import { L as Layout } from './config-CJDJz-fI.js';
+import { L as Layout } from './layout-o8aKmB_k.js';
 
 /**
  * Breakpoint name (e.g., 'lg', 'md', 'sm', 'xs', 'xxs').

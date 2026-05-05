@@ -1,6 +1,6 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import { MouseEvent } from 'react';
-import { c as LayoutItem, d as CollisionResolver, L as Layout, e as GridConfig } from './config-CJDJz-fI.mjs';
+import { c as LayoutItem, d as CollisionResolver, L as Layout, e as GridConfig } from './layout-o8aKmB_k.js';
 
 interface GutterHandleProps {
     type: "horizontal" | "vertical";
