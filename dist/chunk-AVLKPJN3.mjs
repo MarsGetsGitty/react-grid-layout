@@ -1,4 +1,4 @@
-import { verticalCompactor, correctBounds, cloneLayout, getLayoutItem, cloneLayoutItem, moveElement, bottom, sortBreakpoints, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout } from './chunk-5ZXXTVVU.mjs';
+import { verticalCompactor, correctBounds, cloneLayout, getLayoutItem, cloneLayoutItem, moveElement, bottom, sortBreakpoints, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout } from './chunk-4HJR37C4.mjs';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { deepEqual } from 'fast-equals';
 

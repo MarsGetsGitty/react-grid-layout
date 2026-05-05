@@ -1,6 +1,8 @@
-import { pcdCollisionResolver, resolveResizeCollisions, calcGridCellDimensions } from './chunk-5ZXXTVVU.mjs';
-import { jsx } from 'react/jsx-runtime';
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+'use strict';
+
+var chunkNXH3XH5G_js = require('./chunk-NXH3XH5G.js');
+var jsxRuntime = require('react/jsx-runtime');
+var react = require('react');
 
 function GutterHandle({
   type,
@@ -16,7 +18,7 @@ function GutterHandle({
     `gutter-handle--${type}`,
     isActive && "gutter-handle--active"
   ].filter(Boolean).join(" ");
-  return /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ jsxRuntime.jsx(
     "div",
     {
       className,
@@ -32,24 +34,24 @@ function GutterHandle({
   );
 }
 function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
-  const [isRglInteracting, setIsRglInteracting] = useState(false);
-  const isRglInteractingRef = useRef(false);
-  const layoutRef = useRef(layout);
-  const dragSlotRef = useRef(null);
-  const onLayoutChangeRef = useRef(onLayoutChange);
-  useEffect(() => {
+  const [isRglInteracting, setIsRglInteracting] = react.useState(false);
+  const isRglInteractingRef = react.useRef(false);
+  const layoutRef = react.useRef(layout);
+  const dragSlotRef = react.useRef(null);
+  const onLayoutChangeRef = react.useRef(onLayoutChange);
+  react.useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
-  useEffect(() => {
+  react.useEffect(() => {
     onLayoutChangeRef.current = onLayoutChange;
   }, [onLayoutChange]);
-  const handleLayoutChange = useCallback((newLayout) => {
+  const handleLayoutChange = react.useCallback((newLayout) => {
     onLayoutChangeRef.current?.(newLayout);
   }, []);
-  const collisionResolver = useCallback(
+  const collisionResolver = react.useCallback(
     (tentativeLayout, movedItem, originalPosition, context) => {
       const activeSlot = dragSlotRef.current || originalPosition;
-      const resolved = pcdCollisionResolver(
+      const resolved = chunkNXH3XH5G_js.pcdCollisionResolver(
         tentativeLayout,
         movedItem,
         activeSlot,
@@ -62,7 +64,7 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
     },
     []
   );
-  const handleDragStart = useCallback(
+  const handleDragStart = react.useCallback(
     (_newLayout, oldItem) => {
       isRglInteractingRef.current = true;
       setIsRglInteracting(true);
@@ -72,12 +74,12 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
     },
     []
   );
-  const handleDrag = useCallback(
+  const handleDrag = react.useCallback(
     (_newLayout, _oldItem, _newItem) => {
     },
     []
   );
-  const handleDragStop = useCallback(
+  const handleDragStop = react.useCallback(
     (_newLayout, _oldItem, _newItem) => {
       isRglInteractingRef.current = false;
       setIsRglInteracting(false);
@@ -85,17 +87,17 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
     },
     []
   );
-  const handleResizeStart = useCallback(() => {
+  const handleResizeStart = react.useCallback(() => {
     isRglInteractingRef.current = true;
     setIsRglInteracting(true);
   }, []);
-  const handleResize = useCallback(
+  const handleResize = react.useCallback(
     (newLayout, oldItem, newItem) => {
       if (!oldItem || !newItem) {
         onLayoutChangeRef.current?.(newLayout);
         return;
       }
-      const resolved = resolveResizeCollisions(
+      const resolved = chunkNXH3XH5G_js.resolveResizeCollisions(
         newLayout,
         newItem.i,
         oldItem,
@@ -109,7 +111,7 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
     },
     [maxRows, cols]
   );
-  const handleResizeStop = useCallback(
+  const handleResizeStop = react.useCallback(
     (newLayout, oldItem, newItem) => {
       isRglInteractingRef.current = false;
       setIsRglInteracting(false);
@@ -117,7 +119,7 @@ function useGridArrangement({ layout, maxRows, cols, onLayoutChange }) {
         onLayoutChangeRef.current?.(newLayout);
         return;
       }
-      const resolved = resolveResizeCollisions(
+      const resolved = chunkNXH3XH5G_js.resolveResizeCollisions(
         newLayout,
         newItem.i,
         oldItem,
@@ -203,18 +205,18 @@ function calcGutterPixelPos(pair, dims) {
   return { left, top, width, height };
 }
 function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, isRglInteracting, isEditMode = true) {
-  const [activeGutter, setActiveGutter] = useState(null);
-  const dragStartRef = useRef(null);
-  const onGutterResizeRef = useRef(onGutterResize);
-  useEffect(() => {
+  const [activeGutter, setActiveGutter] = react.useState(null);
+  const dragStartRef = react.useRef(null);
+  const onGutterResizeRef = react.useRef(onGutterResize);
+  react.useEffect(() => {
     onGutterResizeRef.current = onGutterResize;
   }, [onGutterResize]);
-  const layoutRef = useRef(layout);
-  useEffect(() => {
+  const layoutRef = react.useRef(layout);
+  react.useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
-  const dims = useMemo(
-    () => calcGridCellDimensions({
+  const dims = react.useMemo(
+    () => chunkNXH3XH5G_js.calcGridCellDimensions({
       width: containerWidth,
       cols: gridConfig.cols,
       rowHeight: gridConfig.rowHeight,
@@ -222,12 +224,12 @@ function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, is
     }),
     [containerWidth, gridConfig.cols, gridConfig.rowHeight, gridConfig.margin]
   );
-  const pairs = useMemo(() => findAdjacentPairs(layout), [layout]);
-  const gutterPositions = useMemo(
+  const pairs = react.useMemo(() => findAdjacentPairs(layout), [layout]);
+  const gutterPositions = react.useMemo(
     () => pairs.map((pair) => calcGutterPixelPos(pair, dims)),
     [pairs, dims]
   );
-  const handleMouseMove = useCallback((e) => {
+  const handleMouseMove = react.useCallback((e) => {
     const drag = dragStartRef.current;
     if (!drag) return;
     const pixelDelta = drag.pair.type === "horizontal" ? e.clientX - drag.clientStart : e.clientY - drag.clientStart;
@@ -307,7 +309,7 @@ function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, is
     drag.appliedDelta = clampedDelta;
     onGutterResizeRef.current(nextLayout);
   }, [gridConfig.cols]);
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = react.useCallback(() => {
     dragStartRef.current = null;
     setActiveGutter(null);
     document.body.style.cursor = "";
@@ -315,7 +317,7 @@ function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, is
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   }, [handleMouseMove]);
-  const handleMouseDown = useCallback((pair, e) => {
+  const handleMouseDown = react.useCallback((pair, e) => {
     e.preventDefault();
     e.stopPropagation();
     const cellStep = pair.type === "horizontal" ? dims.cellWidth + dims.gapX : dims.cellHeight + dims.gapY;
@@ -331,14 +333,14 @@ function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, is
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   }, [dims, handleMouseMove, handleMouseUp]);
-  const gutterElements = useMemo(() => {
+  const gutterElements = react.useMemo(() => {
     if (isRglInteracting || !isEditMode) return null;
     return pairs.map((pair, idx) => {
       const pos = gutterPositions[idx];
       if (!pos) return null;
       const key = `${pair.a.i}-${pair.b.i}-${pair.type}`;
       const isActive = activeGutter === key;
-      return /* @__PURE__ */ jsx(
+      return /* @__PURE__ */ jsxRuntime.jsx(
         GutterHandle,
         {
           type: pair.type,
@@ -359,4 +361,6 @@ function useGutterHandles(layout, onGutterResize, containerWidth, gridConfig, is
   };
 }
 
-export { GutterHandle, useGridArrangement, useGutterHandles };
+exports.GutterHandle = GutterHandle;
+exports.useGridArrangement = useGridArrangement;
+exports.useGutterHandles = useGutterHandles;

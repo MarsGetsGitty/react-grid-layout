@@ -1,6 +1,6 @@
 'use strict';
 
-var chunk6GGFG2WJ_js = require('./chunk-6GGFG2WJ.js');
+var chunkNXH3XH5G_js = require('./chunk-NXH3XH5G.js');
 var React3 = require('react');
 var reactDom = require('react-dom');
 var reactDraggable = require('react-draggable');
@@ -80,8 +80,8 @@ function useGridItemDrag(opts) {
         return;
       }
       setDragging(true);
-      const rawPos = chunk6GGFG2WJ_js.calcXYRaw(positionParams, newPosition.top, newPosition.left);
-      const { x: newX, y: newY } = chunk6GGFG2WJ_js.applyPositionConstraints(
+      const rawPos = chunkNXH3XH5G_js.calcXYRaw(positionParams, newPosition.top, newPosition.left);
+      const { x: newX, y: newY } = chunkNXH3XH5G_js.applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -121,12 +121,12 @@ function useGridItemDrag(opts) {
         thresholdExceededRef.current = true;
         dragPendingRef.current = false;
         if (onDragStartProp) {
-          const rawPos2 = chunk6GGFG2WJ_js.calcXYRaw(
+          const rawPos2 = chunkNXH3XH5G_js.calcXYRaw(
             positionParams,
             dragPositionRef.current.top,
             dragPositionRef.current.left
           );
-          const { x: startX, y: startY } = chunk6GGFG2WJ_js.applyPositionConstraints(
+          const { x: startX, y: startY } = chunkNXH3XH5G_js.applyPositionConstraints(
             constraints,
             effectiveLayoutItem,
             rawPos2.x,
@@ -146,17 +146,17 @@ function useGridItemDrag(opts) {
       if (isBounded) {
         const { offsetParent } = node;
         if (offsetParent) {
-          const bottomBoundary = offsetParent.clientHeight - chunk6GGFG2WJ_js.calcGridItemWHPx(h, rowHeight, margin[1]);
-          top = chunk6GGFG2WJ_js.clamp(top, 0, bottomBoundary);
-          const colWidth = chunk6GGFG2WJ_js.calcGridColWidth(positionParams);
-          const rightBoundary = containerWidth - chunk6GGFG2WJ_js.calcGridItemWHPx(w, colWidth, margin[0]);
-          left = chunk6GGFG2WJ_js.clamp(left, 0, rightBoundary);
+          const bottomBoundary = offsetParent.clientHeight - chunkNXH3XH5G_js.calcGridItemWHPx(h, rowHeight, margin[1]);
+          top = chunkNXH3XH5G_js.clamp(top, 0, bottomBoundary);
+          const colWidth = chunkNXH3XH5G_js.calcGridColWidth(positionParams);
+          const rightBoundary = containerWidth - chunkNXH3XH5G_js.calcGridItemWHPx(w, colWidth, margin[0]);
+          left = chunkNXH3XH5G_js.clamp(left, 0, rightBoundary);
         }
       }
       const newPosition = { top, left };
       dragPositionRef.current = newPosition;
-      const rawPos = chunk6GGFG2WJ_js.calcXYRaw(positionParams, top, left);
-      const { x: newX, y: newY } = chunk6GGFG2WJ_js.applyPositionConstraints(
+      const rawPos = chunkNXH3XH5G_js.calcXYRaw(positionParams, top, left);
+      const { x: newX, y: newY } = chunkNXH3XH5G_js.applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -204,8 +204,8 @@ function useGridItemDrag(opts) {
       const newPosition = { top, left };
       setDragging(false);
       dragPositionRef.current = { left: 0, top: 0 };
-      const rawPos = chunk6GGFG2WJ_js.calcXYRaw(positionParams, top, left);
-      const { x: newX, y: newY } = chunk6GGFG2WJ_js.applyPositionConstraints(
+      const rawPos = chunkNXH3XH5G_js.calcXYRaw(positionParams, top, left);
+      const { x: newX, y: newY } = chunkNXH3XH5G_js.applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -270,7 +270,7 @@ function useGridItemResize(opts) {
       if (!handler) return;
       let updatedSize;
       if (node) {
-        updatedSize = chunk6GGFG2WJ_js.resizeItemInDirection(
+        updatedSize = chunkNXH3XH5G_js.resizeItemInDirection(
           resizeHandle,
           position,
           size,
@@ -284,8 +284,8 @@ function useGridItemResize(opts) {
         };
       }
       resizePositionRef.current = updatedSize;
-      const rawSize = chunk6GGFG2WJ_js.calcWHRaw(positionParams, updatedSize.width, updatedSize.height);
-      const { w: newW, h: newH } = chunk6GGFG2WJ_js.applySizeConstraints(
+      const rawSize = chunkNXH3XH5G_js.calcWHRaw(positionParams, updatedSize.width, updatedSize.height);
+      const { w: newW, h: newH } = chunkNXH3XH5G_js.applySizeConstraints(
         constraints,
         effectiveLayoutItem,
         rawSize.w,
@@ -315,7 +315,7 @@ function useGridItemResize(opts) {
   const handleResizeStart = React3.useCallback(
     (e, data) => {
       setResizing(true);
-      const pos = chunk6GGFG2WJ_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = chunkNXH3XH5G_js.calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -326,7 +326,7 @@ function useGridItemResize(opts) {
   );
   const handleResize = React3.useCallback(
     (e, data) => {
-      const pos = chunk6GGFG2WJ_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = chunkNXH3XH5G_js.calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -339,7 +339,7 @@ function useGridItemResize(opts) {
     (e, data) => {
       setResizing(false);
       resizePositionRef.current = { top: 0, left: 0, width: 0, height: 0 };
-      const pos = chunk6GGFG2WJ_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = chunkNXH3XH5G_js.calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -444,7 +444,7 @@ function GridItem(props) {
     i,
     resizeHandles,
     resizeHandle,
-    constraints = chunk6GGFG2WJ_js.defaultConstraints,
+    constraints = chunkNXH3XH5G_js.defaultConstraints,
     layoutItem,
     layout = [],
     onDragStart: onDragStartProp,
@@ -566,21 +566,21 @@ function GridItem(props) {
         return positionStrategy.calcStyle(pos2);
       }
       if (useCSSTransforms) {
-        return chunk6GGFG2WJ_js.setTransform(pos2);
+        return chunkNXH3XH5G_js.setTransform(pos2);
       }
-      const styleObj = chunk6GGFG2WJ_js.setTopLeft(pos2);
+      const styleObj = chunkNXH3XH5G_js.setTopLeft(pos2);
       if (usePercentages) {
         return {
           ...styleObj,
-          left: chunk6GGFG2WJ_js.perc(pos2.left / containerWidth),
-          width: chunk6GGFG2WJ_js.perc(pos2.width / containerWidth)
+          left: chunkNXH3XH5G_js.perc(pos2.left / containerWidth),
+          width: chunkNXH3XH5G_js.perc(pos2.width / containerWidth)
         };
       }
       return styleObj;
     },
     [positionStrategy, useCSSTransforms, usePercentages, containerWidth]
   );
-  const pos = chunk6GGFG2WJ_js.calcGridItemPosition(
+  const pos = chunkNXH3XH5G_js.calcGridItemPosition(
     positionParams,
     x,
     y,
@@ -592,14 +592,14 @@ function GridItem(props) {
     resizing ? resizePositionRef.current : null
   );
   const child = React3__default.default.Children.only(children);
-  const colWidth = chunk6GGFG2WJ_js.calcGridColWidth(positionParams);
+  const colWidth = chunkNXH3XH5G_js.calcGridColWidth(positionParams);
   const minConstraints = [
-    chunk6GGFG2WJ_js.calcGridItemWHPx(minW, colWidth, margin[0]),
-    chunk6GGFG2WJ_js.calcGridItemWHPx(minH, rowHeight, margin[1])
+    chunkNXH3XH5G_js.calcGridItemWHPx(minW, colWidth, margin[0]),
+    chunkNXH3XH5G_js.calcGridItemWHPx(minH, rowHeight, margin[1])
   ];
   const maxConstraints = [
-    chunk6GGFG2WJ_js.calcGridItemWHPx(maxW, colWidth, margin[0]),
-    chunk6GGFG2WJ_js.calcGridItemWHPx(maxH, rowHeight, margin[1])
+    chunkNXH3XH5G_js.calcGridItemWHPx(maxW, colWidth, margin[0]),
+    chunkNXH3XH5G_js.calcGridItemWHPx(maxH, rowHeight, margin[1])
   ];
   const childProps = child.props;
   const childClassName = childProps["className"];
@@ -623,7 +623,7 @@ function GridItem(props) {
   });
   let ghostPortal = null;
   if (ghostDrag && dragging && gridContainerRef?.current) {
-    const ghostPos = chunk6GGFG2WJ_js.calcGridItemPosition(
+    const ghostPos = chunkNXH3XH5G_js.calcGridItemPosition(
       positionParams,
       x,
       y,
@@ -718,7 +718,7 @@ function useGridLayoutDrag(opts) {
   const onDragStart = React3.useCallback(
     (i, _x, _y, data) => {
       const currentLayout = layoutRef.current;
-      const l = chunk6GGFG2WJ_js.getLayoutItem(currentLayout, i);
+      const l = chunkNXH3XH5G_js.getLayoutItem(currentLayout, i);
       if (!l) return;
       const placeholder = {
         w: l.w,
@@ -727,9 +727,9 @@ function useGridLayoutDrag(opts) {
         y: l.y,
         i
       };
-      oldDragItemRef.current = chunk6GGFG2WJ_js.cloneLayoutItem(l);
-      oldLayoutRef.current = currentLayout.map((item) => chunk6GGFG2WJ_js.cloneLayoutItem(item));
-      latestDragLayoutRef.current = currentLayout.map((item) => chunk6GGFG2WJ_js.cloneLayoutItem(item));
+      oldDragItemRef.current = chunkNXH3XH5G_js.cloneLayoutItem(l);
+      oldLayoutRef.current = currentLayout.map((item) => chunkNXH3XH5G_js.cloneLayoutItem(item));
+      latestDragLayoutRef.current = currentLayout.map((item) => chunkNXH3XH5G_js.cloneLayoutItem(item));
       setActiveDrag(placeholder);
       onDragStartProp(currentLayout, l, l, null, data.e, data.node);
     },
@@ -739,13 +739,13 @@ function useGridLayoutDrag(opts) {
     (i, x, y, data) => {
       const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
-      const l = chunk6GGFG2WJ_js.getLayoutItem(currentLayout, i);
+      const l = chunkNXH3XH5G_js.getLayoutItem(currentLayout, i);
       if (!l) return;
       if (collisionResolver) {
-        const tentativeBase = currentLayout.map((item) => chunk6GGFG2WJ_js.cloneLayoutItem(item));
-        const tentativeItem = chunk6GGFG2WJ_js.getLayoutItem(tentativeBase, i);
+        const tentativeBase = currentLayout.map((item) => chunkNXH3XH5G_js.cloneLayoutItem(item));
+        const tentativeItem = chunkNXH3XH5G_js.getLayoutItem(tentativeBase, i);
         if (!tentativeItem) return;
-        const tentative = chunk6GGFG2WJ_js.moveElement(
+        const tentative = chunkNXH3XH5G_js.moveElement(
           tentativeBase,
           tentativeItem,
           x,
@@ -758,7 +758,7 @@ function useGridLayoutDrag(opts) {
           true
           // allowOverlap — let resolver see the raw position
         );
-        const movedItem = chunk6GGFG2WJ_js.getLayoutItem(tentative, i);
+        const movedItem = chunkNXH3XH5G_js.getLayoutItem(tentative, i);
         if (!movedItem) return;
         const originPos = oldDragItem ? { x: oldDragItem.x, y: oldDragItem.y } : { x: l.x, y: l.y };
         const resolved = collisionResolver(tentative, movedItem, originPos, {
@@ -779,10 +779,10 @@ function useGridLayoutDrag(opts) {
           const compacted2 = compactor.compact(resolved, cols);
           latestDragLayoutRef.current = compacted2;
           onLayoutMutation(compacted2);
-          const acceptedItem = chunk6GGFG2WJ_js.getLayoutItem(compacted2, i) ?? movedItem;
+          const acceptedItem = chunkNXH3XH5G_js.getLayoutItem(compacted2, i) ?? movedItem;
           onDragProp(compacted2, oldDragItem, acceptedItem, placeholder2, data.e, data.node);
         } else {
-          const eventItem = chunk6GGFG2WJ_js.getLayoutItem(currentLayout, i) ?? l;
+          const eventItem = chunkNXH3XH5G_js.getLayoutItem(currentLayout, i) ?? l;
           onDragProp(currentLayout, oldDragItem, eventItem, placeholder2, data.e, data.node);
         }
         setActiveDrag(placeholder2);
@@ -795,7 +795,7 @@ function useGridLayoutDrag(opts) {
         y: l.y,
         i
       };
-      const newLayout = chunk6GGFG2WJ_js.moveElement(
+      const newLayout = chunkNXH3XH5G_js.moveElement(
         currentLayout,
         l,
         x,
@@ -819,13 +819,13 @@ function useGridLayoutDrag(opts) {
       if (!activeDrag) return;
       const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
-      const l = chunk6GGFG2WJ_js.getLayoutItem(currentLayout, i);
+      const l = chunkNXH3XH5G_js.getLayoutItem(currentLayout, i);
       if (!l) return;
       let finalLayout;
       if (collisionResolver) {
         finalLayout = compactor.compact(currentLayout, cols);
       } else {
-        const newLayout = chunk6GGFG2WJ_js.moveElement(
+        const newLayout = chunkNXH3XH5G_js.moveElement(
           currentLayout,
           l,
           x,
@@ -889,9 +889,9 @@ function useGridLayoutResize(opts) {
   const onResizeStart = React3.useCallback(
     (i, _w, _h, data) => {
       const currentLayout = layoutRef.current;
-      const l = chunk6GGFG2WJ_js.getLayoutItem(currentLayout, i);
+      const l = chunkNXH3XH5G_js.getLayoutItem(currentLayout, i);
       if (!l) return;
-      oldResizeItemRef.current = chunk6GGFG2WJ_js.cloneLayoutItem(l);
+      oldResizeItemRef.current = chunkNXH3XH5G_js.cloneLayoutItem(l);
       oldLayoutRef.current = currentLayout;
       setResizing(true);
       onResizeStartProp(currentLayout, l, l, null, data.e, data.node);
@@ -906,7 +906,7 @@ function useGridLayoutResize(opts) {
       let shouldMoveItem = false;
       let newX;
       let newY;
-      const [newLayout, l] = chunk6GGFG2WJ_js.withLayoutItem(currentLayout, i, (item) => {
+      const [newLayout, l] = chunkNXH3XH5G_js.withLayoutItem(currentLayout, i, (item) => {
         newX = item.x;
         newY = item.y;
         if (["sw", "w", "nw", "n", "ne"].includes(handle)) {
@@ -923,7 +923,7 @@ function useGridLayoutResize(opts) {
           shouldMoveItem = true;
         }
         if (preventCollision && !allowOverlap) {
-          const collisions = chunk6GGFG2WJ_js.getAllCollisions(currentLayout, {
+          const collisions = chunkNXH3XH5G_js.getAllCollisions(currentLayout, {
             ...item,
             w,
             h,
@@ -945,7 +945,7 @@ function useGridLayoutResize(opts) {
       if (!l) return;
       let finalLayout = newLayout;
       if (shouldMoveItem && newX !== void 0 && newY !== void 0) {
-        finalLayout = chunk6GGFG2WJ_js.moveElement(
+        finalLayout = chunkNXH3XH5G_js.moveElement(
           newLayout,
           l,
           newX,
@@ -982,7 +982,7 @@ function useGridLayoutResize(opts) {
     (i, _w, _h, data) => {
       const currentLayout = layoutRef.current;
       const oldResizeItem = oldResizeItemRef.current;
-      const l = chunk6GGFG2WJ_js.getLayoutItem(currentLayout, i);
+      const l = chunkNXH3XH5G_js.getLayoutItem(currentLayout, i);
       const finalLayout = compactor.compact(currentLayout, cols);
       onResizeStopProp(
         finalLayout,
@@ -1084,13 +1084,13 @@ function useGridLayoutDrop(opts) {
         containerWidth: width,
         containerPadding: effectiveContainerPadding
       };
-      const actualColWidth = chunk6GGFG2WJ_js.calcGridColWidth(positionParams);
-      const itemPixelWidth = chunk6GGFG2WJ_js.calcGridItemWHPx(
+      const actualColWidth = chunkNXH3XH5G_js.calcGridColWidth(positionParams);
+      const itemPixelWidth = chunkNXH3XH5G_js.calcGridItemWHPx(
         finalDroppingItem.w,
         actualColWidth,
         margin[0]
       );
-      const itemPixelHeight = chunk6GGFG2WJ_js.calcGridItemWHPx(
+      const itemPixelHeight = chunkNXH3XH5G_js.calcGridItemWHPx(
         finalDroppingItem.h,
         rowHeight,
         margin[1]
@@ -1107,7 +1107,7 @@ function useGridLayoutDrop(opts) {
         e: e.nativeEvent
       };
       if (!droppingDOMNode) {
-        const calculatedPosition = chunk6GGFG2WJ_js.calcXY(
+        const calculatedPosition = chunkNXH3XH5G_js.calcXY(
           positionParams,
           clampedGridY,
           clampedGridX,
@@ -1206,7 +1206,7 @@ function synchronizeLayoutWithChildren(initialLayout, children, cols, compactor)
     const key = String(child.key);
     const existingItem = initialLayout.find((l) => l.i === key);
     if (existingItem) {
-      layout.push(chunk6GGFG2WJ_js.cloneLayoutItem(existingItem));
+      layout.push(chunkNXH3XH5G_js.cloneLayoutItem(existingItem));
     } else {
       const childProps = child.props;
       const dataGrid = childProps["data-grid"];
@@ -1231,14 +1231,14 @@ function synchronizeLayoutWithChildren(initialLayout, children, cols, compactor)
         layout.push({
           i: key,
           x: 0,
-          y: chunk6GGFG2WJ_js.bottom(layout),
+          y: chunkNXH3XH5G_js.bottom(layout),
           w: 1,
           h: 1
         });
       }
     }
   });
-  const corrected = chunk6GGFG2WJ_js.correctBounds(layout, { cols });
+  const corrected = chunkNXH3XH5G_js.correctBounds(layout, { cols });
   return compactor.compact(corrected, cols);
 }
 function GridLayout(props) {
@@ -1251,9 +1251,9 @@ function GridLayout(props) {
     dragConfig: dragConfigProp,
     resizeConfig: resizeConfigProp,
     dropConfig: dropConfigProp,
-    positionStrategy = chunk6GGFG2WJ_js.defaultPositionStrategy,
+    positionStrategy = chunkNXH3XH5G_js.defaultPositionStrategy,
     compactor: compactorProp,
-    constraints = chunk6GGFG2WJ_js.defaultConstraints,
+    constraints = chunkNXH3XH5G_js.defaultConstraints,
     collisionResolver,
     ghostDrag,
     // Layout data
@@ -1276,19 +1276,19 @@ function GridLayout(props) {
     onDropDragOver: onDropDragOverProp = noop
   } = props;
   const gridConfig = React3.useMemo(
-    () => ({ ...chunk6GGFG2WJ_js.defaultGridConfig, ...gridConfigProp }),
+    () => ({ ...chunkNXH3XH5G_js.defaultGridConfig, ...gridConfigProp }),
     [gridConfigProp]
   );
   const dragConfig = React3.useMemo(
-    () => ({ ...chunk6GGFG2WJ_js.defaultDragConfig, ...dragConfigProp }),
+    () => ({ ...chunkNXH3XH5G_js.defaultDragConfig, ...dragConfigProp }),
     [dragConfigProp]
   );
   const resizeConfig = React3.useMemo(
-    () => ({ ...chunk6GGFG2WJ_js.defaultResizeConfig, ...resizeConfigProp }),
+    () => ({ ...chunkNXH3XH5G_js.defaultResizeConfig, ...resizeConfigProp }),
     [resizeConfigProp]
   );
   const dropConfig = React3.useMemo(
-    () => ({ ...chunk6GGFG2WJ_js.defaultDropConfig, ...dropConfigProp }),
+    () => ({ ...chunkNXH3XH5G_js.defaultDropConfig, ...dropConfigProp }),
     [dropConfigProp]
   );
   const { cols, rowHeight, maxRows, margin, containerPadding } = gridConfig;
@@ -1309,7 +1309,7 @@ function GridLayout(props) {
     defaultItem: defaultDropItem,
     onDragOver: dropConfigOnDragOver
   } = dropConfig;
-  const compactor = compactorProp ?? chunk6GGFG2WJ_js.getCompactor("vertical");
+  const compactor = compactorProp ?? chunkNXH3XH5G_js.getCompactor("vertical");
   const compactType = compactor.type;
   const allowOverlap = compactor.allowOverlap;
   const preventCollision = compactor.preventCollision ?? false;
@@ -1363,7 +1363,7 @@ function GridLayout(props) {
   }, [onLayoutChange, droppingItem.i]);
   const containerHeight = React3.useMemo(() => {
     if (!autoSize) return void 0;
-    const nbRow = chunk6GGFG2WJ_js.bottom(layout);
+    const nbRow = chunkNXH3XH5G_js.bottom(layout);
     const containerPaddingY = effectiveContainerPadding[1];
     return nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPaddingY * 2 + "px";
   }, [autoSize, layout, rowHeight, margin, effectiveContainerPadding]);
@@ -1432,7 +1432,7 @@ function GridLayout(props) {
   const processGridItem = React3.useCallback(
     (child, isDroppingItem) => {
       if (!child || !child.key) return null;
-      let l = chunk6GGFG2WJ_js.getLayoutItem(layout, String(child.key));
+      let l = chunkNXH3XH5G_js.getLayoutItem(layout, String(child.key));
       if (!l && isDroppingItem && droppingLayoutItem) {
         l = droppingLayoutItem;
       }
@@ -1628,14 +1628,14 @@ function synchronizeLayoutWithChildren2(initialLayout, children, cols, compactor
         layout.push({
           i: key,
           x: 0,
-          y: chunk6GGFG2WJ_js.bottom(layout),
+          y: chunkNXH3XH5G_js.bottom(layout),
           w: 1,
           h: 1
         });
       }
     }
   });
-  const corrected = chunk6GGFG2WJ_js.correctBounds(layout, { cols });
+  const corrected = chunkNXH3XH5G_js.correctBounds(layout, { cols });
   return compactor.compact(corrected, cols);
 }
 function ResponsiveGridLayout(props) {
@@ -1656,17 +1656,17 @@ function ResponsiveGridLayout(props) {
     onWidthChange = noop2,
     ...restProps
   } = props;
-  const compactor = compactorProp ?? chunk6GGFG2WJ_js.getCompactor("vertical");
+  const compactor = compactorProp ?? chunkNXH3XH5G_js.getCompactor("vertical");
   const compactType = compactor.type;
   const allowOverlap = compactor.allowOverlap;
   const initialBreakpoint = React3.useMemo(() => {
-    return propBreakpoint ?? chunk6GGFG2WJ_js.getBreakpointFromWidth(breakpoints, width);
+    return propBreakpoint ?? chunkNXH3XH5G_js.getBreakpointFromWidth(breakpoints, width);
   }, []);
   const initialCols = React3.useMemo(() => {
-    return chunk6GGFG2WJ_js.getColsFromBreakpoint(initialBreakpoint, colsConfig);
+    return chunkNXH3XH5G_js.getColsFromBreakpoint(initialBreakpoint, colsConfig);
   }, [initialBreakpoint, colsConfig]);
   const initialLayout = React3.useMemo(() => {
-    return chunk6GGFG2WJ_js.findOrGenerateResponsiveLayout(
+    return chunkNXH3XH5G_js.findOrGenerateResponsiveLayout(
       propsLayouts,
       breakpoints,
       initialBreakpoint,
@@ -1691,7 +1691,7 @@ function ResponsiveGridLayout(props) {
   }, [layouts]);
   const derivedLayout = React3.useMemo(() => {
     if (!fastEquals.deepEqual(propsLayouts, prevLayoutsRef.current)) {
-      return chunk6GGFG2WJ_js.findOrGenerateResponsiveLayout(
+      return chunkNXH3XH5G_js.findOrGenerateResponsiveLayout(
         propsLayouts,
         breakpoints,
         breakpoint,
@@ -1713,7 +1713,7 @@ function ResponsiveGridLayout(props) {
   }, [derivedLayout, propsLayouts]);
   React3.useEffect(() => {
     if (compactType !== prevCompactTypeRef.current) {
-      const newLayout = compactor.compact(chunk6GGFG2WJ_js.cloneLayout(effectiveLayout), cols);
+      const newLayout = compactor.compact(chunkNXH3XH5G_js.cloneLayout(effectiveLayout), cols);
       const newLayouts = {
         ...layoutsRef.current,
         [breakpoint]: newLayout
@@ -1742,15 +1742,15 @@ function ResponsiveGridLayout(props) {
     );
     const colsChanged = !fastEquals.deepEqual(colsConfig, prevColsRef.current);
     if (widthChanged || breakpointPropChanged || breakpointsChanged || colsChanged) {
-      const newBreakpoint = propBreakpoint ?? chunk6GGFG2WJ_js.getBreakpointFromWidth(breakpoints, width);
-      const newCols = chunk6GGFG2WJ_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
+      const newBreakpoint = propBreakpoint ?? chunkNXH3XH5G_js.getBreakpointFromWidth(breakpoints, width);
+      const newCols = chunkNXH3XH5G_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
       const lastBreakpoint = breakpoint;
       if (lastBreakpoint !== newBreakpoint || breakpointsChanged || colsChanged) {
         const newLayouts = { ...layoutsRef.current };
         if (!newLayouts[lastBreakpoint]) {
-          newLayouts[lastBreakpoint] = chunk6GGFG2WJ_js.cloneLayout(layout);
+          newLayouts[lastBreakpoint] = chunkNXH3XH5G_js.cloneLayout(layout);
         }
-        let newLayout = chunk6GGFG2WJ_js.findOrGenerateResponsiveLayout(
+        let newLayout = chunkNXH3XH5G_js.findOrGenerateResponsiveLayout(
           newLayouts,
           breakpoints,
           newBreakpoint,
@@ -1773,11 +1773,11 @@ function ResponsiveGridLayout(props) {
         onBreakpointChange(newBreakpoint, newCols);
         onLayoutChange(newLayout, newLayouts);
       }
-      const currentMargin2 = chunk6GGFG2WJ_js.getIndentationValue(
+      const currentMargin2 = chunkNXH3XH5G_js.getIndentationValue(
         propMargin,
         newBreakpoint
       );
-      const currentPadding = propContainerPadding ? chunk6GGFG2WJ_js.getIndentationValue(
+      const currentPadding = propContainerPadding ? chunkNXH3XH5G_js.getIndentationValue(
         propContainerPadding,
         newBreakpoint
       ) : null;
@@ -1820,14 +1820,14 @@ function ResponsiveGridLayout(props) {
     [breakpoint, onLayoutChange]
   );
   const currentMargin = React3.useMemo(() => {
-    return chunk6GGFG2WJ_js.getIndentationValue(
+    return chunkNXH3XH5G_js.getIndentationValue(
       propMargin,
       breakpoint
     );
   }, [propMargin, breakpoint]);
   const currentContainerPadding = React3.useMemo(() => {
     if (propContainerPadding === null) return null;
-    return chunk6GGFG2WJ_js.getIndentationValue(
+    return chunkNXH3XH5G_js.getIndentationValue(
       propContainerPadding,
       breakpoint
     );

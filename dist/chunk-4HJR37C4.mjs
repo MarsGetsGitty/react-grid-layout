@@ -1463,6 +1463,28 @@ var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, contex
   if (!dragged) return null;
   const collisions = getAllCollisions(layoutArray, dragged).filter((item) => item.i !== dragged.i);
   if (collisions.length === 0) {
+    if (context.dragConfig?.autoResize && context.oldDragItem) {
+      const origW = context.oldDragItem.w;
+      if (dragged.w < origW) {
+        let maxW = context.cols - dragged.x;
+        for (const obs of layoutArray) {
+          if (obs.i === movedItem.i) continue;
+          if (obs.y >= dragged.y + dragged.h || obs.y + obs.h <= dragged.y) continue;
+          if (obs.x >= dragged.x + dragged.w) {
+            maxW = Math.min(maxW, obs.x - dragged.x);
+          }
+        }
+        const targetW = Math.min(origW, maxW);
+        if (targetW > dragged.w) {
+          const restored = layoutArray.map((item) => cloneLayoutItem(item));
+          const restoredItem = restored.find((item) => item.i === movedItem.i);
+          if (restoredItem) {
+            restoredItem.w = targetW;
+            return restored;
+          }
+        }
+      }
+    }
     return layoutArray.map((item) => cloneLayoutItem(item));
   }
   const cursorPosition = context.cursorPosition;
