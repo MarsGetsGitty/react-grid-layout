@@ -64,7 +64,7 @@ function createHookOptions(overrides: Partial<UseGridLayoutDragOptions> = {}) {
   const oldDragItemRef: React.MutableRefObject<LayoutItem | null> = { current: null };
   const oldLayoutRef: React.MutableRefObject<Layout | null> = { current: null };
 
-  const setLayout = jest.fn<void, [React.SetStateAction<Layout>]>();
+  const onLayoutMutation = jest.fn<void, [Layout]>();
   const setActiveDrag = jest.fn<void, [React.SetStateAction<LayoutItem | null>]>();
   const onDragStartProp = jest.fn();
   const onDragProp = jest.fn();
@@ -81,7 +81,7 @@ function createHookOptions(overrides: Partial<UseGridLayoutDragOptions> = {}) {
     cols: 12,
     allowOverlap: false,
     preventCollision: false,
-    setLayout,
+    onLayoutMutation,
     setActiveDrag,
     onDragStartProp,
     onDragProp,
@@ -95,7 +95,7 @@ function createHookOptions(overrides: Partial<UseGridLayoutDragOptions> = {}) {
     layoutRef,
     oldDragItemRef,
     oldLayoutRef,
-    setLayout,
+    onLayoutMutation,
     setActiveDrag,
     onDragStartProp,
     onDragProp,
@@ -116,7 +116,7 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
 
   it("does not mutate committed layout when custom collisionResolver rejects", () => {
     const collisionResolver = jest.fn(() => null);
-    const { opts, layoutRef, setLayout, initialLayout } =
+    const { opts, layoutRef, onLayoutMutation, initialLayout } =
       createHookOptions({ collisionResolver });
 
     // Snapshot the initial layout for comparison
@@ -138,7 +138,7 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
     // Layout state setter should NOT have been called
     // (only the initial drag-start clone goes into latestDragLayoutRef)
     // setLayout is only called when resolver accepts
-    const setLayoutCalls = setLayout.mock.calls;
+    const setLayoutCalls = onLayoutMutation.mock.calls;
     // If setLayout was called at all, it should not contain a layout
     // with mutations from the tentative move
     if (setLayoutCalls.length > 0) {
@@ -199,7 +199,7 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
       item("b", 0, 0, 2, 2),
     ];
     const collisionResolver = jest.fn(() => resolvedLayout);
-    const { opts, onDragProp, setLayout } = createHookOptions({ collisionResolver });
+    const { opts, onDragProp, onLayoutMutation } = createHookOptions({ collisionResolver });
 
     const { result } = renderHook(() => useGridLayoutDrag(opts));
 
@@ -213,7 +213,7 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
 
     expect(onDragProp).toHaveBeenCalled();
     // setLayout should have been called with the compacted resolved layout
-    expect(setLayout).toHaveBeenCalled();
+    expect(onLayoutMutation).toHaveBeenCalled();
 
     const [layoutArg] = onDragProp.mock.calls[0]!;
     // The layout passed to onDragProp should be the accepted/compacted layout
@@ -270,7 +270,7 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
       return null; // reject on frame 2
     });
 
-    const { opts, setLayout, onLayoutChange, oldLayoutRef } = createHookOptions({
+    const { opts, onLayoutMutation, onLayoutChange, oldLayoutRef } = createHookOptions({
       collisionResolver,
     });
     // Need activeDrag to be non-null for onDragStop to execute
@@ -299,7 +299,7 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
     });
 
     // The final setLayout call should use the last accepted layout
-    const lastSetLayoutCall = setLayout.mock.calls[setLayout.mock.calls.length - 1]!;
+    const lastSetLayoutCall = onLayoutMutation.mock.calls[onLayoutMutation.mock.calls.length - 1]!;
     const finalLayout = lastSetLayoutCall[0] as Layout;
     const aFinal = finalLayout.find(l => l.i === "a");
     // Should be at the accepted position (2,0), not the raw drop (4,0)

@@ -67,8 +67,8 @@ export interface UseGridLayoutDropOptions {
   onDropDragOverProp: (e: ReactDragEvent) => { w?: number; h?: number; dragOffsetX?: number; dragOffsetY?: number } | false | void;
   /** Called when item is dropped */
   onDropProp: (layout: Layout, item: LayoutItem | undefined, e: Event) => void;
-  /** State setters */
-  setLayout: React.Dispatch<React.SetStateAction<Layout>>;
+  /** Callback to report layout mutations (replaces state setter) */
+  onLayoutMutation: (layout: Layout) => void;
   setDroppingDOMNode: React.Dispatch<React.SetStateAction<ReactElement | null>>;
   setDroppingPosition: React.Dispatch<React.SetStateAction<DroppingPosition | undefined>>;
   setActiveDrag: React.Dispatch<React.SetStateAction<LayoutItem | null>>;
@@ -110,7 +110,7 @@ export function useGridLayoutDrop(opts: UseGridLayoutDropOptions): UseGridLayout
     dropConfigOnDragOver,
     onDropDragOverProp,
     onDropProp,
-    setLayout,
+    onLayoutMutation,
     setDroppingDOMNode,
     setDroppingPosition,
     setActiveDrag,
@@ -135,11 +135,11 @@ export function useGridLayoutDrop(opts: UseGridLayoutDropOptions): UseGridLayout
       cols
     );
 
-    setLayout(newLayout);
+    onLayoutMutation(newLayout);
     setDroppingDOMNode(null);
     setActiveDrag(null);
     setDroppingPosition(undefined);
-  }, [layoutRef, droppingItem.i, cols, compactor, setLayout, setDroppingDOMNode, setActiveDrag, setDroppingPosition]);
+  }, [layoutRef, droppingItem.i, cols, compactor, onLayoutMutation, setDroppingDOMNode, setActiveDrag, setDroppingPosition]);
 
   // ── Drag Over ──────────────────────────────────────────
 
@@ -231,7 +231,7 @@ export function useGridLayoutDrop(opts: UseGridLayoutDropOptions): UseGridLayout
         const baseLayout = layoutRef.current.filter(
           l => l.i !== finalDroppingItem.i
         );
-        setLayout([
+        onLayoutMutation([
           ...baseLayout,
           {
             ...finalDroppingItem,
@@ -265,7 +265,7 @@ export function useGridLayoutDrop(opts: UseGridLayoutDropOptions): UseGridLayout
       width,
       effectiveContainerPadding,
       layoutRef,
-      setLayout,
+      onLayoutMutation,
       setDroppingDOMNode,
       setDroppingPosition
     ]

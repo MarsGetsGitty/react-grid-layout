@@ -49,8 +49,8 @@ export interface UseGridLayoutResizeOptions {
   allowOverlap: boolean;
   /** Whether to prevent collisions */
   preventCollision: boolean;
-  /** Layout state setter */
-  setLayout: React.Dispatch<React.SetStateAction<Layout>>;
+  /** Callback to report layout mutations (replaces state setter) */
+  onLayoutMutation: (layout: Layout) => void;
   /** Active drag placeholder setter */
   setActiveDrag: React.Dispatch<React.SetStateAction<LayoutItem | null>>;
   /** Resizing state setter */
@@ -85,7 +85,7 @@ export function useGridLayoutResize(opts: UseGridLayoutResizeOptions): UseGridLa
     cols,
     allowOverlap,
     preventCollision,
-    setLayout,
+    onLayoutMutation,
     setActiveDrag,
     setResizing,
     onResizeStartProp,
@@ -201,10 +201,10 @@ export function useGridLayoutResize(opts: UseGridLayoutResizeOptions): UseGridLa
       );
 
       // Use compactor.compact() - it handles allowOverlap internally (#2213)
-      setLayout(compactor.compact(finalLayout, cols));
+      onLayoutMutation(compactor.compact(finalLayout, cols));
       setActiveDrag(placeholder);
     },
-    [layoutRef, oldResizeItemRef, preventCollision, compactType, cols, allowOverlap, compactor, setLayout, setActiveDrag, onResizeProp]
+    [layoutRef, oldResizeItemRef, preventCollision, compactType, cols, allowOverlap, compactor, onLayoutMutation, setActiveDrag, onResizeProp]
   );
 
   const onResizeStop = useCallback(
@@ -230,13 +230,13 @@ export function useGridLayoutResize(opts: UseGridLayoutResizeOptions): UseGridLa
       oldLayoutRef.current = null;
       setActiveDrag(null);
       setResizing(false);
-      setLayout(finalLayout);
+      onLayoutMutation(finalLayout);
 
       if (oldLayout && !deepEqual(oldLayout, finalLayout)) {
         onLayoutChange(finalLayout);
       }
     },
-    [layoutRef, oldResizeItemRef, oldLayoutRef, cols, compactor, setLayout, setActiveDrag, setResizing, onResizeStopProp, onLayoutChange]
+    [layoutRef, oldResizeItemRef, oldLayoutRef, cols, compactor, onLayoutMutation, setActiveDrag, setResizing, onResizeStopProp, onLayoutChange]
   );
 
   return { onResizeStart, onResize, onResizeStop };

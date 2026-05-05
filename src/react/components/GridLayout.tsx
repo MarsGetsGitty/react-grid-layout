@@ -18,13 +18,12 @@ import React, {
   type ReactElement,
   type CSSProperties
 } from "react";
-import { deepEqual } from "fast-equals";
+
 import clsx from "clsx";
 
 import type {
   Layout,
   LayoutItem,
-  CompactType,
   DroppingPosition,
   GridConfig,
   DragConfig,
@@ -191,23 +190,7 @@ const noop = () => {};
 
 const layoutClassName = "react-grid-layout";
 
-/**
- * Compare children arrays for equality
- */
-function childrenEqual(a: React.ReactNode, b: React.ReactNode): boolean {
-  const aArr = React.Children.toArray(a);
-  const bArr = React.Children.toArray(b);
 
-  if (aArr.length !== bArr.length) return false;
-
-  for (let i = 0; i < aArr.length; i++) {
-    const aChild = aArr[i] as ReactElement;
-    const bChild = bArr[i] as ReactElement;
-    if (aChild?.key !== bChild?.key) return false;
-  }
-
-  return true;
-}
 
 /**
  * Synchronize layout with children
@@ -372,26 +355,14 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
   const effectiveContainerPadding = containerPadding ?? margin;
 
   // ============================================================================
-  // State
+  // Layout — Single Source of Truth (derived from props)
   // ============================================================================
 
-  const [mounted, setMounted] = useState(false);
-  const [layout, setLayout] = useState<Layout>(() =>
-    synchronizeLayoutWithChildren(propsLayout, children, cols, compactor)
+  const layout = useMemo(
+    () => synchronizeLayoutWithChildren(propsLayout, children, cols, compactor),
+    [propsLayout, children, cols, compactor]
   );
-  const [activeDrag, setActiveDrag] = useState<LayoutItem | null>(null);
-  const [resizing, setResizing] = useState(false);
-  const [droppingDOMNode, setDroppingDOMNode] = useState<ReactElement | null>(null);
-  const [droppingPosition, setDroppingPosition] = useState<DroppingPosition | undefined>();
 
-  // Refs
-  const oldDragItemRef = useRef<LayoutItem | null>(null);
-  const oldResizeItemRef = useRef<LayoutItem | null>(null);
-  const oldLayoutRef = useRef<Layout | null>(null);
-  const prevLayoutRef = useRef<Layout>(layout);
-  const prevPropsLayoutRef = useRef<Layout>(propsLayout);
-  const prevChildrenRef = useRef<React.ReactNode>(children);
-  const prevCompactTypeRef = useRef<CompactType>(compactType);
   const layoutRef = useRef<Layout>(layout);
   layoutRef.current = layout;
 
@@ -407,55 +378,38 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
   }, [innerRef]);
 
   // ============================================================================
+  // Transient UI State
+  // ============================================================================
+
+  const [mounted, setMounted] = useState(false);
+  const [activeDrag, setActiveDrag] = useState<LayoutItem | null>(null);
+  const [resizing, setResizing] = useState(false);
+  const [droppingDOMNode, setDroppingDOMNode] = useState<ReactElement | null>(null);
+  const [droppingPosition, setDroppingPosition] = useState<DroppingPosition | undefined>();
+
+  // Refs for interaction lifecycle
+  const oldDragItemRef = useRef<LayoutItem | null>(null);
+  const oldResizeItemRef = useRef<LayoutItem | null>(null);
+  const oldLayoutRef = useRef<Layout | null>(null);
+
+  // ============================================================================
   // Effects
   // ============================================================================
 
-  // Mount effect
+  // Mount effect — notify consumer of the compacted/synchronized layout
   useEffect(() => {
     setMounted(true);
-    if (!deepEqual(layout, propsLayout)) {
-      onLayoutChange(layout);
-    }
+    onLayoutChange(layout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ============================================================================
-  // Derived State (Sync during render to prevent flickering)
+  // Layout Mutation Callback
   // ============================================================================
 
-  if (!droppingDOMNode) {
-    const layoutChanged = !deepEqual(propsLayout, prevPropsLayoutRef.current);
-    const childrenChanged = !childrenEqual(children, prevChildrenRef.current);
-    const compactTypeChanged = compactType !== prevCompactTypeRef.current;
-
-    if (layoutChanged || childrenChanged || compactTypeChanged) {
-      const baseLayout = layoutChanged ? propsLayout : layout;
-      const newLayout = synchronizeLayoutWithChildren(
-        baseLayout,
-        children,
-        cols,
-        compactor
-      );
-
-      // Only set state if the calculated layout differs from what we currently have
-      if (!deepEqual(newLayout, layout)) {
-        setLayout(newLayout);
-      }
-    }
-
-    prevPropsLayoutRef.current = propsLayout;
-    prevChildrenRef.current = children;
-    prevCompactTypeRef.current = compactType;
-  }
-
-  // Layout change callback
-  useEffect(() => {
-    if (!activeDrag && !deepEqual(layout, prevLayoutRef.current)) {
-      prevLayoutRef.current = layout;
-      const publicLayout = layout.filter(l => l.i !== droppingItem.i);
-      onLayoutChange(publicLayout);
-    }
-  }, [layout, activeDrag, onLayoutChange, droppingItem.i]);
+  const handleLayoutMutation = useCallback((newLayout: Layout) => {
+    onLayoutChange(newLayout);
+  }, [onLayoutChange]);
 
   // ============================================================================
   // Container Height
@@ -485,7 +439,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     allowOverlap,
     preventCollision,
     collisionResolver,
-    setLayout,
+    onLayoutMutation: handleLayoutMutation,
     setActiveDrag,
     onDragStartProp,
     onDragProp,
@@ -502,7 +456,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     cols,
     allowOverlap,
     preventCollision,
-    setLayout,
+    onLayoutMutation: handleLayoutMutation,
     setActiveDrag,
     setResizing,
     onResizeStartProp,
@@ -533,7 +487,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     dropConfigOnDragOver,
     onDropDragOverProp,
     onDropProp,
-    setLayout,
+    onLayoutMutation: handleLayoutMutation,
     setDroppingDOMNode,
     setDroppingPosition,
     setActiveDrag,

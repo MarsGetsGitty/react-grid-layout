@@ -54,8 +54,8 @@ export interface UseGridLayoutDragOptions {
    * Return a new layout to accept, or null to reject the move.
    */
   collisionResolver?: CollisionResolver;
-  /** Layout state setter */
-  setLayout: React.Dispatch<React.SetStateAction<Layout>>;
+  /** Callback to report layout mutations (replaces state setter) */
+  onLayoutMutation: (layout: Layout) => void;
   /** Active drag placeholder setter */
   setActiveDrag: React.Dispatch<React.SetStateAction<LayoutItem | null>>;
   /** User callbacks */
@@ -90,7 +90,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
     allowOverlap,
     preventCollision,
     collisionResolver,
-    setLayout,
+    onLayoutMutation,
     setActiveDrag,
     onDragStartProp,
     onDragProp,
@@ -176,7 +176,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
           // Accept: use resolved layout
           const compacted = compactor.compact(resolved, cols);
           latestDragLayoutRef.current = compacted;
-          setLayout(compacted);
+          onLayoutMutation(compacted);
 
           const acceptedItem = getLayoutItem(compacted, i) ?? movedItem;
           onDragProp(compacted, oldDragItem, acceptedItem, placeholder, data.e, data.node);
@@ -219,10 +219,10 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       // Use compactor.compact() - it handles allowOverlap internally (#2213)
       const compacted = compactor.compact(newLayout, cols);
       latestDragLayoutRef.current = compacted;
-      setLayout(compacted);
+      onLayoutMutation(compacted);
       setActiveDrag(placeholder);
     },
-    [layoutRef, oldDragItemRef, preventCollision, compactType, cols, allowOverlap, compactor, collisionResolver, setLayout, setActiveDrag, onDragProp]
+    [layoutRef, oldDragItemRef, preventCollision, compactType, cols, allowOverlap, compactor, collisionResolver, onLayoutMutation, setActiveDrag, onDragProp]
   );
 
   const onDragStop = useCallback(
@@ -265,7 +265,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       oldLayoutRef.current = null;
       latestDragLayoutRef.current = null;
       setActiveDrag(null);
-      setLayout(finalLayout);
+      onLayoutMutation(finalLayout);
 
       if (oldLayout && !deepEqual(oldLayout, finalLayout)) {
         onLayoutChange(finalLayout);
@@ -282,7 +282,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
       allowOverlap,
       compactor,
       collisionResolver,
-      setLayout,
+      onLayoutMutation,
       setActiveDrag,
       onDragStopProp,
       onLayoutChange
