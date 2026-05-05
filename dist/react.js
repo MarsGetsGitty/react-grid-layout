@@ -1,30 +1,31 @@
 'use strict';
 
-var chunkS2OD6547_js = require('./chunk-S2OD6547.js');
+var chunkOW5CUJOF_js = require('./chunk-OW5CUJOF.js');
 var chunkYLHCQXMH_js = require('./chunk-YLHCQXMH.js');
+var chunkAMC7K4RO_js = require('./chunk-AMC7K4RO.js');
 var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
 
 
 
 Object.defineProperty(exports, "DEFAULT_BREAKPOINTS", {
   enumerable: true,
-  get: function () { return chunkS2OD6547_js.DEFAULT_BREAKPOINTS; }
+  get: function () { return chunkOW5CUJOF_js.DEFAULT_BREAKPOINTS; }
 });
 Object.defineProperty(exports, "DEFAULT_COLS", {
   enumerable: true,
-  get: function () { return chunkS2OD6547_js.DEFAULT_COLS; }
+  get: function () { return chunkOW5CUJOF_js.DEFAULT_COLS; }
 });
 Object.defineProperty(exports, "useContainerWidth", {
   enumerable: true,
-  get: function () { return chunkS2OD6547_js.useContainerWidth; }
+  get: function () { return chunkOW5CUJOF_js.useContainerWidth; }
 });
 Object.defineProperty(exports, "useGridLayout", {
   enumerable: true,
-  get: function () { return chunkS2OD6547_js.useGridLayout; }
+  get: function () { return chunkOW5CUJOF_js.useGridLayout; }
 });
 Object.defineProperty(exports, "useResponsiveLayout", {
   enumerable: true,
-  get: function () { return chunkS2OD6547_js.useResponsiveLayout; }
+  get: function () { return chunkOW5CUJOF_js.useResponsiveLayout; }
 });
 Object.defineProperty(exports, "GridItem", {
   enumerable: true,
@@ -37,6 +38,18 @@ Object.defineProperty(exports, "GridLayout", {
 Object.defineProperty(exports, "ResponsiveGridLayout", {
   enumerable: true,
   get: function () { return chunkYLHCQXMH_js.ResponsiveGridLayout; }
+});
+Object.defineProperty(exports, "GutterHandle", {
+  enumerable: true,
+  get: function () { return chunkAMC7K4RO_js.GutterHandle; }
+});
+Object.defineProperty(exports, "useGridArrangement", {
+  enumerable: true,
+  get: function () { return chunkAMC7K4RO_js.useGridArrangement; }
+});
+Object.defineProperty(exports, "useGutterHandles", {
+  enumerable: true,
+  get: function () { return chunkAMC7K4RO_js.useGutterHandles; }
 });
 Object.defineProperty(exports, "bottom", {
   enumerable: true,

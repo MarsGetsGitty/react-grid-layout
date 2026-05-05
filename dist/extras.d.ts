@@ -1,9 +1,9 @@
-import * as React$1 from 'react';
-import { Dispatch, SetStateAction, MouseEvent } from 'react';
+import * as React from 'react';
 import { G as GridCellConfig } from './calculate-oB7CIb0e.js';
-import { a as Compactor, c as LayoutItem, d as CollisionResolver, L as Layout, e as GridConfig } from './config-CJDJz-fI.js';
+import { a as Compactor } from './config-CJDJz-fI.js';
 export { p as pcdCollisionResolver } from './pcd-collision-resolver-uTpVXUp2.js';
-import * as react_jsx_runtime from 'react/jsx-runtime';
+export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-DoXdGbGl.js';
+import 'react/jsx-runtime';
 
 /**
  * GridBackground component
@@ -39,7 +39,7 @@ interface GridBackgroundProps extends GridCellConfig {
     /**
      * Additional inline styles.
      */
-    style?: React$1.CSSProperties;
+    style?: React.CSSProperties;
 }
 /**
  * SVG grid background component.
@@ -76,7 +76,7 @@ interface GridBackgroundProps extends GridCellConfig {
  * }
  * ```
  */
-declare function GridBackground({ width, cols, rowHeight, margin, containerPadding, rows, height, color, borderRadius, className, style }: GridBackgroundProps): React$1.ReactElement;
+declare function GridBackground({ width, cols, rowHeight, margin, containerPadding, rows, height, color, borderRadius, className, style }: GridBackgroundProps): React.ReactElement;
 
 /**
  * Fast Vertical Compactor
@@ -208,40 +208,4 @@ declare const wrapCompactor: Compactor;
  */
 declare const wrapOverlapCompactor: Compactor;
 
-interface UseGridArrangementParams {
-    layout: LayoutItem[];
-    setLayout: Dispatch<SetStateAction<LayoutItem[]>>;
-    maxRows: number;
-    cols: number;
-}
-declare function useGridArrangement({ layout, setLayout, maxRows, cols }: UseGridArrangementParams): {
-    isRglInteracting: boolean;
-    collisionResolver: CollisionResolver;
-    handlers: {
-        onLayoutChange: (newLayout: Layout) => void;
-        onDragStart: (_newLayout: Layout, oldItem: LayoutItem | null) => void;
-        onDrag: (_newLayout: Layout, _oldItem: LayoutItem | null, _newItem: LayoutItem | null) => void;
-        onDragStop: (_newLayout: Layout, _oldItem: LayoutItem | null, _newItem: LayoutItem | null) => void;
-        onResizeStart: () => void;
-        onResize: (newLayout: Layout, oldItem: LayoutItem | null, newItem: LayoutItem | null) => void;
-        onResizeStop: (newLayout: Layout, oldItem: LayoutItem | null, newItem: LayoutItem | null) => void;
-    };
-};
-
-declare function useGutterHandles(layout: LayoutItem[], setLayout: React.Dispatch<React.SetStateAction<LayoutItem[]>>, containerWidth: number, gridConfig: GridConfig, isRglInteracting: boolean): {
-    gutterElements: (react_jsx_runtime.JSX.Element | null)[] | null;
-    isDraggingGutter: boolean;
-};
-
-interface GutterHandleProps {
-    type: "horizontal" | "vertical";
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    isActive: boolean;
-    onMouseDown: (e: MouseEvent) => void;
-}
-declare function GutterHandle({ type, left, top, width, height, isActive, onMouseDown, }: GutterHandleProps): react_jsx_runtime.JSX.Element;
-
-export { GridBackground, type GridBackgroundProps, GutterHandle, type GutterHandleProps, type UseGridArrangementParams, fastHorizontalCompactor, fastHorizontalOverlapCompactor, fastVerticalCompactor, fastVerticalOverlapCompactor, useGridArrangement, useGutterHandles, wrapCompactor, wrapOverlapCompactor };
+export { GridBackground, type GridBackgroundProps, fastHorizontalCompactor, fastHorizontalOverlapCompactor, fastVerticalCompactor, fastVerticalOverlapCompactor, wrapCompactor, wrapOverlapCompactor };
