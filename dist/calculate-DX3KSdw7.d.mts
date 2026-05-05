@@ -1,4 +1,4 @@
-import { P as Position, R as ResizeHandleAxis } from './layout-BOhCYNcp.js';
+import { P as Position, R as ResizeHandleAxis } from './config-CJDJz-fI.mjs';
 
 /**
  * Grid calculation utilities.

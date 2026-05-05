@@ -1,5 +1,5 @@
-import { c as LayoutItem, L as Layout, C as CompactType, a as Compactor } from './layout-BOhCYNcp.mjs';
-import { B as Breakpoint, R as ResponsiveLayouts, a as Breakpoints } from './responsive-UKWMyaIm.mjs';
+import { c as LayoutItem, L as Layout, C as CompactType, a as Compactor } from './config-CJDJz-fI.mjs';
+import { B as Breakpoint, R as ResponsiveLayouts, a as Breakpoints } from './responsive-DnuY7vut.mjs';
 
 /**
  * Collision detection utilities for grid layouts.

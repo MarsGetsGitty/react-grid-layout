@@ -1,6 +1,6 @@
 'use strict';
 
-var chunk62PT2CTZ_js = require('./chunk-62PT2CTZ.js');
+var chunkQIPLLMCP_js = require('./chunk-QIPLLMCP.js');
 var React3 = require('react');
 var reactDom = require('react-dom');
 var reactDraggable = require('react-draggable');
@@ -80,8 +80,8 @@ function useGridItemDrag(opts) {
         return;
       }
       setDragging(true);
-      const rawPos = chunk62PT2CTZ_js.calcXYRaw(positionParams, newPosition.top, newPosition.left);
-      const { x: newX, y: newY } = chunk62PT2CTZ_js.applyPositionConstraints(
+      const rawPos = chunkQIPLLMCP_js.calcXYRaw(positionParams, newPosition.top, newPosition.left);
+      const { x: newX, y: newY } = chunkQIPLLMCP_js.applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -120,12 +120,12 @@ function useGridItemDrag(opts) {
         thresholdExceededRef.current = true;
         dragPendingRef.current = false;
         if (onDragStartProp) {
-          const rawPos2 = chunk62PT2CTZ_js.calcXYRaw(
+          const rawPos2 = chunkQIPLLMCP_js.calcXYRaw(
             positionParams,
             dragPositionRef.current.top,
             dragPositionRef.current.left
           );
-          const { x: startX, y: startY } = chunk62PT2CTZ_js.applyPositionConstraints(
+          const { x: startX, y: startY } = chunkQIPLLMCP_js.applyPositionConstraints(
             constraints,
             effectiveLayoutItem,
             rawPos2.x,
@@ -144,17 +144,17 @@ function useGridItemDrag(opts) {
       if (isBounded) {
         const { offsetParent } = node;
         if (offsetParent) {
-          const bottomBoundary = offsetParent.clientHeight - chunk62PT2CTZ_js.calcGridItemWHPx(h, rowHeight, margin[1]);
-          top = chunk62PT2CTZ_js.clamp(top, 0, bottomBoundary);
-          const colWidth = chunk62PT2CTZ_js.calcGridColWidth(positionParams);
-          const rightBoundary = containerWidth - chunk62PT2CTZ_js.calcGridItemWHPx(w, colWidth, margin[0]);
-          left = chunk62PT2CTZ_js.clamp(left, 0, rightBoundary);
+          const bottomBoundary = offsetParent.clientHeight - chunkQIPLLMCP_js.calcGridItemWHPx(h, rowHeight, margin[1]);
+          top = chunkQIPLLMCP_js.clamp(top, 0, bottomBoundary);
+          const colWidth = chunkQIPLLMCP_js.calcGridColWidth(positionParams);
+          const rightBoundary = containerWidth - chunkQIPLLMCP_js.calcGridItemWHPx(w, colWidth, margin[0]);
+          left = chunkQIPLLMCP_js.clamp(left, 0, rightBoundary);
         }
       }
       const newPosition = { top, left };
       dragPositionRef.current = newPosition;
-      const rawPos = chunk62PT2CTZ_js.calcXYRaw(positionParams, top, left);
-      const { x: newX, y: newY } = chunk62PT2CTZ_js.applyPositionConstraints(
+      const rawPos = chunkQIPLLMCP_js.calcXYRaw(positionParams, top, left);
+      const { x: newX, y: newY } = chunkQIPLLMCP_js.applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -201,8 +201,8 @@ function useGridItemDrag(opts) {
       const newPosition = { top, left };
       setDragging(false);
       dragPositionRef.current = { left: 0, top: 0 };
-      const rawPos = chunk62PT2CTZ_js.calcXYRaw(positionParams, top, left);
-      const { x: newX, y: newY } = chunk62PT2CTZ_js.applyPositionConstraints(
+      const rawPos = chunkQIPLLMCP_js.calcXYRaw(positionParams, top, left);
+      const { x: newX, y: newY } = chunkQIPLLMCP_js.applyPositionConstraints(
         constraints,
         effectiveLayoutItem,
         rawPos.x,
@@ -266,7 +266,7 @@ function useGridItemResize(opts) {
       if (!handler) return;
       let updatedSize;
       if (node) {
-        updatedSize = chunk62PT2CTZ_js.resizeItemInDirection(
+        updatedSize = chunkQIPLLMCP_js.resizeItemInDirection(
           resizeHandle,
           position,
           size,
@@ -280,8 +280,8 @@ function useGridItemResize(opts) {
         };
       }
       resizePositionRef.current = updatedSize;
-      const rawSize = chunk62PT2CTZ_js.calcWHRaw(positionParams, updatedSize.width, updatedSize.height);
-      const { w: newW, h: newH } = chunk62PT2CTZ_js.applySizeConstraints(
+      const rawSize = chunkQIPLLMCP_js.calcWHRaw(positionParams, updatedSize.width, updatedSize.height);
+      const { w: newW, h: newH } = chunkQIPLLMCP_js.applySizeConstraints(
         constraints,
         effectiveLayoutItem,
         rawSize.w,
@@ -311,7 +311,7 @@ function useGridItemResize(opts) {
   const handleResizeStart = React3.useCallback(
     (e, data) => {
       setResizing(true);
-      const pos = chunk62PT2CTZ_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = chunkQIPLLMCP_js.calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -322,7 +322,7 @@ function useGridItemResize(opts) {
   );
   const handleResize = React3.useCallback(
     (e, data) => {
-      const pos = chunk62PT2CTZ_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = chunkQIPLLMCP_js.calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -335,7 +335,7 @@ function useGridItemResize(opts) {
     (e, data) => {
       setResizing(false);
       resizePositionRef.current = { top: 0, left: 0, width: 0, height: 0 };
-      const pos = chunk62PT2CTZ_js.calcGridItemPosition(positionParams, x, y, w, h);
+      const pos = chunkQIPLLMCP_js.calcGridItemPosition(positionParams, x, y, w, h);
       const typedData = {
         ...data,
         handle: data.handle
@@ -440,7 +440,7 @@ function GridItem(props) {
     i,
     resizeHandles,
     resizeHandle,
-    constraints = chunk62PT2CTZ_js.defaultConstraints,
+    constraints = chunkQIPLLMCP_js.defaultConstraints,
     layoutItem,
     layout = [],
     onDragStart: onDragStartProp,
@@ -562,21 +562,21 @@ function GridItem(props) {
         return positionStrategy.calcStyle(pos2);
       }
       if (useCSSTransforms) {
-        return chunk62PT2CTZ_js.setTransform(pos2);
+        return chunkQIPLLMCP_js.setTransform(pos2);
       }
-      const styleObj = chunk62PT2CTZ_js.setTopLeft(pos2);
+      const styleObj = chunkQIPLLMCP_js.setTopLeft(pos2);
       if (usePercentages) {
         return {
           ...styleObj,
-          left: chunk62PT2CTZ_js.perc(pos2.left / containerWidth),
-          width: chunk62PT2CTZ_js.perc(pos2.width / containerWidth)
+          left: chunkQIPLLMCP_js.perc(pos2.left / containerWidth),
+          width: chunkQIPLLMCP_js.perc(pos2.width / containerWidth)
         };
       }
       return styleObj;
     },
     [positionStrategy, useCSSTransforms, usePercentages, containerWidth]
   );
-  const pos = chunk62PT2CTZ_js.calcGridItemPosition(
+  const pos = chunkQIPLLMCP_js.calcGridItemPosition(
     positionParams,
     x,
     y,
@@ -588,14 +588,14 @@ function GridItem(props) {
     resizing ? resizePositionRef.current : null
   );
   const child = React3__default.default.Children.only(children);
-  const colWidth = chunk62PT2CTZ_js.calcGridColWidth(positionParams);
+  const colWidth = chunkQIPLLMCP_js.calcGridColWidth(positionParams);
   const minConstraints = [
-    chunk62PT2CTZ_js.calcGridItemWHPx(minW, colWidth, margin[0]),
-    chunk62PT2CTZ_js.calcGridItemWHPx(minH, rowHeight, margin[1])
+    chunkQIPLLMCP_js.calcGridItemWHPx(minW, colWidth, margin[0]),
+    chunkQIPLLMCP_js.calcGridItemWHPx(minH, rowHeight, margin[1])
   ];
   const maxConstraints = [
-    chunk62PT2CTZ_js.calcGridItemWHPx(maxW, colWidth, margin[0]),
-    chunk62PT2CTZ_js.calcGridItemWHPx(maxH, rowHeight, margin[1])
+    chunkQIPLLMCP_js.calcGridItemWHPx(maxW, colWidth, margin[0]),
+    chunkQIPLLMCP_js.calcGridItemWHPx(maxH, rowHeight, margin[1])
   ];
   const childProps = child.props;
   const childClassName = childProps["className"];
@@ -619,7 +619,7 @@ function GridItem(props) {
   });
   let ghostPortal = null;
   if (ghostDrag && dragging && gridContainerRef?.current) {
-    const ghostPos = chunk62PT2CTZ_js.calcGridItemPosition(
+    const ghostPos = chunkQIPLLMCP_js.calcGridItemPosition(
       positionParams,
       x,
       y,
@@ -713,7 +713,7 @@ function useGridLayoutDrag(opts) {
   const onDragStart = React3.useCallback(
     (i, _x, _y, data) => {
       const currentLayout = layoutRef.current;
-      const l = chunk62PT2CTZ_js.getLayoutItem(currentLayout, i);
+      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
       if (!l) return;
       const placeholder = {
         w: l.w,
@@ -722,9 +722,9 @@ function useGridLayoutDrag(opts) {
         y: l.y,
         i
       };
-      oldDragItemRef.current = chunk62PT2CTZ_js.cloneLayoutItem(l);
-      oldLayoutRef.current = currentLayout.map((item) => chunk62PT2CTZ_js.cloneLayoutItem(item));
-      latestDragLayoutRef.current = currentLayout.map((item) => chunk62PT2CTZ_js.cloneLayoutItem(item));
+      oldDragItemRef.current = chunkQIPLLMCP_js.cloneLayoutItem(l);
+      oldLayoutRef.current = currentLayout.map((item) => chunkQIPLLMCP_js.cloneLayoutItem(item));
+      latestDragLayoutRef.current = currentLayout.map((item) => chunkQIPLLMCP_js.cloneLayoutItem(item));
       setActiveDrag(placeholder);
       onDragStartProp(currentLayout, l, l, null, data.e, data.node);
     },
@@ -734,13 +734,13 @@ function useGridLayoutDrag(opts) {
     (i, x, y, data) => {
       const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
-      const l = chunk62PT2CTZ_js.getLayoutItem(currentLayout, i);
+      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
       if (!l) return;
       if (collisionResolver) {
-        const tentativeBase = currentLayout.map((item) => chunk62PT2CTZ_js.cloneLayoutItem(item));
-        const tentativeItem = chunk62PT2CTZ_js.getLayoutItem(tentativeBase, i);
+        const tentativeBase = currentLayout.map((item) => chunkQIPLLMCP_js.cloneLayoutItem(item));
+        const tentativeItem = chunkQIPLLMCP_js.getLayoutItem(tentativeBase, i);
         if (!tentativeItem) return;
-        const tentative = chunk62PT2CTZ_js.moveElement(
+        const tentative = chunkQIPLLMCP_js.moveElement(
           tentativeBase,
           tentativeItem,
           x,
@@ -753,7 +753,7 @@ function useGridLayoutDrag(opts) {
           true
           // allowOverlap — let resolver see the raw position
         );
-        const movedItem = chunk62PT2CTZ_js.getLayoutItem(tentative, i);
+        const movedItem = chunkQIPLLMCP_js.getLayoutItem(tentative, i);
         if (!movedItem) return;
         const originPos = oldDragItem ? { x: oldDragItem.x, y: oldDragItem.y } : { x: l.x, y: l.y };
         const resolved = collisionResolver(tentative, movedItem, originPos, { cols, compactType });
@@ -768,10 +768,10 @@ function useGridLayoutDrag(opts) {
           const compacted2 = compactor.compact(resolved, cols);
           latestDragLayoutRef.current = compacted2;
           setLayout(compacted2);
-          const acceptedItem = chunk62PT2CTZ_js.getLayoutItem(compacted2, i) ?? movedItem;
+          const acceptedItem = chunkQIPLLMCP_js.getLayoutItem(compacted2, i) ?? movedItem;
           onDragProp(compacted2, oldDragItem, acceptedItem, placeholder2, data.e, data.node);
         } else {
-          const eventItem = chunk62PT2CTZ_js.getLayoutItem(currentLayout, i) ?? l;
+          const eventItem = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i) ?? l;
           onDragProp(currentLayout, oldDragItem, eventItem, placeholder2, data.e, data.node);
         }
         setActiveDrag(placeholder2);
@@ -784,7 +784,7 @@ function useGridLayoutDrag(opts) {
         y: l.y,
         i
       };
-      const newLayout = chunk62PT2CTZ_js.moveElement(
+      const newLayout = chunkQIPLLMCP_js.moveElement(
         currentLayout,
         l,
         x,
@@ -808,13 +808,13 @@ function useGridLayoutDrag(opts) {
       if (!activeDrag) return;
       const currentLayout = latestDragLayoutRef.current ?? layoutRef.current;
       const oldDragItem = oldDragItemRef.current;
-      const l = chunk62PT2CTZ_js.getLayoutItem(currentLayout, i);
+      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
       if (!l) return;
       let finalLayout;
       if (collisionResolver) {
         finalLayout = compactor.compact(currentLayout, cols);
       } else {
-        const newLayout = chunk62PT2CTZ_js.moveElement(
+        const newLayout = chunkQIPLLMCP_js.moveElement(
           currentLayout,
           l,
           x,
@@ -878,9 +878,9 @@ function useGridLayoutResize(opts) {
   const onResizeStart = React3.useCallback(
     (i, _w, _h, data) => {
       const currentLayout = layoutRef.current;
-      const l = chunk62PT2CTZ_js.getLayoutItem(currentLayout, i);
+      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
       if (!l) return;
-      oldResizeItemRef.current = chunk62PT2CTZ_js.cloneLayoutItem(l);
+      oldResizeItemRef.current = chunkQIPLLMCP_js.cloneLayoutItem(l);
       oldLayoutRef.current = currentLayout;
       setResizing(true);
       onResizeStartProp(currentLayout, l, l, null, data.e, data.node);
@@ -895,7 +895,7 @@ function useGridLayoutResize(opts) {
       let shouldMoveItem = false;
       let newX;
       let newY;
-      const [newLayout, l] = chunk62PT2CTZ_js.withLayoutItem(currentLayout, i, (item) => {
+      const [newLayout, l] = chunkQIPLLMCP_js.withLayoutItem(currentLayout, i, (item) => {
         newX = item.x;
         newY = item.y;
         if (["sw", "w", "nw", "n", "ne"].includes(handle)) {
@@ -912,7 +912,7 @@ function useGridLayoutResize(opts) {
           shouldMoveItem = true;
         }
         if (preventCollision && !allowOverlap) {
-          const collisions = chunk62PT2CTZ_js.getAllCollisions(currentLayout, {
+          const collisions = chunkQIPLLMCP_js.getAllCollisions(currentLayout, {
             ...item,
             w,
             h,
@@ -934,7 +934,7 @@ function useGridLayoutResize(opts) {
       if (!l) return;
       let finalLayout = newLayout;
       if (shouldMoveItem && newX !== void 0 && newY !== void 0) {
-        finalLayout = chunk62PT2CTZ_js.moveElement(
+        finalLayout = chunkQIPLLMCP_js.moveElement(
           newLayout,
           l,
           newX,
@@ -971,7 +971,7 @@ function useGridLayoutResize(opts) {
     (i, _w, _h, data) => {
       const currentLayout = layoutRef.current;
       const oldResizeItem = oldResizeItemRef.current;
-      const l = chunk62PT2CTZ_js.getLayoutItem(currentLayout, i);
+      const l = chunkQIPLLMCP_js.getLayoutItem(currentLayout, i);
       const finalLayout = compactor.compact(currentLayout, cols);
       onResizeStopProp(
         finalLayout,
@@ -1073,13 +1073,13 @@ function useGridLayoutDrop(opts) {
         containerWidth: width,
         containerPadding: effectiveContainerPadding
       };
-      const actualColWidth = chunk62PT2CTZ_js.calcGridColWidth(positionParams);
-      const itemPixelWidth = chunk62PT2CTZ_js.calcGridItemWHPx(
+      const actualColWidth = chunkQIPLLMCP_js.calcGridColWidth(positionParams);
+      const itemPixelWidth = chunkQIPLLMCP_js.calcGridItemWHPx(
         finalDroppingItem.w,
         actualColWidth,
         margin[0]
       );
-      const itemPixelHeight = chunk62PT2CTZ_js.calcGridItemWHPx(
+      const itemPixelHeight = chunkQIPLLMCP_js.calcGridItemWHPx(
         finalDroppingItem.h,
         rowHeight,
         margin[1]
@@ -1096,7 +1096,7 @@ function useGridLayoutDrop(opts) {
         e: e.nativeEvent
       };
       if (!droppingDOMNode) {
-        const calculatedPosition = chunk62PT2CTZ_js.calcXY(
+        const calculatedPosition = chunkQIPLLMCP_js.calcXY(
           positionParams,
           clampedGridY,
           clampedGridX,
@@ -1206,7 +1206,7 @@ function synchronizeLayoutWithChildren(initialLayout, children, cols, compactor)
     const key = String(child.key);
     const existingItem = initialLayout.find((l) => l.i === key);
     if (existingItem) {
-      layout.push(chunk62PT2CTZ_js.cloneLayoutItem(existingItem));
+      layout.push(chunkQIPLLMCP_js.cloneLayoutItem(existingItem));
     } else {
       const childProps = child.props;
       const dataGrid = childProps["data-grid"];
@@ -1231,14 +1231,14 @@ function synchronizeLayoutWithChildren(initialLayout, children, cols, compactor)
         layout.push({
           i: key,
           x: 0,
-          y: chunk62PT2CTZ_js.bottom(layout),
+          y: chunkQIPLLMCP_js.bottom(layout),
           w: 1,
           h: 1
         });
       }
     }
   });
-  const corrected = chunk62PT2CTZ_js.correctBounds(layout, { cols });
+  const corrected = chunkQIPLLMCP_js.correctBounds(layout, { cols });
   return compactor.compact(corrected, cols);
 }
 function GridLayout(props) {
@@ -1251,9 +1251,9 @@ function GridLayout(props) {
     dragConfig: dragConfigProp,
     resizeConfig: resizeConfigProp,
     dropConfig: dropConfigProp,
-    positionStrategy = chunk62PT2CTZ_js.defaultPositionStrategy,
+    positionStrategy = chunkQIPLLMCP_js.defaultPositionStrategy,
     compactor: compactorProp,
-    constraints = chunk62PT2CTZ_js.defaultConstraints,
+    constraints = chunkQIPLLMCP_js.defaultConstraints,
     collisionResolver,
     ghostDrag,
     // Layout data
@@ -1276,19 +1276,19 @@ function GridLayout(props) {
     onDropDragOver: onDropDragOverProp = noop
   } = props;
   const gridConfig = React3.useMemo(
-    () => ({ ...chunk62PT2CTZ_js.defaultGridConfig, ...gridConfigProp }),
+    () => ({ ...chunkQIPLLMCP_js.defaultGridConfig, ...gridConfigProp }),
     [gridConfigProp]
   );
   const dragConfig = React3.useMemo(
-    () => ({ ...chunk62PT2CTZ_js.defaultDragConfig, ...dragConfigProp }),
+    () => ({ ...chunkQIPLLMCP_js.defaultDragConfig, ...dragConfigProp }),
     [dragConfigProp]
   );
   const resizeConfig = React3.useMemo(
-    () => ({ ...chunk62PT2CTZ_js.defaultResizeConfig, ...resizeConfigProp }),
+    () => ({ ...chunkQIPLLMCP_js.defaultResizeConfig, ...resizeConfigProp }),
     [resizeConfigProp]
   );
   const dropConfig = React3.useMemo(
-    () => ({ ...chunk62PT2CTZ_js.defaultDropConfig, ...dropConfigProp }),
+    () => ({ ...chunkQIPLLMCP_js.defaultDropConfig, ...dropConfigProp }),
     [dropConfigProp]
   );
   const { cols, rowHeight, maxRows, margin, containerPadding } = gridConfig;
@@ -1309,7 +1309,7 @@ function GridLayout(props) {
     defaultItem: defaultDropItem,
     onDragOver: dropConfigOnDragOver
   } = dropConfig;
-  const compactor = compactorProp ?? chunk62PT2CTZ_js.getCompactor("vertical");
+  const compactor = compactorProp ?? chunkQIPLLMCP_js.getCompactor("vertical");
   const compactType = compactor.type;
   const allowOverlap = compactor.allowOverlap;
   const preventCollision = compactor.preventCollision ?? false;
@@ -1357,8 +1357,7 @@ function GridLayout(props) {
       onLayoutChange(layout);
     }
   }, []);
-  React3.useEffect(() => {
-    if (droppingDOMNode) return;
+  if (!droppingDOMNode) {
     const layoutChanged = !fastEquals.deepEqual(propsLayout, prevPropsLayoutRef.current);
     const childrenChanged = !childrenEqual(children, prevChildrenRef.current);
     const compactTypeChanged = compactType !== prevCompactTypeRef.current;
@@ -1377,16 +1376,7 @@ function GridLayout(props) {
     prevPropsLayoutRef.current = propsLayout;
     prevChildrenRef.current = children;
     prevCompactTypeRef.current = compactType;
-  }, [
-    propsLayout,
-    children,
-    cols,
-    compactType,
-    compactor,
-    activeDrag,
-    droppingDOMNode,
-    layout
-  ]);
+  }
   React3.useEffect(() => {
     if (!activeDrag && !fastEquals.deepEqual(layout, prevLayoutRef.current)) {
       prevLayoutRef.current = layout;
@@ -1396,7 +1386,7 @@ function GridLayout(props) {
   }, [layout, activeDrag, onLayoutChange, droppingItem.i]);
   const containerHeight = React3.useMemo(() => {
     if (!autoSize) return void 0;
-    const nbRow = chunk62PT2CTZ_js.bottom(layout);
+    const nbRow = chunkQIPLLMCP_js.bottom(layout);
     const containerPaddingY = effectiveContainerPadding[1];
     return nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPaddingY * 2 + "px";
   }, [autoSize, layout, rowHeight, margin, effectiveContainerPadding]);
@@ -1464,7 +1454,7 @@ function GridLayout(props) {
   const processGridItem = React3.useCallback(
     (child, isDroppingItem) => {
       if (!child || !child.key) return null;
-      const l = chunk62PT2CTZ_js.getLayoutItem(layout, String(child.key));
+      const l = chunkQIPLLMCP_js.getLayoutItem(layout, String(child.key));
       if (!l) return null;
       const draggable = typeof l.isDraggable === "boolean" ? l.isDraggable : !l.static && isDraggable;
       const resizable = typeof l.isResizable === "boolean" ? l.isResizable : !l.static && isResizable;
@@ -1657,14 +1647,14 @@ function synchronizeLayoutWithChildren2(initialLayout, children, cols, compactor
         layout.push({
           i: key,
           x: 0,
-          y: chunk62PT2CTZ_js.bottom(layout),
+          y: chunkQIPLLMCP_js.bottom(layout),
           w: 1,
           h: 1
         });
       }
     }
   });
-  const corrected = chunk62PT2CTZ_js.correctBounds(layout, { cols });
+  const corrected = chunkQIPLLMCP_js.correctBounds(layout, { cols });
   return compactor.compact(corrected, cols);
 }
 function ResponsiveGridLayout(props) {
@@ -1685,17 +1675,17 @@ function ResponsiveGridLayout(props) {
     onWidthChange = noop2,
     ...restProps
   } = props;
-  const compactor = compactorProp ?? chunk62PT2CTZ_js.getCompactor("vertical");
+  const compactor = compactorProp ?? chunkQIPLLMCP_js.getCompactor("vertical");
   const compactType = compactor.type;
   const allowOverlap = compactor.allowOverlap;
   const initialBreakpoint = React3.useMemo(() => {
-    return propBreakpoint ?? chunk62PT2CTZ_js.getBreakpointFromWidth(breakpoints, width);
+    return propBreakpoint ?? chunkQIPLLMCP_js.getBreakpointFromWidth(breakpoints, width);
   }, []);
   const initialCols = React3.useMemo(() => {
-    return chunk62PT2CTZ_js.getColsFromBreakpoint(initialBreakpoint, colsConfig);
+    return chunkQIPLLMCP_js.getColsFromBreakpoint(initialBreakpoint, colsConfig);
   }, [initialBreakpoint, colsConfig]);
   const initialLayout = React3.useMemo(() => {
-    return chunk62PT2CTZ_js.findOrGenerateResponsiveLayout(
+    return chunkQIPLLMCP_js.findOrGenerateResponsiveLayout(
       propsLayouts,
       breakpoints,
       initialBreakpoint,
@@ -1720,7 +1710,7 @@ function ResponsiveGridLayout(props) {
   }, [layouts]);
   const derivedLayout = React3.useMemo(() => {
     if (!fastEquals.deepEqual(propsLayouts, prevLayoutsRef.current)) {
-      return chunk62PT2CTZ_js.findOrGenerateResponsiveLayout(
+      return chunkQIPLLMCP_js.findOrGenerateResponsiveLayout(
         propsLayouts,
         breakpoints,
         breakpoint,
@@ -1742,7 +1732,7 @@ function ResponsiveGridLayout(props) {
   }, [derivedLayout, propsLayouts]);
   React3.useEffect(() => {
     if (compactType !== prevCompactTypeRef.current) {
-      const newLayout = compactor.compact(chunk62PT2CTZ_js.cloneLayout(effectiveLayout), cols);
+      const newLayout = compactor.compact(chunkQIPLLMCP_js.cloneLayout(effectiveLayout), cols);
       const newLayouts = {
         ...layoutsRef.current,
         [breakpoint]: newLayout
@@ -1771,15 +1761,15 @@ function ResponsiveGridLayout(props) {
     );
     const colsChanged = !fastEquals.deepEqual(colsConfig, prevColsRef.current);
     if (widthChanged || breakpointPropChanged || breakpointsChanged || colsChanged) {
-      const newBreakpoint = propBreakpoint ?? chunk62PT2CTZ_js.getBreakpointFromWidth(breakpoints, width);
-      const newCols = chunk62PT2CTZ_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
+      const newBreakpoint = propBreakpoint ?? chunkQIPLLMCP_js.getBreakpointFromWidth(breakpoints, width);
+      const newCols = chunkQIPLLMCP_js.getColsFromBreakpoint(newBreakpoint, colsConfig);
       const lastBreakpoint = breakpoint;
       if (lastBreakpoint !== newBreakpoint || breakpointsChanged || colsChanged) {
         const newLayouts = { ...layoutsRef.current };
         if (!newLayouts[lastBreakpoint]) {
-          newLayouts[lastBreakpoint] = chunk62PT2CTZ_js.cloneLayout(layout);
+          newLayouts[lastBreakpoint] = chunkQIPLLMCP_js.cloneLayout(layout);
         }
-        let newLayout = chunk62PT2CTZ_js.findOrGenerateResponsiveLayout(
+        let newLayout = chunkQIPLLMCP_js.findOrGenerateResponsiveLayout(
           newLayouts,
           breakpoints,
           newBreakpoint,
@@ -1802,11 +1792,11 @@ function ResponsiveGridLayout(props) {
         onBreakpointChange(newBreakpoint, newCols);
         onLayoutChange(newLayout, newLayouts);
       }
-      const currentMargin2 = chunk62PT2CTZ_js.getIndentationValue(
+      const currentMargin2 = chunkQIPLLMCP_js.getIndentationValue(
         propMargin,
         newBreakpoint
       );
-      const currentPadding = propContainerPadding ? chunk62PT2CTZ_js.getIndentationValue(
+      const currentPadding = propContainerPadding ? chunkQIPLLMCP_js.getIndentationValue(
         propContainerPadding,
         newBreakpoint
       ) : null;
@@ -1849,14 +1839,14 @@ function ResponsiveGridLayout(props) {
     [breakpoint, onLayoutChange]
   );
   const currentMargin = React3.useMemo(() => {
-    return chunk62PT2CTZ_js.getIndentationValue(
+    return chunkQIPLLMCP_js.getIndentationValue(
       propMargin,
       breakpoint
     );
   }, [propMargin, breakpoint]);
   const currentContainerPadding = React3.useMemo(() => {
     if (propContainerPadding === null) return null;
-    return chunk62PT2CTZ_js.getIndentationValue(
+    return chunkQIPLLMCP_js.getIndentationValue(
       propContainerPadding,
       breakpoint
     );

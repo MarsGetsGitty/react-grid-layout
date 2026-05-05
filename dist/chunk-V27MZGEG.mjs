@@ -1,4 +1,4 @@
-import { defaultConstraints, setTransform, setTopLeft, perc, calcGridItemPosition, calcGridColWidth, calcGridItemWHPx, defaultPositionStrategy, defaultGridConfig, defaultDragConfig, defaultResizeConfig, defaultDropConfig, getCompactor, bottom, getLayoutItem, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout, cloneLayout, getIndentationValue, calcXYRaw, applyPositionConstraints, clamp, resizeItemInDirection, calcWHRaw, applySizeConstraints, cloneLayoutItem, correctBounds, moveElement, withLayoutItem, getAllCollisions, calcXY } from './chunk-U4RG4KDN.mjs';
+import { defaultConstraints, setTransform, setTopLeft, perc, calcGridItemPosition, calcGridColWidth, calcGridItemWHPx, defaultPositionStrategy, defaultGridConfig, defaultDragConfig, defaultResizeConfig, defaultDropConfig, getCompactor, bottom, getLayoutItem, getBreakpointFromWidth, getColsFromBreakpoint, findOrGenerateResponsiveLayout, cloneLayout, getIndentationValue, calcXYRaw, applyPositionConstraints, clamp, resizeItemInDirection, calcWHRaw, applySizeConstraints, cloneLayoutItem, correctBounds, moveElement, withLayoutItem, getAllCollisions, calcXY } from './chunk-73AP6TWJ.mjs';
 import React3, { useRef, useMemo, useCallback, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { DraggableCore } from 'react-draggable';
@@ -1350,8 +1350,7 @@ function GridLayout(props) {
       onLayoutChange(layout);
     }
   }, []);
-  useEffect(() => {
-    if (droppingDOMNode) return;
+  if (!droppingDOMNode) {
     const layoutChanged = !deepEqual(propsLayout, prevPropsLayoutRef.current);
     const childrenChanged = !childrenEqual(children, prevChildrenRef.current);
     const compactTypeChanged = compactType !== prevCompactTypeRef.current;
@@ -1370,16 +1369,7 @@ function GridLayout(props) {
     prevPropsLayoutRef.current = propsLayout;
     prevChildrenRef.current = children;
     prevCompactTypeRef.current = compactType;
-  }, [
-    propsLayout,
-    children,
-    cols,
-    compactType,
-    compactor,
-    activeDrag,
-    droppingDOMNode,
-    layout
-  ]);
+  }
   useEffect(() => {
     if (!activeDrag && !deepEqual(layout, prevLayoutRef.current)) {
       prevLayoutRef.current = layout;

@@ -1,4 +1,4 @@
-import { L as Layout, c as LayoutItem, C as CompactType, a as Compactor, P as Position, d as PositionStrategy } from './layout-BOhCYNcp.js';
+import { L as Layout, c as LayoutItem, C as CompactType, a as Compactor, P as Position, i as PositionStrategy } from './config-CJDJz-fI.js';
 
 /**
  * Get the bottom-most Y coordinate of the layout.
@@ -82,84 +82,50 @@ declare function validateLayout(layout: Layout, contextName?: string): void;
  *
  * Compactors are pluggable strategies for removing gaps between grid items.
  * Use the Compactor interface to create custom compaction algorithms.
+ *
+ * The vertical and horizontal compactors use optimized "rising tide" / "sweeping
+ * tide" algorithms with O(n log n) complexity (dominated by sorting).
+ *
+ * Based on the algorithm from PR #2152 by Morris Brodersen (@morris).
  */
 
 /**
- * Resolve a compaction collision by moving items.
+ * Vertical compactor — moves items up to fill gaps.
  *
- * Before moving an item to a position, checks if that movement would
- * cause collisions and recursively moves those items first.
- *
- * Useful for implementing custom compactors.
- *
- * @param layout - Full layout (must be sorted for optimization)
- * @param item - Item being moved (will be mutated)
- * @param moveToCoord - Target coordinate
- * @param axis - Which axis to move on ('x' or 'y')
- * @param hasStatics - Whether layout contains static items (disables early break optimization)
- */
-declare function resolveCompactionCollision(layout: Layout, item: LayoutItem, moveToCoord: number, axis: "x" | "y", hasStatics?: boolean): void;
-/**
- * Compact a single item vertically (move up).
- *
- * Moves the item as far up as possible without colliding.
- * Useful for implementing custom vertical compactors.
- *
- * @param compareWith - Items to check for collisions
- * @param l - Item to compact (will be mutated)
- * @param fullLayout - Full layout for collision resolution
- * @param maxY - Maximum Y to start from
- * @returns The compacted item
- */
-declare function compactItemVertical(compareWith: Layout, l: LayoutItem, fullLayout: Layout, maxY: number): LayoutItem;
-/**
- * Compact a single item horizontally (move left).
- *
- * Moves the item as far left as possible without colliding.
- * Wraps to the next row if it overflows.
- * Useful for implementing custom horizontal compactors.
- *
- * @param compareWith - Items to check for collisions
- * @param l - Item to compact (will be mutated)
- * @param cols - Number of columns in the grid
- * @param fullLayout - Full layout for collision resolution
- * @returns The compacted item
- */
-declare function compactItemHorizontal(compareWith: Layout, l: LayoutItem, cols: number, fullLayout: Layout): LayoutItem;
-/**
- * Vertical compactor - moves items up to fill gaps.
- *
- * Items are sorted by row then column, and each item is moved
+ * Uses an optimized "rising tide" algorithm with O(n log n) complexity.
+ * Items are sorted top-to-bottom, left-to-right, and each item is moved
  * as far up as possible without overlapping other items.
  *
  * This is the default compaction mode for react-grid-layout.
  */
 declare const verticalCompactor: Compactor;
 /**
- * Horizontal compactor - moves items left to fill gaps.
+ * Vertical compactor that allows overlapping items.
  *
- * Items are sorted by column then row, and each item is moved
- * as far left as possible without overlapping other items.
+ * Items are cloned without movement — they stay where placed.
+ * MUST clear moved flags for drag-frame consistency.
+ */
+declare const verticalOverlapCompactor: Compactor;
+/**
+ * Horizontal compactor — moves items left to fill gaps.
+ *
+ * Uses an optimized "sweeping tide" algorithm with O(n log n) complexity.
+ * Items are sorted left-to-right, top-to-bottom, and each item is moved
+ * as far left as possible without overlapping other items. Wraps to the
+ * next row on overflow.
  */
 declare const horizontalCompactor: Compactor;
 /**
- * No compaction - items stay where placed.
+ * Horizontal compactor that allows overlapping items.
+ */
+declare const horizontalOverlapCompactor: Compactor;
+/**
+ * No compaction — items stay where placed.
  *
  * Use this for free-form layouts where items can be placed anywhere.
  * Items will not automatically move to fill gaps.
  */
 declare const noCompactor: Compactor;
-/**
- * Vertical compactor that allows overlapping items.
- *
- * Items compact upward but are allowed to overlap each other.
- * Useful for layered layouts or when collision detection is handled externally.
- */
-declare const verticalOverlapCompactor: Compactor;
-/**
- * Horizontal compactor that allows overlapping items.
- */
-declare const horizontalOverlapCompactor: Compactor;
 /**
  * No compaction, with overlapping allowed.
  *
@@ -246,4 +212,4 @@ declare function createScaledStrategy(scale: number): PositionStrategy;
 /** Default position strategy (transform-based) */
 declare const defaultPositionStrategy: PositionStrategy;
 
-export { cloneLayoutItem as a, bottom as b, cloneLayout as c, getLayoutItem as d, setTransform as e, verticalCompactor as f, getCompactor as g, horizontalCompactor as h, absoluteStrategy as i, compactItemHorizontal as j, compactItemVertical as k, createScaledStrategy as l, defaultPositionStrategy as m, noCompactor as n, getStatics as o, horizontalOverlapCompactor as p, modifyLayout as q, noOverlapCompactor as r, setTopLeft as s, perc as t, resolveCompactionCollision as u, validateLayout as v, transformStrategy as w, verticalOverlapCompactor as x, withLayoutItem as y };
+export { cloneLayoutItem as a, bottom as b, cloneLayout as c, getLayoutItem as d, setTransform as e, verticalCompactor as f, getCompactor as g, horizontalCompactor as h, absoluteStrategy as i, createScaledStrategy as j, defaultPositionStrategy as k, getStatics as l, horizontalOverlapCompactor as m, noCompactor as n, modifyLayout as o, noOverlapCompactor as p, perc as q, verticalOverlapCompactor as r, setTopLeft as s, transformStrategy as t, validateLayout as v, withLayoutItem as w };

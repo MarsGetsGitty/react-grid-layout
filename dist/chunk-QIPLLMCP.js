@@ -1,3 +1,5 @@
+'use strict';
+
 // src/core/types/config.ts
 var defaultGridConfig = {
   cols: 12,
@@ -319,116 +321,207 @@ function moveElementAwayFromCollision(layout, collidesWith, itemToMove, isUserAc
 }
 
 // src/core/strategies/compactors.ts
-function resolveCompactionCollision(layout, item, moveToCoord, axis, hasStatics) {
-  const sizeProp = axis === "x" ? "w" : "h";
-  item[axis] += 1;
-  const itemIndex = layout.findIndex((l) => l.i === item.i);
-  const layoutHasStatics = hasStatics ?? getStatics(layout).length > 0;
-  for (let i = itemIndex + 1; i < layout.length; i++) {
-    const otherItem = layout[i];
-    if (otherItem === void 0) continue;
-    if (otherItem.static) continue;
-    if (!layoutHasStatics && otherItem.y > item.y + item.h) break;
-    if (collides(item, otherItem)) {
-      resolveCompactionCollision(
-        layout,
-        otherItem,
-        moveToCoord + item[sizeProp],
-        axis,
-        layoutHasStatics
-      );
+function compactVerticalFast(layout, cols, allowOverlap) {
+  const numItems = layout.length;
+  layout.sort((a, b) => {
+    if (a.y < b.y) return -1;
+    if (a.y > b.y) return 1;
+    if (a.x < b.x) return -1;
+    if (a.x > b.x) return 1;
+    if (a.static && !b.static) return -1;
+    if (!a.static && b.static) return 1;
+    return 0;
+  });
+  const tide = new Array(cols).fill(0);
+  const staticItems = layout.filter((item) => item.static);
+  const numStatics = staticItems.length;
+  let staticOffset = 0;
+  for (let i = 0; i < numItems; i++) {
+    const item = layout[i];
+    let x2 = item.x + item.w;
+    if (x2 > cols) {
+      x2 = cols;
     }
-  }
-  item[axis] = moveToCoord;
-}
-function compactItemVertical(compareWith, l, fullLayout, maxY) {
-  l.x = Math.max(l.x, 0);
-  l.y = Math.max(l.y, 0);
-  l.y = Math.min(maxY, l.y);
-  while (l.y > 0 && !getFirstCollision(compareWith, l)) {
-    l.y--;
-  }
-  let collision;
-  while ((collision = getFirstCollision(compareWith, l)) !== void 0) {
-    resolveCompactionCollision(fullLayout, l, collision.y + collision.h, "y");
-  }
-  l.y = Math.max(l.y, 0);
-  return l;
-}
-function compactItemHorizontal(compareWith, l, cols, fullLayout) {
-  l.x = Math.max(l.x, 0);
-  l.y = Math.max(l.y, 0);
-  while (l.x > 0 && !getFirstCollision(compareWith, l)) {
-    l.x--;
-  }
-  let collision;
-  while ((collision = getFirstCollision(compareWith, l)) !== void 0) {
-    resolveCompactionCollision(fullLayout, l, collision.x + collision.w, "x");
-    if (l.x + l.w > cols) {
-      l.x = cols - l.w;
-      l.y++;
-      while (l.x > 0 && !getFirstCollision(compareWith, l)) {
-        l.x--;
+    if (item.static) {
+      ++staticOffset;
+    } else {
+      let minGap = Infinity;
+      for (let x = item.x; x < x2; ++x) {
+        const tideValue = tide[x] ?? 0;
+        const gap = item.y - tideValue;
+        if (gap < minGap) {
+          minGap = gap;
+        }
+      }
+      {
+        item.y -= minGap;
+      }
+      for (let j = staticOffset; j < numStatics; ++j) {
+        const staticItem = staticItems[j];
+        if (staticItem === void 0) continue;
+        if (staticItem.y >= item.y + item.h) {
+          break;
+        }
+        if (collides(item, staticItem)) {
+          item.y = staticItem.y + staticItem.h;
+          if (j > staticOffset) {
+            j = staticOffset;
+          }
+        }
+      }
+      item.moved = false;
+    }
+    const t = item.y + item.h;
+    for (let x = item.x; x < x2; ++x) {
+      const currentTide = tide[x] ?? 0;
+      if (currentTide < t) {
+        tide[x] = t;
       }
     }
   }
-  l.x = Math.max(l.x, 0);
-  return l;
+}
+function ensureTideRows(tide, neededRows) {
+  while (tide.length < neededRows) {
+    tide.push(0);
+  }
+}
+function getMaxTideForItem(tide, y, h) {
+  let maxTide = 0;
+  for (let row = y; row < y + h; row++) {
+    const tideValue = tide[row] ?? 0;
+    if (tideValue > maxTide) {
+      maxTide = tideValue;
+    }
+  }
+  return maxTide;
+}
+function canPlaceAt(item, x, y, staticItems, cols) {
+  if (x + item.w > cols) return false;
+  for (const staticItem of staticItems) {
+    if (x < staticItem.x + staticItem.w && x + item.w > staticItem.x && y < staticItem.y + staticItem.h && y + item.h > staticItem.y) {
+      return false;
+    }
+  }
+  return true;
+}
+function compactHorizontalFast(layout, cols, allowOverlap) {
+  const numItems = layout.length;
+  if (numItems === 0) return;
+  for (let i = 0; i < numItems; i++) {
+    const item = layout[i];
+    if (item && !item.static) {
+      item.x = Math.max(item.x, 0);
+      item.y = Math.max(item.y, 0);
+    }
+  }
+  layout.sort((a, b) => {
+    if (a.x !== b.x) return a.x - b.x;
+    if (a.y !== b.y) return a.y - b.y;
+    if (a.static !== b.static) return a.static ? -1 : 1;
+    return 0;
+  });
+  let maxRow = 0;
+  for (let i = 0; i < numItems; i++) {
+    const item = layout[i];
+    if (item !== void 0) {
+      const bottom2 = item.y + item.h;
+      if (bottom2 > maxRow) maxRow = bottom2;
+    }
+  }
+  const tide = new Array(maxRow).fill(0);
+  const staticItems = layout.filter((item) => item.static);
+  const maxRowLimit = Math.max(1e4, numItems * 100);
+  for (let i = 0; i < numItems; i++) {
+    const item = layout[i];
+    if (item.static) {
+      ensureTideRows(tide, item.y + item.h);
+      const t2 = item.x + item.w;
+      for (let y = item.y; y < item.y + item.h; y++) {
+        if ((tide[y] ?? 0) < t2) {
+          tide[y] = t2;
+        }
+      }
+      continue;
+    }
+    let targetY = item.y;
+    let targetX = 0;
+    let placed = false;
+    while (!placed) {
+      ensureTideRows(tide, targetY + item.h);
+      const maxTide = getMaxTideForItem(tide, targetY, item.h);
+      targetX = maxTide;
+      if (targetX + item.w <= cols) {
+        if (canPlaceAt(item, targetX, targetY, staticItems, cols)) {
+          placed = true;
+        } else {
+          let maxStaticRight = targetX;
+          let foundCollision = false;
+          for (const staticItem of staticItems) {
+            if (targetX < staticItem.x + staticItem.w && targetX + item.w > staticItem.x && targetY < staticItem.y + staticItem.h && targetY + item.h > staticItem.y) {
+              maxStaticRight = Math.max(
+                maxStaticRight,
+                staticItem.x + staticItem.w
+              );
+              foundCollision = true;
+            }
+          }
+          if (foundCollision) {
+            targetX = maxStaticRight;
+          }
+          if (foundCollision && targetX + item.w <= cols) {
+            if (canPlaceAt(item, targetX, targetY, staticItems, cols)) {
+              placed = true;
+            } else {
+              targetY++;
+            }
+          } else if (foundCollision) {
+            targetY++;
+          } else {
+            placed = true;
+          }
+        }
+      } else {
+        targetY++;
+      }
+      if (targetY > maxRowLimit) {
+        if (typeof console !== "undefined" && console.warn) {
+          console.warn(
+            `Horizontal compactor: Item "${item.i}" exceeded max row limit (${targetY}). This may indicate a layout that cannot be compacted within grid bounds.`
+          );
+        }
+        targetX = 0;
+        placed = true;
+      }
+    }
+    item.x = targetX;
+    item.y = targetY;
+    item.moved = false;
+    ensureTideRows(tide, targetY + item.h);
+    const t = targetX + item.w;
+    for (let y = targetY; y < targetY + item.h; y++) {
+      if ((tide[y] ?? 0) < t) {
+        tide[y] = t;
+      }
+    }
+  }
 }
 var verticalCompactor = {
   type: "vertical",
   allowOverlap: false,
-  compact(layout, _cols) {
-    const compareWith = getStatics(layout);
-    let maxY = bottom(compareWith);
-    const sorted = sortLayoutItemsByRowCol(layout);
-    const out = new Array(layout.length);
-    for (let i = 0; i < sorted.length; i++) {
-      const sortedItem = sorted[i];
-      if (sortedItem === void 0) continue;
-      let l = cloneLayoutItem(sortedItem);
-      if (!l.static) {
-        l = compactItemVertical(compareWith, l, sorted, maxY);
-        maxY = Math.max(maxY, l.y + l.h);
-        compareWith.push(l);
-      }
-      const originalIndex = layout.indexOf(sortedItem);
-      out[originalIndex] = l;
-      l.moved = false;
-    }
-    return out;
-  }
-};
-var horizontalCompactor = {
-  type: "horizontal",
-  allowOverlap: false,
   compact(layout, cols) {
-    const compareWith = getStatics(layout);
-    const sorted = sortLayoutItemsByColRow(layout);
-    const out = new Array(layout.length);
-    for (let i = 0; i < sorted.length; i++) {
-      const sortedItem = sorted[i];
-      if (sortedItem === void 0) continue;
-      let l = cloneLayoutItem(sortedItem);
-      if (!l.static) {
-        l = compactItemHorizontal(compareWith, l, cols, sorted);
-        compareWith.push(l);
-      }
-      const originalIndex = layout.indexOf(sortedItem);
-      out[originalIndex] = l;
-      l.moved = false;
+    const indexMap = /* @__PURE__ */ new Map();
+    for (let i = 0; i < layout.length; i++) {
+      const item = layout[i];
+      if (item) indexMap.set(item.i, i);
     }
-    return out;
-  }
-};
-var noCompactor = {
-  type: null,
-  allowOverlap: false,
-  compact(layout, _cols) {
-    const out = cloneLayout(layout);
-    for (let i = 0; i < out.length; i++) {
-      const item = out[i];
-      if (item) item.moved = false;
+    const working = cloneLayout(layout);
+    compactVerticalFast(working, cols);
+    const out = new Array(layout.length);
+    for (const item of working) {
+      const originalIdx = indexMap.get(item.i);
+      if (originalIdx !== void 0) {
+        out[originalIdx] = item;
+      }
     }
     return out;
   }
@@ -445,9 +538,42 @@ var verticalOverlapCompactor = {
     return out;
   }
 };
+var horizontalCompactor = {
+  type: "horizontal",
+  allowOverlap: false,
+  compact(layout, cols) {
+    const indexMap = /* @__PURE__ */ new Map();
+    for (let i = 0; i < layout.length; i++) {
+      const item = layout[i];
+      if (item) indexMap.set(item.i, i);
+    }
+    const working = cloneLayout(layout);
+    compactHorizontalFast(working, cols);
+    const out = new Array(layout.length);
+    for (const item of working) {
+      const originalIdx = indexMap.get(item.i);
+      if (originalIdx !== void 0) {
+        out[originalIdx] = item;
+      }
+    }
+    return out;
+  }
+};
 var horizontalOverlapCompactor = {
   ...horizontalCompactor,
   allowOverlap: true,
+  compact(layout, _cols) {
+    const out = cloneLayout(layout);
+    for (let i = 0; i < out.length; i++) {
+      const item = out[i];
+      if (item) item.moved = false;
+    }
+    return out;
+  }
+};
+var noCompactor = {
+  type: null,
+  allowOverlap: false,
   compact(layout, _cols) {
     const out = cloneLayout(layout);
     for (let i = 0; i < out.length; i++) {
@@ -1319,4 +1445,119 @@ function resolveResizeCollisions(layout, resizedId, oldItem, newItem, maxRows, c
   return cloned;
 }
 
-export { absoluteStrategy, applyPositionConstraints, applySizeConstraints, aspectRatio, bottom, boundedX, boundedY, calcGridCellDimensions, calcGridColWidth, calcGridItemPosition, calcGridItemWHPx, calcWH, calcWHRaw, calcXY, calcXYRaw, clamp2 as clamp, cloneLayout, cloneLayoutItem, collides, compactItemHorizontal, compactItemVertical, containerBounds, correctBounds, createPhysicsEngine, createScaledStrategy, defaultConstraints, defaultDragConfig, defaultDropConfig, defaultGridConfig, defaultPositionStrategy, defaultResizeConfig, findOrGenerateResponsiveLayout, getAllCollisions, getBreakpointFromWidth, getColsFromBreakpoint, getCompactor, getFirstCollision, getIndentationValue, getLayoutItem, getStatics, gridBounds, horizontalCompactor, horizontalOverlapCompactor, inferResizeHandles, maxSize, minMaxSize, minSize, modifyLayout, moveElement, moveElementAwayFromCollision, noCompactor, noOverlapCompactor, perc, resizeItemInDirection, resolveCompactionCollision, resolveResizeCollisions, setTopLeft, setTransform, snapToGrid, sortBreakpoints, sortLayoutItems, sortLayoutItemsByColRow, sortLayoutItemsByRowCol, transformStrategy, trySwap, validateLayout, verticalCompactor, verticalOverlapCompactor, withLayoutItem };
+// src/core/engines/pcd-collision-resolver.ts
+function hasAnyCollisions(layout) {
+  return layout.some(
+    (item) => getAllCollisions(layout, item).some((other) => other.i !== item.i)
+  );
+}
+var pcdCollisionResolver = (tentativeLayout, movedItem, originalPosition, context) => {
+  const layoutArray = tentativeLayout;
+  if (typeof context?.cols !== "number") {
+    return null;
+  }
+  const swapped = trySwap(layoutArray, movedItem.i, originalPosition);
+  if (swapped) {
+    return hasAnyCollisions(swapped) ? null : swapped;
+  }
+  const dragged = layoutArray.find((item) => item.i === movedItem.i);
+  if (!dragged) return null;
+  const collisions = getAllCollisions(layoutArray, dragged).filter((item) => item.i !== dragged.i);
+  if (collisions.length === 0) {
+    return layoutArray.map((item) => cloneLayoutItem(item));
+  }
+  const clonedLayout = layoutArray.map((item) => cloneLayoutItem(item));
+  for (const item of clonedLayout) {
+    item.moved = false;
+  }
+  const clonedPrevItem = clonedLayout.find((item) => item.i === movedItem.i);
+  if (clonedPrevItem) {
+    clonedPrevItem.x = originalPosition.x;
+    clonedPrevItem.y = originalPosition.y;
+    const pushCompactType = context.compactType === "horizontal" ? "horizontal" : "vertical";
+    const pushedLayout = moveElement(
+      clonedLayout,
+      clonedPrevItem,
+      movedItem.x,
+      movedItem.y,
+      true,
+      // isUserAction
+      false,
+      // preventCollision — let moveElement resolve collisions
+      pushCompactType,
+      context.cols,
+      false
+      // allowOverlap — resolve collisions, don't ignore them
+    );
+    return hasAnyCollisions(pushedLayout) ? null : pushedLayout;
+  }
+  return null;
+};
+
+exports.absoluteStrategy = absoluteStrategy;
+exports.applyPositionConstraints = applyPositionConstraints;
+exports.applySizeConstraints = applySizeConstraints;
+exports.aspectRatio = aspectRatio;
+exports.bottom = bottom;
+exports.boundedX = boundedX;
+exports.boundedY = boundedY;
+exports.calcGridCellDimensions = calcGridCellDimensions;
+exports.calcGridColWidth = calcGridColWidth;
+exports.calcGridItemPosition = calcGridItemPosition;
+exports.calcGridItemWHPx = calcGridItemWHPx;
+exports.calcWH = calcWH;
+exports.calcWHRaw = calcWHRaw;
+exports.calcXY = calcXY;
+exports.calcXYRaw = calcXYRaw;
+exports.clamp = clamp2;
+exports.cloneLayout = cloneLayout;
+exports.cloneLayoutItem = cloneLayoutItem;
+exports.collides = collides;
+exports.containerBounds = containerBounds;
+exports.correctBounds = correctBounds;
+exports.createPhysicsEngine = createPhysicsEngine;
+exports.createScaledStrategy = createScaledStrategy;
+exports.defaultConstraints = defaultConstraints;
+exports.defaultDragConfig = defaultDragConfig;
+exports.defaultDropConfig = defaultDropConfig;
+exports.defaultGridConfig = defaultGridConfig;
+exports.defaultPositionStrategy = defaultPositionStrategy;
+exports.defaultResizeConfig = defaultResizeConfig;
+exports.findOrGenerateResponsiveLayout = findOrGenerateResponsiveLayout;
+exports.getAllCollisions = getAllCollisions;
+exports.getBreakpointFromWidth = getBreakpointFromWidth;
+exports.getColsFromBreakpoint = getColsFromBreakpoint;
+exports.getCompactor = getCompactor;
+exports.getFirstCollision = getFirstCollision;
+exports.getIndentationValue = getIndentationValue;
+exports.getLayoutItem = getLayoutItem;
+exports.getStatics = getStatics;
+exports.gridBounds = gridBounds;
+exports.horizontalCompactor = horizontalCompactor;
+exports.horizontalOverlapCompactor = horizontalOverlapCompactor;
+exports.inferResizeHandles = inferResizeHandles;
+exports.maxSize = maxSize;
+exports.minMaxSize = minMaxSize;
+exports.minSize = minSize;
+exports.modifyLayout = modifyLayout;
+exports.moveElement = moveElement;
+exports.moveElementAwayFromCollision = moveElementAwayFromCollision;
+exports.noCompactor = noCompactor;
+exports.noOverlapCompactor = noOverlapCompactor;
+exports.pcdCollisionResolver = pcdCollisionResolver;
+exports.perc = perc;
+exports.resizeItemInDirection = resizeItemInDirection;
+exports.resolveResizeCollisions = resolveResizeCollisions;
+exports.setTopLeft = setTopLeft;
+exports.setTransform = setTransform;
+exports.snapToGrid = snapToGrid;
+exports.sortBreakpoints = sortBreakpoints;
+exports.sortLayoutItems = sortLayoutItems;
+exports.sortLayoutItemsByColRow = sortLayoutItemsByColRow;
+exports.sortLayoutItemsByRowCol = sortLayoutItemsByRowCol;
+exports.transformStrategy = transformStrategy;
+exports.trySwap = trySwap;
+exports.validateLayout = validateLayout;
+exports.verticalCompactor = verticalCompactor;
+exports.verticalOverlapCompactor = verticalOverlapCompactor;
+exports.withLayoutItem = withLayoutItem;
