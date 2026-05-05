@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { GridLayout } from "../components/GridLayout";
 import { useContainerWidth } from "../hooks/useContainerWidth";
 import { useGridArrangement } from "../hooks/useGridArrangement";
@@ -50,6 +50,10 @@ export interface ContainerGridProps {
   /** Default size for dropped items. */
   droppingItem?: { i: string; w: number; h: number };
   
+  // ── Smart Grid Auto-Resize Config ────────────────────────
+  /** When true, widgets will intelligently shrink to fit into available gaps during drag. */
+  autoResize?: boolean;
+  
   // Grid config defaults
   cols?: number;
   rowHeight?: number;
@@ -68,6 +72,7 @@ export function ContainerGrid({
   onDrop,
   onDropDragOver,
   droppingItem,
+  autoResize = false,
   cols = 12,
   rowHeight = 30,
   margin = [6, 6],
@@ -76,40 +81,30 @@ export function ContainerGrid({
 }: ContainerGridProps) {
   const { containerRef, width } = useContainerWidth();
 
-  // Maximum row count derived from container visible height.
-  // Used by squashPushEngine to reject resizes that push widgets off-screen.
-  const [maxRows, setMaxRows] = useState(20);
-
-  useEffect(() => {
-    const el = (containerRef as React.RefObject<HTMLElement>).current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => {
-      if (!entry) return;
-      const rows = Math.floor(
-        (entry.contentRect.height + margin[1]) / (rowHeight + margin[1])
-      );
-      setMaxRows(Math.max(rows, 4));
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef, rowHeight, margin]);
+  const gridConfig = useMemo<GridConfig>(() => ({
+    cols,
+    rowHeight,
+    margin,
+    containerPadding,
+    maxRows: Infinity, // Enforced internally by squashPushEngine
+  }), [cols, rowHeight, margin, containerPadding]);
 
   // Use the grid arrangement hook for collision resolution.
   const { isRglInteracting, collisionResolver, handlers } = useGridArrangement({
     layout,
     onLayoutChange,
-    maxRows,
+    maxRows: Infinity,
     cols,
   });
 
   // Drag config — controlled by isEditMode.
   const dragConfig = useMemo(() => ({
     enabled: isEditMode,
-    bounded: true,
+    bounded: false,
+    autoResize,
     handle: ".widget-drag-handle",
     cancel: "button, a, input, textarea, select, [data-no-drag]",
-  }), [isEditMode]);
+  }), [isEditMode, autoResize]);
 
   // Resize config — controlled by isEditMode.
   const editResizeConfig = useMemo(() => ({
@@ -143,13 +138,7 @@ export function ContainerGrid({
     };
   }, [handlers, onLayoutSettled]);
 
-  const gridConfig = useMemo<GridConfig>(() => ({
-    cols,
-    rowHeight,
-    margin,
-    containerPadding,
-    maxRows: Infinity, // Enforced internally by squashPushEngine
-  }), [cols, rowHeight, margin, containerPadding]);
+
 
   // Gutter Handles overlay
   const { gutterElements, isDraggingGutter } = useGutterHandles(

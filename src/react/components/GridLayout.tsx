@@ -449,6 +449,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     cols,
     allowOverlap,
     preventCollision,
+    dragConfig,
     collisionResolver,
     onLayoutMutation: handleLayoutMutation,
     setActiveDrag,

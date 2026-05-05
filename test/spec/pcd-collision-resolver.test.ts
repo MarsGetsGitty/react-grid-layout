@@ -8,6 +8,13 @@
 
 import type { LayoutItem } from "../../src/core/types/index";
 import { pcdCollisionResolver } from "../../src/core/index";
+import { getAllCollisions } from "../../src/core/spatial/collision";
+
+function hasAnyCollisions(layout: LayoutItem[]): boolean {
+  return layout.some(item =>
+    getAllCollisions(layout, item).some(other => other.i !== item.i)
+  );
+}
 
 // =============================================================================
 // Helpers
@@ -148,6 +155,122 @@ describe("pcdCollisionResolver", () => {
           expect(overlaps).toHaveLength(0);
         }
       }
+    });
+  });
+
+  // ===========================================================================
+  // Smart Grid (Shrink-to-Fit)
+  // ===========================================================================
+
+  describe("Smart Grid (Shrink-to-Fit)", () => {
+    const smartCtx = { 
+      cols: 12, 
+      compactType: null as null,
+      dragConfig: { autoResize: true } as any,
+      oldDragItem: item("a", 0, 0, 12, 2)
+    };
+
+    it("shrinks wide widget when cursor is over empty space next to obstacle", () => {
+      // "a" is a wide widget (w: 12) originally at top
+      // "b" is an obstacle at x: 4, w: 2
+      // Cursor is at x: 0 (empty space to the left of "b")
+      const tentative = [
+        item("a", 0, 2, 12, 2, { minW: 3 }), // moved to y=2, but overlapping b
+        item("b", 4, 2, 2, 2),
+      ];
+      
+      const result = pcdCollisionResolver(
+        tentative, 
+        tentative[0], 
+        { x: 0, y: 0 }, 
+        { ...smartCtx, cursorPosition: { x: 0, y: 2 } }
+      );
+      
+      console.log("TEST 1 RESULT:", result);
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      
+      // Since gap on the left of b is [0, 4), and cursor is at 0, "a" should shrink to w: 4.
+      expect(resultA.w).toBe(4);
+      expect(resultA.x).toBe(0);
+      
+      // Should resolve collisions
+      expect(hasAnyCollisions(result as LayoutItem[])).toBe(false);
+    });
+
+    it("shrinks widget and snaps x if dragged from left to right gap", () => {
+      // Cursor is at x: 8, "b" is at x: 4, w: 2
+      // gap on the right is [6, 12) -> width 6. 
+      // "a" is at x: 0, w: 12.
+      const tentative = [
+        item("a", 0, 2, 12, 2, { minW: 3 }),
+        item("b", 4, 2, 2, 2),
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative, 
+        tentative[0], 
+        { x: 0, y: 0 }, 
+        { ...smartCtx, cursorPosition: { x: 8, y: 2 } }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      
+      // Gap is [6, 12) -> width 6. Target width = min(original(12), 6) = 6.
+      // Target x should snap to 6 to stay within gap and contain cursor x:8.
+      expect(resultA.w).toBe(6);
+      expect(resultA.x).toBe(6);
+      expect(hasAnyCollisions(result as LayoutItem[])).toBe(false);
+    });
+
+    it("falls back to push if cursor is over an obstacle", () => {
+      // Cursor is at x: 4 (on top of "b")
+      const tentative = [
+        item("a", 0, 2, 12, 2),
+        item("b", 4, 2, 2, 2),
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative, 
+        tentative[0], 
+        { x: 0, y: 0 }, 
+        { ...smartCtx, cursorPosition: { x: 4, y: 2 } }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      const resultB = result!.find(l => l.i === "b")!;
+      
+      // Because cursor is over "b", it should NOT shrink. Instead it should push.
+      expect(resultA.w).toBe(12);
+      expect(resultB.y).not.toBe(2); // "b" gets pushed away (in this case, up to 0)
+    });
+    
+    it("falls back to push if available gap is smaller than minW", () => {
+      // Cursor is at x: 0
+      // Obstacle "b" is at x: 2, w: 2. Gap is [0, 2).
+      // Widget "a" has minW = 3. Gap is too small.
+      const tentative = [
+        item("a", 0, 2, 12, 2, { minW: 3 }),
+        item("b", 2, 2, 2, 2),
+      ];
+
+      const result = pcdCollisionResolver(
+        tentative, 
+        tentative[0], 
+        { x: 0, y: 0 }, 
+        { ...smartCtx, cursorPosition: { x: 0, y: 2 } }
+      );
+
+      expect(result).not.toBeNull();
+      const resultA = result!.find(l => l.i === "a")!;
+      const resultB = result!.find(l => l.i === "b")!;
+      
+      // Should not shrink since gap(2) < minW(3). "b" should be pushed.
+      expect(resultA.w).toBe(12);
+      expect(resultB.y).not.toBe(2);
     });
   });
 

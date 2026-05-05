@@ -17,7 +17,8 @@ import type {
   GridDragEvent,
   Compactor,
   EventCallback,
-  CollisionResolver
+  CollisionResolver,
+  DragConfig
 } from "../../core/index.js";
 import {
   cloneLayoutItem,
@@ -48,6 +49,8 @@ export interface UseGridLayoutDragOptions {
   allowOverlap: boolean;
   /** Whether to prevent collisions */
   preventCollision: boolean;
+  /** Drag behavior config */
+  dragConfig: DragConfig;
   /**
    * Custom collision resolver. When provided, replaces the default
    * moveElement → compact pipeline on each drag tick.
@@ -89,6 +92,7 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
     cols,
     allowOverlap,
     preventCollision,
+    dragConfig,
     collisionResolver,
     onLayoutMutation,
     setActiveDrag,
@@ -160,7 +164,13 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
         const originPos = oldDragItem
           ? { x: oldDragItem.x, y: oldDragItem.y }
           : { x: l.x, y: l.y };
-        const resolved = collisionResolver(tentative, movedItem, originPos, { cols, compactType });
+        const resolved = collisionResolver(tentative, movedItem, originPos, { 
+          cols, 
+          compactType,
+          dragConfig,
+          oldDragItem: oldDragItem || l,
+          cursorPosition: data.rawPosition
+        });
 
         // Placeholder tracks the proposed grid position so the user
         // always sees where the widget WOULD land, even when rejected.

@@ -54,13 +54,21 @@ export interface DragConfig {
    * @default 3
    */
   threshold: number;
+
+  /**
+   * Whether the grid should automatically shrink dragged items to fit into
+   * narrower empty gaps instead of pushing existing items down.
+   * @default false
+   */
+  autoResize?: boolean;
 }
 
 /** Default drag configuration */
 export const defaultDragConfig: DragConfig = {
   enabled: true,
   bounded: false,
-  threshold: 3
+  threshold: 3,
+  autoResize: false
 };
 
 /**

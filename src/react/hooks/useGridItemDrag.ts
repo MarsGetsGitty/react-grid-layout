@@ -14,7 +14,8 @@ import type {
   LayoutConstraint,
   ConstraintContext,
   LayoutItem as LayoutItemType,
-  PositionStrategy
+  PositionStrategy,
+  GridDragEvent
 } from "../../core/index.js";
 import type { PositionParams } from "../../core/index.js";
 import {
@@ -66,19 +67,19 @@ export interface UseGridItemDragOptions {
     i: string,
     x: number,
     y: number,
-    data: { e: Event; node: HTMLElement; newPosition: PartialPosition }
+    data: GridDragEvent
   ) => void;
   onDragProp?: (
     i: string,
     x: number,
     y: number,
-    data: { e: Event; node: HTMLElement; newPosition: PartialPosition }
+    data: GridDragEvent
   ) => void;
   onDragStopProp?: (
     i: string,
     x: number,
     y: number,
-    data: { e: Event; node: HTMLElement; newPosition: PartialPosition }
+    data: GridDragEvent
   ) => void;
 }
 
@@ -203,7 +204,8 @@ export function useGridItemDrag(opts: UseGridItemDragOptions): UseGridItemDragRe
       onDragStartProp(i, newX, newY, {
         e: e as unknown as Event,
         node,
-        newPosition
+        newPosition,
+        rawPosition: rawPos
       });
     },
     [
@@ -255,7 +257,8 @@ export function useGridItemDrag(opts: UseGridItemDragOptions): UseGridItemDragRe
           onDragStartProp(i, startX, startY, {
             e: e as unknown as Event,
             node,
-            newPosition: dragPositionRef.current
+            newPosition: dragPositionRef.current,
+            rawPosition: rawPos
           });
         }
       }
@@ -295,7 +298,8 @@ export function useGridItemDrag(opts: UseGridItemDragOptions): UseGridItemDragRe
       onDragProp(i, newX, newY, {
         e: e as unknown as Event,
         node,
-        newPosition
+        newPosition,
+        rawPosition: rawPos
       });
     },
     [
@@ -352,7 +356,8 @@ export function useGridItemDrag(opts: UseGridItemDragOptions): UseGridItemDragRe
       onDragStopProp(i, newX, newY, {
         e: e as unknown as Event,
         node,
-        newPosition
+        newPosition,
+        rawPosition: rawPos
       });
     },
     [

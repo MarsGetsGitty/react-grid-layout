@@ -247,7 +247,13 @@ describe("useGridLayoutDrag — custom collision resolver", () => {
       expect.any(Array),
       expect.objectContaining({ i: "a" }),
       expect.objectContaining({ x: 0, y: 0 }),
-      { cols: 6, compactType: "horizontal" }
+      { 
+        cols: 6, 
+        compactType: "horizontal",
+        dragConfig: undefined,
+        cursorPosition: undefined,
+        oldDragItem: expect.objectContaining({ i: "a", x: 0, y: 0 })
+      }
     );
   });
 

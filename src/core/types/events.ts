@@ -56,6 +56,8 @@ export interface GridDragEvent {
   e: Event;
   node: HTMLElement;
   newPosition: PartialPosition;
+  /** The raw, unclamped grid coordinate before constraints are applied */
+  rawPosition?: { x: number; y: number };
 }
 
 /**
@@ -102,6 +104,8 @@ export type EventCallback = (
  */
 export type OnLayoutChangeCallback = (layout: Layout) => void;
 
+import type { DragConfig } from "./config.js";
+
 /**
  * Custom collision resolver for drag operations.
  *
@@ -122,11 +126,17 @@ export type OnLayoutChangeCallback = (layout: Layout) => void;
 export interface CollisionResolverContext {
   cols: number;
   compactType?: CompactType;
+  /** Active drag configuration */
+  dragConfig: DragConfig;
+  /** The dragged item's original state before the drag started */
+  oldDragItem: LayoutItem;
+  /** The raw grid coordinate the mouse cursor maps to (unclamped) */
+  cursorPosition?: { x: number; y: number };
 }
 
 export type CollisionResolver = (
   layout: Layout,
   movedItem: LayoutItem,
   originalPosition: { x: number; y: number },
-  context?: CollisionResolverContext
+  context: CollisionResolverContext
 ) => Layout | null;
