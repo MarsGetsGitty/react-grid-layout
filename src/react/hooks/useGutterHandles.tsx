@@ -57,7 +57,7 @@ function strictOverlap(l1: LayoutItem, l2: LayoutItem): boolean {
 
 // ── Adjacency Detection ──────────────────────────────────
 
-function findAdjacentPairs(layout: LayoutItem[]): AdjacentPair[] {
+function findAdjacentPairs(layout: readonly LayoutItem[]): AdjacentPair[] {
   const pairs: AdjacentPair[] = [];
 
   for (let i = 0; i < layout.length; i++) {
@@ -135,11 +135,12 @@ function calcGutterPixelPos(
 // ── Hook ─────────────────────────────────────────────────
 
 export function useGutterHandles(
-  layout: LayoutItem[],
-  onGutterResize: (layout: LayoutItem[]) => void,
+  layout: readonly LayoutItem[],
+  onGutterResize: (layout: readonly LayoutItem[]) => void,
   containerWidth: number,
   gridConfig: GridConfig,
   isRglInteracting: boolean,
+  isEditMode: boolean = true,
 ) {
   const [activeGutter, setActiveGutter] = useState<string | null>(null);
   const dragStartRef = useRef<{
@@ -332,7 +333,7 @@ export function useGutterHandles(
 
   // Build gutter elements
   const gutterElements = useMemo(() => {
-    if (isRglInteracting) return null;
+    if (isRglInteracting || !isEditMode) return null;
 
     return pairs.map((pair, idx) => {
       const pos = gutterPositions[idx];

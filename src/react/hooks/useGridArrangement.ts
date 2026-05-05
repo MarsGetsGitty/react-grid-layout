@@ -19,7 +19,7 @@ import { pcdCollisionResolver } from '../../core/engines/pcd-collision-resolver.
 
 export interface UseGridArrangementParams {
   /** Current layout state (read-only input). */
-  layout: LayoutItem[];
+  layout: readonly LayoutItem[];
   /** Maximum visible rows (for resize boundary enforcement). */
   maxRows: number;
   /** Number of grid columns. */
@@ -28,7 +28,7 @@ export interface UseGridArrangementParams {
    * Called whenever the layout changes (drag, resize, or RGL internal sync).
    * The consumer is responsible for updating their own state.
    */
-  onLayoutChange?: (layout: LayoutItem[]) => void;
+  onLayoutChange?: (layout: readonly LayoutItem[]) => void;
 }
 
 export function useGridArrangement({ layout, maxRows, cols, onLayoutChange }: UseGridArrangementParams) {
