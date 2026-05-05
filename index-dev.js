@@ -17,7 +17,7 @@ module.exports.ResponsiveGridLayout =
   require("./src/react/components/ResponsiveGridLayout").ResponsiveGridLayout;
 
 // Constraint exports
-Object.assign(module.exports, require("./src/core/constraints"));
+Object.assign(module.exports, require("./src/core/strategies/constraints"));
 
 // Compactor exports
-Object.assign(module.exports, require("./src/core/compactors"));
+Object.assign(module.exports, require("./src/core/strategies/compactors"));
