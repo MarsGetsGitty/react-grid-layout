@@ -20,6 +20,7 @@ import React, {
 } from "react";
 
 import clsx from "clsx";
+import { deepEqual } from "fast-equals";
 
 import type {
   Layout,
@@ -386,6 +387,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
   const [resizing, setResizing] = useState(false);
   const [droppingDOMNode, setDroppingDOMNode] = useState<ReactElement | null>(null);
   const [droppingPosition, setDroppingPosition] = useState<DroppingPosition | undefined>();
+  const [droppingLayoutItem, setDroppingLayoutItem] = useState<LayoutItem | undefined>();
 
   // Refs for interaction lifecycle
   const oldDragItemRef = useRef<LayoutItem | null>(null);
@@ -408,8 +410,17 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
   // ============================================================================
 
   const handleLayoutMutation = useCallback((newLayout: Layout) => {
-    onLayoutChange(newLayout);
-  }, [onLayoutChange]);
+    const dropping = newLayout.find(l => l.i === droppingItem.i);
+    setDroppingLayoutItem(dropping);
+
+    const publicLayout = newLayout.filter(l => l.i !== droppingItem.i);
+    
+    // Only fire onLayoutChange if the public layout actually changed
+    // This prevents infinite loops when only the dropping item position changes
+    if (!deepEqual(publicLayout, layoutRef.current)) {
+      onLayoutChange(publicLayout);
+    }
+  }, [onLayoutChange, droppingItem.i]);
 
   // ============================================================================
   // Container Height
@@ -504,7 +515,12 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     ): ReactElement | null | undefined => {
       if (!child || !child.key) return null;
 
-      const l = getLayoutItem(layout, String(child.key));
+      let l = getLayoutItem(layout, String(child.key));
+      
+      if (!l && isDroppingItem && droppingLayoutItem) {
+        l = droppingLayoutItem;
+      }
+
       if (!l) return null;
 
       const draggable =
