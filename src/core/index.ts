@@ -196,6 +196,35 @@ export {
 } from "./math/adaptive-metrics.js";
 
 // =============================================================================
+// Proportional Layout Conversion
+// =============================================================================
+
+export type {
+  ProportionalCoords,
+  ProportionalLayoutItem,
+  GridContext
+} from "./math/proportional.js";
+
+export {
+  toProportional,
+  fromProportional,
+  toProportionalLayout,
+  fromProportionalLayout,
+  totalOccupiedRows
+} from "./math/proportional.js";
+
+export type {
+  ItemConstraints,
+  RepairContext
+} from "./math/proportional-repair.js";
+
+export {
+  repairLayout,
+  hasOverlaps,
+  hasOverflow
+} from "./math/proportional-repair.js";
+
+// =============================================================================
 // Responsive Utilities
 // =============================================================================
 
