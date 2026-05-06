@@ -255,9 +255,10 @@ export function GridItem(props: GridItemProps): ReactElement {
       containerHeight: 0,
       rowHeight,
       margin,
+      containerPadding,
       layout: []
     }),
-    [cols, maxRows, containerWidth, rowHeight, margin]
+    [cols, maxRows, containerWidth, rowHeight, margin, containerPadding]
   );
 
   const getConstraintContext = useCallback(

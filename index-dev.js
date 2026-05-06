@@ -21,3 +21,6 @@ Object.assign(module.exports, require("./src/core/strategies/constraints"));
 
 // Compactor exports
 Object.assign(module.exports, require("./src/core/strategies/compactors"));
+
+// Adaptive metrics
+Object.assign(module.exports, require("./src/core/math/adaptive-metrics"));

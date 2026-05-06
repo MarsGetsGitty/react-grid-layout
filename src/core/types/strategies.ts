@@ -140,6 +140,9 @@ export interface ConstraintContext {
   /** Margin between items [x, y] in pixels */
   margin: readonly [number, number];
 
+  /** Container padding [x, y] in pixels (resolved — never null) */
+  containerPadding: readonly [number, number];
+
   /** Current layout state */
   layout: Layout;
 }

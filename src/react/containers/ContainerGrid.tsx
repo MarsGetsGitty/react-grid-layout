@@ -4,6 +4,9 @@ import { useContainerDimensions } from "../hooks/useContainerDimensions";
 import { useGridArrangement } from "../hooks/useGridArrangement";
 import { useGutterHandles } from "../hooks/useGutterHandles";
 import { getCompactor } from "../../core/strategies/compactors";
+import { computeAdaptiveMetrics } from "../../core/math/adaptive-metrics";
+import { calcMaxRows } from "../../core/math/calculate";
+import type { AdaptiveOptionsInput } from "../../core/math/adaptive-metrics";
 import type { LayoutItem } from "../../core/types/layout";
 import type { GridConfig } from "../../core/types/config";
 
@@ -54,8 +57,19 @@ export interface ContainerGridProps {
   /** When true, widgets will intelligently shrink to fit into available gaps during drag. */
   autoResize?: boolean;
   
+  // ── Adaptive Grid Config ──────────────────────────────────
+  /**
+   * When provided, cols, rowHeight, and maxRows are computed from measured
+   * container dimensions. Overrides the explicit cols/rowHeight props.
+   * Pass `{}` to use all defaults (targetCellWidth=120, cellAspectRatio=0.75).
+   * When absent (undefined), behavior is unchanged — uses explicit props.
+   */
+  adaptive?: AdaptiveOptionsInput;
+
   // Grid config defaults
+  /** Fixed column count. Ignored when `adaptive` is provided. @default 12 */
   cols?: number;
+  /** Fixed row height. Ignored when `adaptive` is provided. @default 30 */
   rowHeight?: number;
   margin?: [number, number];
   containerPadding?: [number, number] | null;
@@ -73,6 +87,7 @@ export function ContainerGrid({
   onDropDragOver,
   droppingItem,
   autoResize = false,
+  adaptive,
   cols = 12,
   rowHeight = 30,
   margin = [6, 6],
@@ -81,26 +96,52 @@ export function ContainerGrid({
 }: ContainerGridProps) {
   const { containerRef, width, height } = useContainerDimensions();
 
-  // Compute real maxRows from measured container height.
-  // When height is 0 (not measured yet), fall back to Infinity to preserve old behavior.
-  const computedMaxRows = height > 0
-    ? Math.floor((height + margin[1]) / (rowHeight + margin[1]))
-    : Infinity;
+  // Stabilize array references — default initializers create new arrays each render,
+  // which defeats useMemo dependency checks.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: compare scalars, not ref
+  const stableMargin = useMemo(() => margin, [margin[0], margin[1]]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: compare scalars, not ref
+  const stablePadding = useMemo(
+    () => containerPadding,
+    [containerPadding?.[0] ?? null, containerPadding?.[1] ?? null]
+  );
+
+  // ── Compute effective grid metrics ────────────────────────
+  // When adaptive is provided (even as {}), compute cols/rowHeight/maxRows
+  // from measured container dimensions. Otherwise use explicit props.
+  // TODO: When PCD starts passing `adaptive`, stabilize the object ref
+  // the same way as stableMargin (or require caller to memoize).
+  const metrics = useMemo(
+    () => adaptive !== undefined
+      // adaptive options (spread last) override ContainerGrid's margin/containerPadding
+      ? computeAdaptiveMetrics(width, height, { margin: stableMargin, containerPadding: stablePadding, ...adaptive })
+      : null,
+    [adaptive, width, height, stableMargin, stablePadding]
+  );
+
+  const effectiveCols = metrics?.cols ?? cols;
+  const effectiveRowHeight = metrics?.rowHeight ?? rowHeight;
+
+  // maxRows: adaptive provides it; non-adaptive computes from height.
+  // Both paths use calcMaxRows (single source of truth for the formula).
+  const effectivePadding = stablePadding ?? stableMargin;
+  const effectiveMaxRows = metrics?.maxRows
+    ?? calcMaxRows(height, rowHeight, stableMargin[1], effectivePadding[1]);
 
   const gridConfig = useMemo<GridConfig>(() => ({
-    cols,
-    rowHeight,
-    margin,
-    containerPadding,
-    maxRows: computedMaxRows,
-  }), [cols, rowHeight, margin, containerPadding, computedMaxRows]);
+    cols: effectiveCols,
+    rowHeight: effectiveRowHeight,
+    margin: stableMargin,
+    containerPadding: stablePadding,
+    maxRows: effectiveMaxRows,
+  }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows]);
 
   // Use the grid arrangement hook for collision resolution.
   const { isRglInteracting, collisionResolver, handlers } = useGridArrangement({
     layout,
     onLayoutChange,
-    maxRows: computedMaxRows,
-    cols,
+    maxRows: effectiveMaxRows,
+    cols: effectiveCols,
   });
 
   // Drag config — controlled by isEditMode.
@@ -143,8 +184,6 @@ export function ContainerGrid({
       },
     };
   }, [handlers, onLayoutSettled]);
-
-
 
   // Gutter Handles overlay
   const { gutterElements, isDraggingGutter } = useGutterHandles(

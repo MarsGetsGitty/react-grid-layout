@@ -49,6 +49,7 @@ function createContext(
     containerHeight: 800,
     rowHeight: 30,
     margin: [10, 10] as [number, number],
+    containerPadding: [10, 10] as [number, number],
     layout: [],
     ...overrides
   };
@@ -214,18 +215,20 @@ describe("Constraints", () => {
 
     it("constrains position using container height to calculate visible rows", () => {
       const item = createItem({ w: 2, h: 2 });
-      // With containerHeight: 390, rowHeight: 30, margin: 10
-      // visibleRows = floor((390 + 10) / (30 + 10)) = floor(400 / 40) = 10
+      // With containerHeight: 390, rowHeight: 30, margin: [10, 10], containerPadding: [10, 10]
+      // availableHeight = max(0, 390 - 10*2) = 370
+      // visibleRows = floor((370 + 10) / (30 + 10)) = floor(380 / 40) = 9
       const context = createContext({
         cols: 12,
         containerHeight: 390,
         rowHeight: 30,
-        margin: [10, 10]
+        margin: [10, 10],
+        containerPadding: [10, 10]
       });
 
       const result = containerBounds.constrainPosition!(item, 15, 15, context);
       expect(result.x).toBe(10);
-      expect(result.y).toBe(8); // visibleRows - h = 10 - 2 = 8
+      expect(result.y).toBe(7); // visibleRows - h = 9 - 2 = 7
     });
 
     it("falls back to maxRows when containerHeight is 0 (auto-height)", () => {

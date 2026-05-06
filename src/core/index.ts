@@ -176,8 +176,24 @@ export {
   calcXYRaw,
   calcWHRaw,
   clamp,
+  calcMaxRows,
   calcGridCellDimensions
 } from "./math/calculate.js";
+
+// =============================================================================
+// Adaptive Metrics
+// =============================================================================
+
+export type {
+  AdaptiveOptionsInput,
+  ResolvedAdaptiveOptions,
+  AdaptiveMetrics
+} from "./math/adaptive-metrics.js";
+
+export {
+  computeAdaptiveMetrics,
+  ADAPTIVE_DEFAULTS
+} from "./math/adaptive-metrics.js";
 
 // =============================================================================
 // Responsive Utilities

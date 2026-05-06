@@ -316,6 +316,37 @@ export function clamp(
 }
 
 // ============================================================================
+// Max Rows Calculation
+// ============================================================================
+
+/**
+ * Calculate the maximum number of fully-fitting rows from a container height.
+ *
+ * Subtracts vertical container padding before computing. Returns Infinity
+ * when containerHeight is 0 (auto-height / not-yet-measured).
+ *
+ * This is the single source of truth for the maxRows formula. All call sites
+ * (adaptive-metrics, ContainerGrid, constraints) should use this function.
+ *
+ * @param containerHeight - Measured container height in pixels (0 = auto)
+ * @param rowHeight       - Height of a single row in pixels
+ * @param marginY         - Vertical margin between items in pixels
+ * @param paddingY        - Vertical container padding in pixels
+ * @returns Maximum number of fully-fitting rows, or Infinity if auto-height
+ */
+export function calcMaxRows(
+  containerHeight: number,
+  rowHeight: number,
+  marginY: number,
+  paddingY: number
+): number {
+  const availableHeight = Math.max(0, containerHeight - paddingY * 2);
+  return availableHeight > 0
+    ? Math.floor((availableHeight + marginY) / (rowHeight + marginY))
+    : Infinity;
+}
+
+// ============================================================================
 // Grid Background Calculations
 // ============================================================================
 

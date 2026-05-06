@@ -11,6 +11,7 @@ import type {
   ConstraintContext,
   ResizeHandleAxis
 } from "../types/index.js";
+import { calcMaxRows } from "../math/calculate.js";
 
 // ============================================================================
 // Utility Functions
@@ -114,14 +115,13 @@ export const containerBounds: LayoutConstraint = {
     item: LayoutItem,
     x: number,
     y: number,
-    { cols, maxRows, containerHeight, rowHeight, margin }: ConstraintContext
+    { cols, maxRows, containerHeight, rowHeight, margin, containerPadding }: ConstraintContext
   ): { x: number; y: number } {
-    // Calculate visible rows from container height
-    // Formula: containerHeight = rows * rowHeight + (rows - 1) * margin
-    // Solving: rows = (containerHeight + margin) / (rowHeight + margin)
+    // Calculate visible rows from container height, accounting for vertical padding.
+    // Uses the shared calcMaxRows utility (single source of truth).
     const visibleRows =
       containerHeight > 0
-        ? Math.floor((containerHeight + margin[1]) / (rowHeight + margin[1]))
+        ? calcMaxRows(containerHeight, rowHeight, margin[1], containerPadding[1])
         : maxRows;
 
     return {
