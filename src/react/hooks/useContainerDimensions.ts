@@ -1,8 +1,10 @@
 /**
- * useContainerWidth hook
+ * useContainerDimensions hook
  *
- * Observes container width using ResizeObserver and provides
- * reactive width updates for responsive layouts.
+ * Observes container width AND height using ResizeObserver and provides
+ * reactive dimension updates for responsive/adaptive layouts.
+ *
+ * @module react/hooks/useContainerDimensions
  */
 
 import {
@@ -13,9 +15,9 @@ import {
   type RefObject
 } from "react";
 
-export interface UseContainerWidthOptions {
+export interface UseContainerDimensionsOptions {
   /**
-   * If true, delays initial render until width is measured.
+   * If true, delays initial render until dimensions are measured.
    * Useful for SSR or when you need accurate initial measurements.
    */
   measureBeforeMount?: boolean;
@@ -25,13 +27,25 @@ export interface UseContainerWidthOptions {
    * Defaults to 1280.
    */
   initialWidth?: number;
+
+  /**
+   * Initial height to use before measurement.
+   * Defaults to 0 (indicates "not measured yet").
+   */
+  initialHeight?: number;
 }
 
-export interface UseContainerWidthResult {
+export interface UseContainerDimensionsResult {
   /**
    * Current container width in pixels.
    */
   width: number;
+
+  /**
+   * Current container height in pixels.
+   * 0 indicates the container has not been measured yet.
+   */
+  height: number;
 
   /**
    * Whether the container has been measured at least once.
@@ -44,21 +58,22 @@ export interface UseContainerWidthResult {
   containerRef: RefObject<HTMLDivElement | null>;
 
   /**
-   * Manually trigger a width measurement.
+   * Manually trigger a dimension measurement.
    * Useful when the container size might change without a resize event.
    */
-  measureWidth: () => void;
+  measureDimensions: () => void;
 }
 
 /**
- * Hook to observe and track container width.
+ * Hook to observe and track container width and height.
  *
  * Replaces the WidthProvider HOC with a more composable approach.
+ * Also provides height for vertical boundary enforcement.
  *
  * @example
  * ```tsx
  * function MyGrid() {
- *   const { width, containerRef, mounted } = useContainerWidth();
+ *   const { width, height, containerRef, mounted } = useContainerDimensions();
  *
  *   return (
  *     <div ref={containerRef}>
@@ -68,21 +83,22 @@ export interface UseContainerWidthResult {
  * }
  * ```
  */
-export function useContainerWidth(
-  options: UseContainerWidthOptions = {}
-): UseContainerWidthResult {
-  const { measureBeforeMount = false, initialWidth = 1280 } = options;
+export function useContainerDimensions(
+  options: UseContainerDimensionsOptions = {}
+): UseContainerDimensionsResult {
+  const { measureBeforeMount = false, initialWidth = 1280, initialHeight = 0 } = options;
 
   const [width, setWidth] = useState(initialWidth);
+  const [height, setHeight] = useState(initialHeight);
   const [mounted, setMounted] = useState(!measureBeforeMount);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<ResizeObserver | null>(null);
 
-  const measureWidth = useCallback(() => {
+  const measureDimensions = useCallback(() => {
     const node = containerRef.current;
     if (node) {
-      const newWidth = node.offsetWidth;
-      setWidth(newWidth);
+      setWidth(node.offsetWidth);
+      setHeight(node.offsetHeight);
       if (!mounted) {
         setMounted(true);
       }
@@ -94,7 +110,7 @@ export function useContainerWidth(
     if (!node) return;
 
     // Initial measurement
-    measureWidth();
+    measureDimensions();
 
     // Set up ResizeObserver
     if (typeof ResizeObserver !== "undefined") {
@@ -103,8 +119,9 @@ export function useContainerWidth(
       observerRef.current = new ResizeObserver(entries => {
         const entry = entries[0];
         if (entry) {
-          // Use contentRect.width for consistent measurements
+          // Use contentRect for consistent measurements
           const newWidth = entry.contentRect.width;
+          const newHeight = entry.contentRect.height;
 
           // Defer state update to next paint cycle to avoid
           // "ResizeObserver loop completed with undelivered notifications" error (#1959)
@@ -113,6 +130,7 @@ export function useContainerWidth(
           }
           rafId = requestAnimationFrame(() => {
             setWidth(newWidth);
+            setHeight(newHeight);
             rafId = null;
           });
         }
@@ -138,14 +156,15 @@ export function useContainerWidth(
         observerRef.current = null;
       }
     };
-  }, [measureWidth]);
+  }, [measureDimensions]);
 
   return {
     width,
+    height,
     mounted,
     containerRef,
-    measureWidth
+    measureDimensions
   };
 }
 
-export default useContainerWidth;
+export default useContainerDimensions;

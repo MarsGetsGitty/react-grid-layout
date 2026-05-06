@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import {
   GridLayout,
-  useContainerWidth,
+  useContainerDimensions,
   gridBounds,
   minMaxSize,
   aspectRatio
@@ -29,7 +29,7 @@ import {
  * - Example 21: Creating custom constraints
  */
 export default function AspectRatioLayout(props) {
-  const { width, containerRef, mounted } = useContainerWidth();
+  const { width, containerRef, mounted } = useContainerDimensions();
 
   // Pre-create constraint instances to avoid recreating on each render
   const constraints16x9 = useMemo(() => [aspectRatio(16 / 9)], []);

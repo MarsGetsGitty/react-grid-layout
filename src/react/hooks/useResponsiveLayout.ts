@@ -106,7 +106,7 @@ export interface UseResponsiveLayoutResult<
  * @example
  * ```tsx
  * function MyResponsiveGrid() {
- *   const { width, containerRef } = useContainerWidth();
+ *   const { width, containerRef } = useContainerDimensions();
  *   const { layout, breakpoint, cols } = useResponsiveLayout({
  *     width,
  *     layouts: {

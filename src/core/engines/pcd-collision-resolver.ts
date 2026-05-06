@@ -2,7 +2,7 @@ import {
   type CollisionResolver,
   type CollisionResolverContext
 } from "../types/events.js";
-import { type LayoutItem } from "../types/layout.js";
+import { type LayoutItem, type Layout } from "../types/layout.js";
 import { trySwap } from "./swap-strategy.js";
 import { moveElement } from "../layout/movement.js";
 import { getAllCollisions } from "../spatial/collision.js";
@@ -18,11 +18,44 @@ function hasAnyCollisions(layout: LayoutItem[]): boolean {
 }
 
 /**
+ * Check if a resolved layout has items that were pushed out of bounds
+ * by the drag — but were NOT already out of bounds before the drag.
+ *
+ * Items that were already out of bounds (e.g., from a viewport resize
+ * shrinking maxRows while an existing layout is loaded) are NOT treated
+ * as violations. This prevents freezing the grid when legacy layouts
+ * have items beyond the current viewport.
+ */
+function hasNewlyInvalidItems(
+  resolvedLayout: LayoutItem[],
+  previousLayout: LayoutItem[] | Layout,
+  maxRows: number
+): boolean {
+  if (maxRows === Infinity) return false;
+  const prevArray = previousLayout as LayoutItem[];
+  for (const item of resolvedLayout) {
+    if (item.y + item.h > maxRows) {
+      const prev = prevArray.find(p => p.i === item.i);
+      if (prev && prev.y + prev.h <= maxRows) {
+        // This item was in-bounds before the drag but is now out — reject
+        return true;
+      }
+      // Item was already out of bounds — not caused by this drag
+    }
+  }
+  return false;
+}
+
+/**
  * A specialized drag collision resolver that orchestrates:
- * 1. Try Swap (1:1 dimension match swap)
- * 2. Try Shrink-to-Fit (if autoResize is enabled and cursor is over an empty gap)
- * 3. Try Push (fallback to moveElement with collision resolution)
- * 4. Reject (returns null)
+ * 1. Clamp dragged item within vertical boundary (maxRows)
+ * 2. Try Swap (1:1 dimension match swap)
+ * 3. Try Shrink-to-Fit (if autoResize is enabled and cursor is over an empty gap)
+ * 4. Try Push (fallback to moveElement with collision resolution)
+ * 5. Reject (returns null)
+ *
+ * After each resolution strategy, the result is validated against maxRows
+ * to ensure no previously-in-bounds items were pushed out of the grid.
  *
  * The tentativeLayout passed by the caller already has the dragged item
  * at its new position. We must account for this when falling back to
@@ -41,14 +74,37 @@ export const pcdCollisionResolver: CollisionResolver = (
     return null;
   }
 
+  // Normalize optional fields with safe defaults
+  const maxRows = context.maxRows ?? Infinity;
+  const previousLayout = (context.previousLayout ?? tentativeLayout) as LayoutItem[];
+
+  // ── Step 0: Clamp dragged item within vertical boundary ──
+  // This must happen BEFORE any resolution strategy, and must NOT
+  // mutate the caller's live layout — only the tentative clone.
+  const dragged = layoutArray.find(item => item.i === movedItem.i);
+  if (!dragged) return null;
+
+  if (maxRows !== Infinity) {
+    if (dragged.h > maxRows) {
+      // Item is taller than the entire grid — reject outright
+      return null;
+    }
+    if (dragged.y + dragged.h > maxRows) {
+      (dragged as Mutable<LayoutItem>).y = Math.max(0, maxRows - dragged.h);
+    }
+    if (dragged.y < 0) {
+      (dragged as Mutable<LayoutItem>).y = 0;
+    }
+  }
+
   // 1. Try swap — if a single same-dimension collision exists, swap positions
   const swapped = trySwap(layoutArray, movedItem.i, originalPosition);
   if (swapped) {
-    return hasAnyCollisions(swapped as LayoutItem[]) ? null : swapped;
+    const swappedArray = swapped as LayoutItem[];
+    if (hasAnyCollisions(swappedArray)) return null;
+    if (hasNewlyInvalidItems(swappedArray, previousLayout, maxRows)) return null;
+    return swapped;
   }
-
-  const dragged = layoutArray.find(item => item.i === movedItem.i);
-  if (!dragged) return null;
 
   // Check if there are no collisions (free space move)
   const collisions = getAllCollisions(layoutArray, dragged)
@@ -144,6 +200,7 @@ export const pcdCollisionResolver: CollisionResolver = (
               .filter(item => item.i !== shrinkItem.i);
             
             if (remainingCollisions.length === 0) {
+              if (hasNewlyInvalidItems(shrinkLayout, previousLayout, maxRows)) return null;
               return shrinkLayout; // Success! Shrink-to-fit resolved the collision.
             }
           }
@@ -186,7 +243,9 @@ export const pcdCollisionResolver: CollisionResolver = (
       false  // allowOverlap — resolve collisions, don't ignore them
     );
 
-    return hasAnyCollisions(pushedLayout) ? null : pushedLayout;
+    if (hasAnyCollisions(pushedLayout)) return null;
+    if (hasNewlyInvalidItems(pushedLayout, previousLayout, maxRows)) return null;
+    return pushedLayout;
   }
 
   // 4. Reject

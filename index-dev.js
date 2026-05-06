@@ -9,8 +9,8 @@ module.exports.Responsive =
 module.exports.WidthProvider = require("./src/legacy/WidthProvider").default;
 
 // v2 API additions
-module.exports.useContainerWidth =
-  require("./src/react/hooks/useContainerWidth").useContainerWidth;
+module.exports.useContainerDimensions =
+  require("./src/react/hooks/useContainerDimensions").useContainerDimensions;
 module.exports.GridLayout =
   require("./src/react/components/GridLayout").GridLayout;
 module.exports.ResponsiveGridLayout =

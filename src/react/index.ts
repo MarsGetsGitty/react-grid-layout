@@ -36,13 +36,13 @@ export {
 // =============================================================================
 
 export {
-  useContainerWidth,
+  useContainerDimensions,
   useGridLayout,
   useResponsiveLayout,
   useGridArrangement,
   useGutterHandles,
-  type UseContainerWidthOptions,
-  type UseContainerWidthResult,
+  type UseContainerDimensionsOptions,
+  type UseContainerDimensionsResult,
   type UseGridLayoutOptions,
   type UseGridLayoutResult,
   type DragState,

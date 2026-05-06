@@ -56,7 +56,7 @@ export interface GridBackgroundProps extends GridCellConfig {
  * import { GridBackground } from 'react-grid-layout/extras';
  *
  * function MyGrid() {
- *   const { width, containerRef, mounted } = useContainerWidth();
+ *   const { width, containerRef, mounted } = useContainerDimensions();
  *
  *   return (
  *     <div ref={containerRef} style={{ position: 'relative' }}>

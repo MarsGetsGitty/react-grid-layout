@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo } from "react";
 import { GridLayout } from "../components/GridLayout";
-import { useContainerWidth } from "../hooks/useContainerWidth";
+import { useContainerDimensions } from "../hooks/useContainerDimensions";
 import { useGridArrangement } from "../hooks/useGridArrangement";
 import { useGutterHandles } from "../hooks/useGutterHandles";
 import { getCompactor } from "../../core/strategies/compactors";
@@ -79,21 +79,27 @@ export function ContainerGrid({
   containerPadding = null,
   children
 }: ContainerGridProps) {
-  const { containerRef, width } = useContainerWidth();
+  const { containerRef, width, height } = useContainerDimensions();
+
+  // Compute real maxRows from measured container height.
+  // When height is 0 (not measured yet), fall back to Infinity to preserve old behavior.
+  const computedMaxRows = height > 0
+    ? Math.floor((height + margin[1]) / (rowHeight + margin[1]))
+    : Infinity;
 
   const gridConfig = useMemo<GridConfig>(() => ({
     cols,
     rowHeight,
     margin,
     containerPadding,
-    maxRows: Infinity, // Enforced internally by squashPushEngine
-  }), [cols, rowHeight, margin, containerPadding]);
+    maxRows: computedMaxRows,
+  }), [cols, rowHeight, margin, containerPadding, computedMaxRows]);
 
   // Use the grid arrangement hook for collision resolution.
   const { isRglInteracting, collisionResolver, handlers } = useGridArrangement({
     layout,
     onLayoutChange,
-    maxRows: Infinity,
+    maxRows: computedMaxRows,
     cols,
   });
 

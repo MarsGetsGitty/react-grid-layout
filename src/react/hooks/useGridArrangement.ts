@@ -60,11 +60,17 @@ export function useGridArrangement({ layout, maxRows, cols, onLayoutChange }: Us
     (tentativeLayout, movedItem, originalPosition, context) => {
       const activeSlot = dragSlotRef.current || originalPosition;
       
+      // Inject maxRows into the context so the resolver can enforce
+      // vertical boundary containment.
+      const enrichedContext = context
+        ? { ...context, maxRows }
+        : context;
+
       const resolved = pcdCollisionResolver(
         tentativeLayout,
         movedItem,
         activeSlot,
-        context
+        enrichedContext
       );
 
       // If the resolver accepted the move, we update our chain slot
@@ -74,7 +80,7 @@ export function useGridArrangement({ layout, maxRows, cols, onLayoutChange }: Us
 
       return resolved;
     },
-    []
+    [maxRows]
   );
 
   // ── Drag Handlers ──────────────────────────────────────

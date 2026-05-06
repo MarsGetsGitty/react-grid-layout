@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import {
   GridLayout,
-  useContainerWidth,
+  useContainerDimensions,
   gridBounds,
   minMaxSize,
   snapToGrid
@@ -129,7 +129,7 @@ const snapToGrid = (stepX, stepY = stepX) => ({
  * You can create any constraint logic you need.
  */
 export default function CustomConstraintsLayout(props) {
-  const { width, containerRef, mounted } = useContainerWidth();
+  const { width, containerRef, mounted } = useContainerDimensions();
   const [customConstraint, setCustomConstraint] = useState("none");
   const [layout, setLayoutState] = useState([
     { i: "0", x: 0, y: 0, w: 2, h: 2 },

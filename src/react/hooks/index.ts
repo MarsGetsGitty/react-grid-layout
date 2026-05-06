@@ -5,12 +5,12 @@
  * extracting state management from the class components.
  */
 
-// Container width observation
+// Container dimension observation (width + height)
 export {
-  useContainerWidth,
-  type UseContainerWidthOptions,
-  type UseContainerWidthResult
-} from "./useContainerWidth.js";
+  useContainerDimensions,
+  type UseContainerDimensionsOptions,
+  type UseContainerDimensionsResult
+} from "./useContainerDimensions.js";
 
 // Core grid layout state management
 export {

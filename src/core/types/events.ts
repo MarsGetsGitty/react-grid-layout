@@ -125,6 +125,15 @@ import type { DragConfig } from "./config.js";
  */
 export interface CollisionResolverContext {
   cols: number;
+  /** Maximum visible rows. Optional — defaults to Infinity (no boundary). */
+  maxRows?: number;
+  /**
+   * The last accepted layout before the current drag tick.
+   * Used for "newly-invalid only" boundary checks: items that were
+   * already out of bounds before the drag are not treated as violations.
+   * If not provided, boundary checks compare against the tentative layout.
+   */
+  previousLayout?: Layout;
   compactType?: CompactType;
   /** Active drag configuration */
   dragConfig: DragConfig;
@@ -138,5 +147,5 @@ export type CollisionResolver = (
   layout: Layout,
   movedItem: LayoutItem,
   originalPosition: { x: number; y: number },
-  context: CollisionResolverContext
+  context?: CollisionResolverContext
 ) => Layout | null;

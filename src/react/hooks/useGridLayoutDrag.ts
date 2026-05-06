@@ -169,7 +169,8 @@ export function useGridLayoutDrag(opts: UseGridLayoutDragOptions): UseGridLayout
           compactType,
           dragConfig,
           oldDragItem: oldDragItem || l,
-          cursorPosition: data.rawPosition
+          cursorPosition: data.rawPosition,
+          previousLayout: currentLayout
         });
 
         // Placeholder tracks the proposed grid position so the user

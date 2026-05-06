@@ -40,11 +40,11 @@ export { GridLayout as default } from "./react/components/index.js";
 // =============================================================================
 
 export {
-  useContainerWidth,
+  useContainerDimensions,
   useGridLayout,
   useResponsiveLayout,
-  type UseContainerWidthOptions,
-  type UseContainerWidthResult,
+  type UseContainerDimensionsOptions,
+  type UseContainerDimensionsResult,
   type UseGridLayoutOptions,
   type UseGridLayoutResult,
   type DragState,

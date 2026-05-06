@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import {
   GridLayout,
-  useContainerWidth,
+  useContainerDimensions,
   gridBounds,
   minMaxSize,
   containerBounds,
@@ -52,7 +52,7 @@ import {
  * - Example 21: Creating custom constraints
  */
 export default function ConstraintsLayout(props) {
-  const { width, containerRef, mounted } = useContainerWidth();
+  const { width, containerRef, mounted } = useContainerDimensions();
   const [constraintType, setConstraintType] = useState("default");
   const [useNoCompaction, setUseNoCompaction] = useState(false);
   const [layout, setLayoutState] = useState([

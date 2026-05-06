@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
-import ReactGridLayout, { useContainerWidth } from "react-grid-layout";
+import ReactGridLayout, { useContainerDimensions } from "react-grid-layout";
 import {
   verticalCompactor,
   horizontalCompactor,
@@ -43,7 +43,7 @@ function generateLayout(count) {
 }
 
 export default function CompactorShowcase(props) {
-  const { width, containerRef, mounted } = useContainerWidth();
+  const { width, containerRef, mounted } = useContainerDimensions();
   const [selectedCompactor, setSelectedCompactor] = useState("vertical");
   const [preventCollision, setPreventCollision] = useState(false);
   const [itemCount, setItemCount] = useState(20);

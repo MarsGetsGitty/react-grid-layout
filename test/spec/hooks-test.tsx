@@ -8,7 +8,7 @@ import React from "react";
 import { renderHook, act, render, screen } from "@testing-library/react";
 
 import {
-  useContainerWidth,
+  useContainerDimensions,
   useGridLayout,
   useResponsiveLayout,
   DEFAULT_BREAKPOINTS,
@@ -70,15 +70,15 @@ beforeEach(() => {
   resizeObserverInstances = [];
 });
 
-// Test component that uses useContainerWidth with actual DOM
+// Test component that uses useContainerDimensions with actual DOM
 function TestContainerWidthComponent({
   onWidthChange,
   options = {}
 }: {
   onWidthChange: (width: number, mounted: boolean) => void;
-  options?: Parameters<typeof useContainerWidth>[0];
+  options?: Parameters<typeof useContainerDimensions>[0];
 }) {
-  const { width, containerRef, mounted } = useContainerWidth(options);
+  const { width, containerRef, mounted } = useContainerDimensions(options);
 
   React.useEffect(() => {
     onWidthChange(width, mounted);
@@ -92,9 +92,9 @@ function TestContainerWidthComponent({
 }
 
 describe("React Hooks", () => {
-  describe("useContainerWidth", () => {
+  describe("useContainerDimensions", () => {
     it("returns containerRef and width", () => {
-      const { result } = renderHook(() => useContainerWidth());
+      const { result } = renderHook(() => useContainerDimensions());
 
       expect(result.current).toHaveProperty("containerRef");
       expect(result.current).toHaveProperty("width");
@@ -103,21 +103,21 @@ describe("React Hooks", () => {
 
     it("uses provided initial width", () => {
       const { result } = renderHook(() =>
-        useContainerWidth({ initialWidth: 800 })
+        useContainerDimensions({ initialWidth: 800 })
       );
 
       expect(result.current.width).toBe(800);
     });
 
-    it("provides measureWidth function", () => {
-      const { result } = renderHook(() => useContainerWidth());
+    it("provides measureDimensions function", () => {
+      const { result } = renderHook(() => useContainerDimensions());
 
-      expect(typeof result.current.measureWidth).toBe("function");
+      expect(typeof result.current.measureDimensions).toBe("function");
     });
 
     it("handles measureBeforeMount option", () => {
       const { result } = renderHook(() =>
-        useContainerWidth({ measureBeforeMount: true, initialWidth: 500 })
+        useContainerDimensions({ measureBeforeMount: true, initialWidth: 500 })
       );
 
       // Should start unmounted when measureBeforeMount is true
@@ -125,7 +125,7 @@ describe("React Hooks", () => {
     });
 
     it("defaults to 1280 width when no initial width provided", () => {
-      const { result } = renderHook(() => useContainerWidth());
+      const { result } = renderHook(() => useContainerDimensions());
 
       expect(result.current.width).toBe(1280);
     });
@@ -133,19 +133,19 @@ describe("React Hooks", () => {
     it("ResizeObserver callback updates width when called", () => {
       // This test verifies that the ResizeObserver callback logic works
       // by directly testing the callback that would be passed to ResizeObserver
-      const { result } = renderHook(() => useContainerWidth());
+      const { result } = renderHook(() => useContainerDimensions());
 
       // The ResizeObserver is set up in useEffect which requires a DOM node
       // Here we verify that the hook provides the expected interface
       expect(result.current.containerRef).toBeDefined();
-      expect(typeof result.current.measureWidth).toBe("function");
+      expect(typeof result.current.measureDimensions).toBe("function");
 
       // When ResizeObserver fires (tested via integration tests),
       // it should update the width via setWidth
     });
 
     it("mounted becomes true after initialization", () => {
-      const { result } = renderHook(() => useContainerWidth());
+      const { result } = renderHook(() => useContainerDimensions());
 
       // Should be mounted (true) by default when measureBeforeMount is false
       expect(result.current.mounted).toBe(true);
