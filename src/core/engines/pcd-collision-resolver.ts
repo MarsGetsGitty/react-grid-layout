@@ -36,11 +36,20 @@ function hasNewlyInvalidItems(
   for (const item of resolvedLayout) {
     if (item.y + item.h > maxRows) {
       const prev = prevArray.find(p => p.i === item.i);
-      if (prev && prev.y + prev.h <= maxRows) {
-        // This item was in-bounds before the drag but is now out — reject
+      if (prev) {
+        if (prev.y + prev.h <= maxRows) {
+          // This item was in-bounds before the drag but is now out — reject
+          return true;
+        }
+        if (item.y + item.h > prev.y + prev.h) {
+          // Item was already out of bounds, but pushed FURTHER out — reject
+          return true;
+        }
+      } else {
+        // New item out of bounds — reject
         return true;
       }
-      // Item was already out of bounds — not caused by this drag
+      // Item was already out of bounds, and is NOT being pushed further out
     }
   }
   return false;

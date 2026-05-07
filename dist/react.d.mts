@@ -8,7 +8,7 @@ export { G as GridLayout, a as GridLayoutProps, R as ResponsiveGridLayout, b as 
 export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-ZBDWcbq5.mjs';
 export { B as Breakpoint, a as Breakpoints, R as ResponsiveLayouts } from './responsive-DKRPaN_o.mjs';
 export { b as bottom, c as cloneLayout, a as cloneLayoutItem, g as getCompactor, d as getLayoutItem, h as horizontalCompactor, n as noCompactor, s as setTopLeft, e as setTransform, f as verticalCompactor } from './css-strategies-CofaQPLs.mjs';
-export { c as calcGridItemPosition, a as calcWH, b as calcXY } from './calculate-CAiPfNhQ.mjs';
+export { c as calcGridItemPosition, a as calcWH, b as calcXY } from './calculate-TosCSAO3.mjs';
 
 interface ContainerGridProps {
     /** RGL-compatible layout items */
