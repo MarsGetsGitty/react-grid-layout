@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { G as GridCellConfig } from './calculate-BmqanVpt.mjs';
-import { a as Compactor } from './layout-o8aKmB_k.mjs';
-export { p as pcdCollisionResolver } from './pcd-collision-resolver-Dz1u1ehV.mjs';
-export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-DHasTJU9.mjs';
+import { G as GridCellConfig } from './calculate-CAiPfNhQ.mjs';
+import { a as Compactor } from './layout-CFHbwcvs.mjs';
+export { p as pcdCollisionResolver } from './pcd-collision-resolver-vhKsm_v4.mjs';
+export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-ZBDWcbq5.mjs';
 import 'react/jsx-runtime';
 
 /**
@@ -52,7 +52,7 @@ interface GridBackgroundProps extends GridCellConfig {
  * import { GridBackground } from 'react-grid-layout/extras';
  *
  * function MyGrid() {
- *   const { width, containerRef, mounted } = useContainerWidth();
+ *   const { width, containerRef, mounted } = useContainerDimensions();
  *
  *   return (
  *     <div ref={containerRef} style={{ position: 'relative' }}>

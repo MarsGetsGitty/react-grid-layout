@@ -1,7 +1,7 @@
 'use strict';
 
-var chunkXJ4OOF4W_js = require('./chunk-XJ4OOF4W.js');
-var chunkNXH3XH5G_js = require('./chunk-NXH3XH5G.js');
+var chunkYAXASYWF_js = require('./chunk-YAXASYWF.js');
+var chunkVPECGAUQ_js = require('./chunk-VPECGAUQ.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 
@@ -19,7 +19,7 @@ function GridBackground({
   style
 }) {
   const dims = react.useMemo(
-    () => chunkNXH3XH5G_js.calcGridCellDimensions({
+    () => chunkVPECGAUQ_js.calcGridCellDimensions({
       width,
       cols,
       rowHeight,
@@ -155,7 +155,7 @@ var fastVerticalCompactor = {
   type: "vertical",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkNXH3XH5G_js.cloneLayout(layout);
+    const out = chunkVPECGAUQ_js.cloneLayout(layout);
     compactVerticalFast(out, cols, false);
     return out;
   }
@@ -164,7 +164,7 @@ var fastVerticalOverlapCompactor = {
   ...fastVerticalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkNXH3XH5G_js.cloneLayout(layout);
+    const out = chunkVPECGAUQ_js.cloneLayout(layout);
     compactVerticalFast(out, cols, true);
     return out;
   }
@@ -293,7 +293,7 @@ var fastHorizontalCompactor = {
   type: "horizontal",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkNXH3XH5G_js.cloneLayout(layout);
+    const out = chunkVPECGAUQ_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, false);
     return out;
   }
@@ -302,7 +302,7 @@ var fastHorizontalOverlapCompactor = {
   ...fastHorizontalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkNXH3XH5G_js.cloneLayout(layout);
+    const out = chunkVPECGAUQ_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, true);
     return out;
   }
@@ -338,7 +338,7 @@ function compactWrap(layout, cols) {
   for (let i = 0; i < sorted.length; i++) {
     const sortedItem = sorted[i];
     if (sortedItem === void 0) continue;
-    const l = chunkNXH3XH5G_js.cloneLayoutItem(sortedItem);
+    const l = chunkVPECGAUQ_js.cloneLayoutItem(sortedItem);
     if (l.static) {
       const originalIndex2 = layout.indexOf(sortedItem);
       out[originalIndex2] = l;
@@ -376,25 +376,25 @@ var wrapOverlapCompactor = {
   ...wrapCompactor,
   allowOverlap: true,
   compact(layout, _cols) {
-    return chunkNXH3XH5G_js.cloneLayout(layout);
+    return chunkVPECGAUQ_js.cloneLayout(layout);
   }
 };
 
 Object.defineProperty(exports, "GutterHandle", {
   enumerable: true,
-  get: function () { return chunkXJ4OOF4W_js.GutterHandle; }
+  get: function () { return chunkYAXASYWF_js.GutterHandle; }
 });
 Object.defineProperty(exports, "useGridArrangement", {
   enumerable: true,
-  get: function () { return chunkXJ4OOF4W_js.useGridArrangement; }
+  get: function () { return chunkYAXASYWF_js.useGridArrangement; }
 });
 Object.defineProperty(exports, "useGutterHandles", {
   enumerable: true,
-  get: function () { return chunkXJ4OOF4W_js.useGutterHandles; }
+  get: function () { return chunkYAXASYWF_js.useGutterHandles; }
 });
 Object.defineProperty(exports, "pcdCollisionResolver", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.pcdCollisionResolver; }
+  get: function () { return chunkVPECGAUQ_js.pcdCollisionResolver; }
 });
 exports.GridBackground = GridBackground;
 exports.fastHorizontalCompactor = fastHorizontalCompactor;

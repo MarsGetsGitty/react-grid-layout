@@ -1,10 +1,11 @@
-import { c as LayoutItem, j as LayoutConstraint, k as ConstraintContext, R as ResizeHandleAxis, P as Position, L as Layout, a as Compactor } from './layout-o8aKmB_k.mjs';
-export { d as CollisionResolver, C as CompactType, f as DragConfig, l as DragOverEvent, h as DropConfig, D as DroppingPosition, E as EventCallback, e as GridConfig, G as GridDragEvent, b as GridResizeEvent, O as OnLayoutChangeCallback, m as PartialPosition, i as PositionStrategy, n as ReactDraggableCallbackData, g as ResizeConfig, S as Size, o as defaultDragConfig, p as defaultDropConfig, q as defaultGridConfig, r as defaultResizeConfig } from './layout-o8aKmB_k.mjs';
-export { B as Breakpoint, b as BreakpointCols, a as Breakpoints, O as OnBreakpointChangeCallback, R as ResponsiveLayouts } from './responsive-CKyjwwDx.mjs';
-export { c as collides, f as findOrGenerateResponsiveLayout, g as getAllCollisions, a as getBreakpointFromWidth, b as getColsFromBreakpoint, d as getFirstCollision, i as getIndentationValue, m as moveElement, j as moveElementAwayFromCollision, k as sortBreakpoints, s as sortLayoutItems, e as sortLayoutItemsByColRow, h as sortLayoutItemsByRowCol } from './responsive-BIVFFF3t.mjs';
-export { i as absoluteStrategy, b as bottom, c as cloneLayout, a as cloneLayoutItem, j as createScaledStrategy, k as defaultPositionStrategy, g as getCompactor, d as getLayoutItem, l as getStatics, h as horizontalCompactor, m as horizontalOverlapCompactor, o as modifyLayout, n as noCompactor, p as noOverlapCompactor, q as perc, s as setTopLeft, e as setTransform, t as transformStrategy, v as validateLayout, f as verticalCompactor, r as verticalOverlapCompactor, w as withLayoutItem } from './css-strategies-Cdw4AzUw.mjs';
-export { G as GridCellConfig, d as GridCellDimensions, P as PositionParams, e as calcGridCellDimensions, f as calcGridColWidth, c as calcGridItemPosition, g as calcGridItemWHPx, a as calcWH, h as calcWHRaw, b as calcXY, i as calcXYRaw, j as clamp } from './calculate-BmqanVpt.mjs';
-export { p as pcdCollisionResolver } from './pcd-collision-resolver-Dz1u1ehV.mjs';
+import { c as LayoutItem, j as LayoutConstraint, k as ConstraintContext, R as ResizeHandleAxis, P as Position, L as Layout, a as Compactor } from './layout-CFHbwcvs.mjs';
+export { d as CollisionResolver, C as CompactType, f as DragConfig, l as DragOverEvent, h as DropConfig, D as DroppingPosition, E as EventCallback, e as GridConfig, G as GridDragEvent, b as GridResizeEvent, O as OnLayoutChangeCallback, m as PartialPosition, i as PositionStrategy, n as ReactDraggableCallbackData, g as ResizeConfig, S as Size, o as defaultDragConfig, p as defaultDropConfig, q as defaultGridConfig, r as defaultResizeConfig } from './layout-CFHbwcvs.mjs';
+export { B as Breakpoint, b as BreakpointCols, a as Breakpoints, O as OnBreakpointChangeCallback, R as ResponsiveLayouts } from './responsive-DKRPaN_o.mjs';
+export { c as collides, f as findOrGenerateResponsiveLayout, g as getAllCollisions, a as getBreakpointFromWidth, b as getColsFromBreakpoint, d as getFirstCollision, i as getIndentationValue, m as moveElement, j as moveElementAwayFromCollision, k as sortBreakpoints, s as sortLayoutItems, e as sortLayoutItemsByColRow, h as sortLayoutItemsByRowCol } from './responsive-CTLpP85r.mjs';
+export { i as absoluteStrategy, b as bottom, c as cloneLayout, a as cloneLayoutItem, j as createScaledStrategy, k as defaultPositionStrategy, g as getCompactor, d as getLayoutItem, l as getStatics, h as horizontalCompactor, m as horizontalOverlapCompactor, o as modifyLayout, n as noCompactor, p as noOverlapCompactor, q as perc, s as setTopLeft, e as setTransform, t as transformStrategy, v as validateLayout, f as verticalCompactor, r as verticalOverlapCompactor, w as withLayoutItem } from './css-strategies-CofaQPLs.mjs';
+export { G as GridCellConfig, d as GridCellDimensions, P as PositionParams, e as calcGridCellDimensions, f as calcGridColWidth, c as calcGridItemPosition, g as calcGridItemWHPx, h as calcMaxRows, a as calcWH, i as calcWHRaw, b as calcXY, j as calcXYRaw, k as clamp } from './calculate-CAiPfNhQ.mjs';
+export { a as ADAPTIVE_DEFAULTS, b as AdaptiveMetrics, A as AdaptiveOptionsInput, R as ResolvedAdaptiveOptions, c as computeAdaptiveMetrics } from './adaptive-metrics-BljnZr6R.mjs';
+export { p as pcdCollisionResolver } from './pcd-collision-resolver-vhKsm_v4.mjs';
 import 'react';
 
 /**
@@ -209,6 +210,195 @@ declare function applySizeConstraints(constraints: LayoutConstraint[], item: Lay
  * @returns Constrained position and size
  */
 declare function resizeItemInDirection(direction: ResizeHandleAxis, currentSize: Position, newSize: Position, containerWidth: number): Position;
+
+/**
+ * Proportional Layout Conversion — Pure Functions
+ *
+ * Converts between absolute grid coordinates ({x, y, w, h} in integer grid units)
+ * and proportional fractions ({xF, yF, wF, hF} as 0..1 floats relative to grid size).
+ *
+ * Proportional layouts are screen-independent: a widget at wF=0.5 is always
+ * half the grid width regardless of the actual column count. This enables
+ * cross-screen portability — layouts saved on a 24-col monitor render correctly
+ * on a 12-col laptop.
+ *
+ * Design decisions:
+ * - Full proportional (Approach A): both x/w AND y/h are fractional.
+ *   This ensures vertical portability across different maxRows.
+ * - Reference for vertical: maxRows from adaptive metrics (Option 1).
+ *   "What you see is what you save."
+ * - Conversion is pure — no overlap resolution. Use repairLayout() after
+ *   fromProportionalLayout() to fix rounding artifacts.
+ *
+ * @see 2A.9.extra-1_Adaptive_Grid_System.md — Session 4 (Proportional Layout Spike)
+ */
+
+/**
+ * Proportional coordinates — all values are fractions in the range [0, 1].
+ *
+ * - xF: horizontal position as fraction of total cols
+ * - yF: vertical position as fraction of total rows (maxRows)
+ * - wF: width as fraction of total cols
+ * - hF: height as fraction of total rows (maxRows)
+ */
+interface ProportionalCoords {
+    xF: number;
+    yF: number;
+    wF: number;
+    hF: number;
+}
+/**
+ * Proportional layout item — a LayoutItem's identity + proportional coords.
+ */
+interface ProportionalLayoutItem extends ProportionalCoords {
+    /** Item identifier (same as LayoutItem.i) */
+    i: string;
+}
+/**
+ * Grid context for conversion. Defines the grid dimensions to convert
+ * between absolute and proportional coordinates.
+ */
+interface GridContext {
+    /** Number of columns in the grid */
+    cols: number;
+    /** Number of rows in the grid (from adaptive metrics or manual config) */
+    maxRows: number;
+}
+/**
+ * Convert a single layout item to proportional coordinates.
+ *
+ * @param item - Layout item with absolute grid coordinates
+ * @param ctx - Grid context (cols, maxRows) for the current grid
+ * @returns Proportional coordinates (xF, yF, wF, hF) in [0, 1]
+ *
+ * @example
+ * ```ts
+ * toProportional({ i: "a", x: 6, y: 3, w: 6, h: 3 }, { cols: 12, maxRows: 12 })
+ * // → { xF: 0.5, yF: 0.25, wF: 0.5, hF: 0.25 }
+ * ```
+ */
+declare function toProportional(item: Pick<LayoutItem, "x" | "y" | "w" | "h">, ctx: GridContext): ProportionalCoords;
+/**
+ * Convert proportional coordinates back to absolute grid coordinates.
+ *
+ * Rounds to nearest integer. Clamps w/h to minimum 1, and ensures
+ * x+w ≤ cols and y+h ≤ maxRows.
+ *
+ * @param frac - Proportional coordinates
+ * @param ctx - Target grid context (may differ from the original)
+ * @returns Absolute coordinates { x, y, w, h } as integers
+ *
+ * @example
+ * ```ts
+ * fromProportional({ xF: 0.5, yF: 0.25, wF: 0.5, hF: 0.25 }, { cols: 24, maxRows: 17 })
+ * // → { x: 12, y: 4, w: 12, h: 4 }
+ * ```
+ */
+declare function fromProportional(frac: ProportionalCoords, ctx: GridContext): {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+};
+/**
+ * Convert an entire layout to proportional coordinates.
+ *
+ * @param layout - Array of layout items with absolute coordinates
+ * @param ctx - Grid context for the current grid
+ * @returns Array of proportional layout items (with identifiers preserved)
+ */
+declare function toProportionalLayout(layout: readonly LayoutItem[], ctx: GridContext): ProportionalLayoutItem[];
+/**
+ * Convert an entire proportional layout back to absolute coordinates.
+ *
+ * Preserves all non-coordinate properties from the original layout items
+ * (minW, minH, maxW, maxH, static, etc.) when an originals map is provided.
+ *
+ * @param proportional - Array of proportional layout items
+ * @param ctx - Target grid context (may differ from original)
+ * @param originals - Optional map of original LayoutItems keyed by `i`,
+ *   used to carry forward non-coordinate properties (minW, minH, etc.)
+ * @returns Array of LayoutItems with absolute coordinates
+ */
+declare function fromProportionalLayout(proportional: readonly ProportionalLayoutItem[], ctx: GridContext, originals?: ReadonlyMap<string, LayoutItem>): LayoutItem[];
+/**
+ * Compute the total occupied rows in a layout (max y + h across all items).
+ * Useful as a fallback reference when maxRows is Infinity.
+ *
+ * @param layout - Layout to measure
+ * @returns The bottom edge of the lowest item, or 0 for empty layouts
+ */
+declare function totalOccupiedRows(layout: readonly LayoutItem[]): number;
+
+/**
+ * Proportional Layout Repair — Post-Conversion Artifact Resolution
+ *
+ * After converting a proportional layout to absolute coordinates via
+ * fromProportionalLayout(), rounding can introduce:
+ * 1. Boundary violations (items extending past cols/maxRows)
+ * 2. Min/max size violations (widget rounded below its minW/minH)
+ * 3. Overlapping items (two items rounded into the same cell)
+ *
+ * This module provides a deterministic repair pass that resolves all
+ * three classes of artifacts without fundamentally altering the layout.
+ *
+ * The repair strategy is conservative: clamp first, enforce constraints
+ * second, resolve overlaps last (via vertical push-down). Items are
+ * processed in reading order (top-to-bottom, left-to-right) to ensure
+ * deterministic output.
+ *
+ * @see 2A.9.extra-1_Adaptive_Grid_System.md — Session 4 (Proportional Layout Spike)
+ */
+
+/**
+ * Size constraints for a single item. Optional — if not provided,
+ * the item's own minW/minH/maxW/maxH are used.
+ */
+interface ItemConstraints {
+    minW?: number;
+    minH?: number;
+    maxW?: number;
+    maxH?: number;
+}
+/**
+ * Grid bounds for the repair pass.
+ */
+interface RepairContext {
+    cols: number;
+    maxRows: number;
+}
+/**
+ * Repair a layout that may contain rounding artifacts from proportional
+ * conversion.
+ *
+ * The repair is deterministic and processes items in reading order
+ * (top-to-bottom, left-to-right). The algorithm:
+ *
+ * 1. **Boundary clamp** — items can't extend past cols or maxRows
+ * 2. **Constraint enforcement** — apply minW/minH/maxW/maxH
+ * 3. **Overlap resolution** — push overlapping items down
+ *
+ * @param layout - Layout items (may have overlaps/boundary violations)
+ * @param ctx - Grid bounds (cols, maxRows)
+ * @param constraints - Optional per-item constraints keyed by item.i
+ * @returns A new layout array with all artifacts resolved. Never mutates input.
+ */
+declare function repairLayout(layout: readonly LayoutItem[], ctx: RepairContext, constraints?: ReadonlyMap<string, ItemConstraints>): LayoutItem[];
+/**
+ * Check if any items in the layout overlap.
+ *
+ * @param layout - Layout to check
+ * @returns true if any two items overlap
+ */
+declare function hasOverlaps(layout: readonly LayoutItem[]): boolean;
+/**
+ * Check if any items extend past the grid bounds.
+ *
+ * @param layout - Layout to check
+ * @param ctx - Grid bounds
+ * @returns true if any item extends past cols or maxRows
+ */
+declare function hasOverflow(layout: readonly LayoutItem[], ctx: RepairContext): boolean;
 
 /**
  * PhysicsEngine Facade
@@ -451,4 +641,4 @@ declare function inferResizeHandles(oldItem: LayoutItem, newItem: LayoutItem): R
  */
 declare function resolveResizeCollisions(layout: LayoutItem[], resizedId: string, oldItem: LayoutItem, newItem: LayoutItem, maxRows: number, cols: number): LayoutItem[] | null;
 
-export { type ArrayElement, Compactor, ConstraintContext, type DeepPartial, type DragCollisionResolver, type DragSlot, Layout, LayoutConstraint, LayoutItem, type Mutable, type PhysicsEngine, type PhysicsEngineConfig, Position, type ResizeCollisionResolver, ResizeHandleAxis, applyPositionConstraints, applySizeConstraints, aspectRatio, boundedX, boundedY, containerBounds, correctBounds, createPhysicsEngine, defaultConstraints, gridBounds, inferResizeHandles, maxSize, minMaxSize, minSize, resizeItemInDirection, resolveResizeCollisions, snapToGrid, trySwap };
+export { type ArrayElement, Compactor, ConstraintContext, type DeepPartial, type DragCollisionResolver, type DragSlot, type GridContext, type ItemConstraints, Layout, LayoutConstraint, LayoutItem, type Mutable, type PhysicsEngine, type PhysicsEngineConfig, Position, type ProportionalCoords, type ProportionalLayoutItem, type RepairContext, type ResizeCollisionResolver, ResizeHandleAxis, applyPositionConstraints, applySizeConstraints, aspectRatio, boundedX, boundedY, containerBounds, correctBounds, createPhysicsEngine, defaultConstraints, fromProportional, fromProportionalLayout, gridBounds, hasOverflow, hasOverlaps, inferResizeHandles, maxSize, minMaxSize, minSize, repairLayout, resizeItemInDirection, resolveResizeCollisions, snapToGrid, toProportional, toProportionalLayout, totalOccupiedRows, trySwap };

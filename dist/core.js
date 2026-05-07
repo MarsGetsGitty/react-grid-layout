@@ -1,274 +1,318 @@
 'use strict';
 
-var chunkNXH3XH5G_js = require('./chunk-NXH3XH5G.js');
+var chunkVPECGAUQ_js = require('./chunk-VPECGAUQ.js');
 
 
 
+Object.defineProperty(exports, "ADAPTIVE_DEFAULTS", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.ADAPTIVE_DEFAULTS; }
+});
 Object.defineProperty(exports, "absoluteStrategy", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.absoluteStrategy; }
+  get: function () { return chunkVPECGAUQ_js.absoluteStrategy; }
 });
 Object.defineProperty(exports, "applyPositionConstraints", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.applyPositionConstraints; }
+  get: function () { return chunkVPECGAUQ_js.applyPositionConstraints; }
 });
 Object.defineProperty(exports, "applySizeConstraints", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.applySizeConstraints; }
+  get: function () { return chunkVPECGAUQ_js.applySizeConstraints; }
 });
 Object.defineProperty(exports, "aspectRatio", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.aspectRatio; }
+  get: function () { return chunkVPECGAUQ_js.aspectRatio; }
 });
 Object.defineProperty(exports, "bottom", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.bottom; }
+  get: function () { return chunkVPECGAUQ_js.bottom; }
 });
 Object.defineProperty(exports, "boundedX", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.boundedX; }
+  get: function () { return chunkVPECGAUQ_js.boundedX; }
 });
 Object.defineProperty(exports, "boundedY", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.boundedY; }
+  get: function () { return chunkVPECGAUQ_js.boundedY; }
 });
 Object.defineProperty(exports, "calcGridCellDimensions", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcGridCellDimensions; }
+  get: function () { return chunkVPECGAUQ_js.calcGridCellDimensions; }
 });
 Object.defineProperty(exports, "calcGridColWidth", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcGridColWidth; }
+  get: function () { return chunkVPECGAUQ_js.calcGridColWidth; }
 });
 Object.defineProperty(exports, "calcGridItemPosition", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcGridItemPosition; }
+  get: function () { return chunkVPECGAUQ_js.calcGridItemPosition; }
 });
 Object.defineProperty(exports, "calcGridItemWHPx", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcGridItemWHPx; }
+  get: function () { return chunkVPECGAUQ_js.calcGridItemWHPx; }
+});
+Object.defineProperty(exports, "calcMaxRows", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.calcMaxRows; }
 });
 Object.defineProperty(exports, "calcWH", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcWH; }
+  get: function () { return chunkVPECGAUQ_js.calcWH; }
 });
 Object.defineProperty(exports, "calcWHRaw", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcWHRaw; }
+  get: function () { return chunkVPECGAUQ_js.calcWHRaw; }
 });
 Object.defineProperty(exports, "calcXY", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcXY; }
+  get: function () { return chunkVPECGAUQ_js.calcXY; }
 });
 Object.defineProperty(exports, "calcXYRaw", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.calcXYRaw; }
+  get: function () { return chunkVPECGAUQ_js.calcXYRaw; }
 });
 Object.defineProperty(exports, "clamp", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.clamp; }
+  get: function () { return chunkVPECGAUQ_js.clamp; }
 });
 Object.defineProperty(exports, "cloneLayout", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.cloneLayout; }
+  get: function () { return chunkVPECGAUQ_js.cloneLayout; }
 });
 Object.defineProperty(exports, "cloneLayoutItem", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.cloneLayoutItem; }
+  get: function () { return chunkVPECGAUQ_js.cloneLayoutItem; }
 });
 Object.defineProperty(exports, "collides", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.collides; }
+  get: function () { return chunkVPECGAUQ_js.collides; }
+});
+Object.defineProperty(exports, "computeAdaptiveMetrics", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.computeAdaptiveMetrics; }
 });
 Object.defineProperty(exports, "containerBounds", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.containerBounds; }
+  get: function () { return chunkVPECGAUQ_js.containerBounds; }
 });
 Object.defineProperty(exports, "correctBounds", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.correctBounds; }
+  get: function () { return chunkVPECGAUQ_js.correctBounds; }
 });
 Object.defineProperty(exports, "createPhysicsEngine", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.createPhysicsEngine; }
+  get: function () { return chunkVPECGAUQ_js.createPhysicsEngine; }
 });
 Object.defineProperty(exports, "createScaledStrategy", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.createScaledStrategy; }
+  get: function () { return chunkVPECGAUQ_js.createScaledStrategy; }
 });
 Object.defineProperty(exports, "defaultConstraints", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.defaultConstraints; }
+  get: function () { return chunkVPECGAUQ_js.defaultConstraints; }
 });
 Object.defineProperty(exports, "defaultDragConfig", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.defaultDragConfig; }
+  get: function () { return chunkVPECGAUQ_js.defaultDragConfig; }
 });
 Object.defineProperty(exports, "defaultDropConfig", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.defaultDropConfig; }
+  get: function () { return chunkVPECGAUQ_js.defaultDropConfig; }
 });
 Object.defineProperty(exports, "defaultGridConfig", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.defaultGridConfig; }
+  get: function () { return chunkVPECGAUQ_js.defaultGridConfig; }
 });
 Object.defineProperty(exports, "defaultPositionStrategy", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.defaultPositionStrategy; }
+  get: function () { return chunkVPECGAUQ_js.defaultPositionStrategy; }
 });
 Object.defineProperty(exports, "defaultResizeConfig", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.defaultResizeConfig; }
+  get: function () { return chunkVPECGAUQ_js.defaultResizeConfig; }
 });
 Object.defineProperty(exports, "findOrGenerateResponsiveLayout", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.findOrGenerateResponsiveLayout; }
+  get: function () { return chunkVPECGAUQ_js.findOrGenerateResponsiveLayout; }
+});
+Object.defineProperty(exports, "fromProportional", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.fromProportional; }
+});
+Object.defineProperty(exports, "fromProportionalLayout", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.fromProportionalLayout; }
 });
 Object.defineProperty(exports, "getAllCollisions", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getAllCollisions; }
+  get: function () { return chunkVPECGAUQ_js.getAllCollisions; }
 });
 Object.defineProperty(exports, "getBreakpointFromWidth", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getBreakpointFromWidth; }
+  get: function () { return chunkVPECGAUQ_js.getBreakpointFromWidth; }
 });
 Object.defineProperty(exports, "getColsFromBreakpoint", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getColsFromBreakpoint; }
+  get: function () { return chunkVPECGAUQ_js.getColsFromBreakpoint; }
 });
 Object.defineProperty(exports, "getCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getCompactor; }
+  get: function () { return chunkVPECGAUQ_js.getCompactor; }
 });
 Object.defineProperty(exports, "getFirstCollision", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getFirstCollision; }
+  get: function () { return chunkVPECGAUQ_js.getFirstCollision; }
 });
 Object.defineProperty(exports, "getIndentationValue", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getIndentationValue; }
+  get: function () { return chunkVPECGAUQ_js.getIndentationValue; }
 });
 Object.defineProperty(exports, "getLayoutItem", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getLayoutItem; }
+  get: function () { return chunkVPECGAUQ_js.getLayoutItem; }
 });
 Object.defineProperty(exports, "getStatics", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.getStatics; }
+  get: function () { return chunkVPECGAUQ_js.getStatics; }
 });
 Object.defineProperty(exports, "gridBounds", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.gridBounds; }
+  get: function () { return chunkVPECGAUQ_js.gridBounds; }
+});
+Object.defineProperty(exports, "hasOverflow", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.hasOverflow; }
+});
+Object.defineProperty(exports, "hasOverlaps", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.hasOverlaps; }
 });
 Object.defineProperty(exports, "horizontalCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.horizontalCompactor; }
+  get: function () { return chunkVPECGAUQ_js.horizontalCompactor; }
 });
 Object.defineProperty(exports, "horizontalOverlapCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.horizontalOverlapCompactor; }
+  get: function () { return chunkVPECGAUQ_js.horizontalOverlapCompactor; }
 });
 Object.defineProperty(exports, "inferResizeHandles", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.inferResizeHandles; }
+  get: function () { return chunkVPECGAUQ_js.inferResizeHandles; }
 });
 Object.defineProperty(exports, "maxSize", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.maxSize; }
+  get: function () { return chunkVPECGAUQ_js.maxSize; }
 });
 Object.defineProperty(exports, "minMaxSize", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.minMaxSize; }
+  get: function () { return chunkVPECGAUQ_js.minMaxSize; }
 });
 Object.defineProperty(exports, "minSize", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.minSize; }
+  get: function () { return chunkVPECGAUQ_js.minSize; }
 });
 Object.defineProperty(exports, "modifyLayout", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.modifyLayout; }
+  get: function () { return chunkVPECGAUQ_js.modifyLayout; }
 });
 Object.defineProperty(exports, "moveElement", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.moveElement; }
+  get: function () { return chunkVPECGAUQ_js.moveElement; }
 });
 Object.defineProperty(exports, "moveElementAwayFromCollision", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.moveElementAwayFromCollision; }
+  get: function () { return chunkVPECGAUQ_js.moveElementAwayFromCollision; }
 });
 Object.defineProperty(exports, "noCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.noCompactor; }
+  get: function () { return chunkVPECGAUQ_js.noCompactor; }
 });
 Object.defineProperty(exports, "noOverlapCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.noOverlapCompactor; }
+  get: function () { return chunkVPECGAUQ_js.noOverlapCompactor; }
 });
 Object.defineProperty(exports, "pcdCollisionResolver", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.pcdCollisionResolver; }
+  get: function () { return chunkVPECGAUQ_js.pcdCollisionResolver; }
 });
 Object.defineProperty(exports, "perc", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.perc; }
+  get: function () { return chunkVPECGAUQ_js.perc; }
+});
+Object.defineProperty(exports, "repairLayout", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.repairLayout; }
 });
 Object.defineProperty(exports, "resizeItemInDirection", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.resizeItemInDirection; }
+  get: function () { return chunkVPECGAUQ_js.resizeItemInDirection; }
 });
 Object.defineProperty(exports, "resolveResizeCollisions", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.resolveResizeCollisions; }
+  get: function () { return chunkVPECGAUQ_js.resolveResizeCollisions; }
 });
 Object.defineProperty(exports, "setTopLeft", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.setTopLeft; }
+  get: function () { return chunkVPECGAUQ_js.setTopLeft; }
 });
 Object.defineProperty(exports, "setTransform", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.setTransform; }
+  get: function () { return chunkVPECGAUQ_js.setTransform; }
 });
 Object.defineProperty(exports, "snapToGrid", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.snapToGrid; }
+  get: function () { return chunkVPECGAUQ_js.snapToGrid; }
 });
 Object.defineProperty(exports, "sortBreakpoints", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.sortBreakpoints; }
+  get: function () { return chunkVPECGAUQ_js.sortBreakpoints; }
 });
 Object.defineProperty(exports, "sortLayoutItems", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.sortLayoutItems; }
+  get: function () { return chunkVPECGAUQ_js.sortLayoutItems; }
 });
 Object.defineProperty(exports, "sortLayoutItemsByColRow", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.sortLayoutItemsByColRow; }
+  get: function () { return chunkVPECGAUQ_js.sortLayoutItemsByColRow; }
 });
 Object.defineProperty(exports, "sortLayoutItemsByRowCol", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.sortLayoutItemsByRowCol; }
+  get: function () { return chunkVPECGAUQ_js.sortLayoutItemsByRowCol; }
+});
+Object.defineProperty(exports, "toProportional", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.toProportional; }
+});
+Object.defineProperty(exports, "toProportionalLayout", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.toProportionalLayout; }
+});
+Object.defineProperty(exports, "totalOccupiedRows", {
+  enumerable: true,
+  get: function () { return chunkVPECGAUQ_js.totalOccupiedRows; }
 });
 Object.defineProperty(exports, "transformStrategy", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.transformStrategy; }
+  get: function () { return chunkVPECGAUQ_js.transformStrategy; }
 });
 Object.defineProperty(exports, "trySwap", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.trySwap; }
+  get: function () { return chunkVPECGAUQ_js.trySwap; }
 });
 Object.defineProperty(exports, "validateLayout", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.validateLayout; }
+  get: function () { return chunkVPECGAUQ_js.validateLayout; }
 });
 Object.defineProperty(exports, "verticalCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.verticalCompactor; }
+  get: function () { return chunkVPECGAUQ_js.verticalCompactor; }
 });
 Object.defineProperty(exports, "verticalOverlapCompactor", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.verticalOverlapCompactor; }
+  get: function () { return chunkVPECGAUQ_js.verticalOverlapCompactor; }
 });
 Object.defineProperty(exports, "withLayoutItem", {
   enumerable: true,
-  get: function () { return chunkNXH3XH5G_js.withLayoutItem; }
+  get: function () { return chunkVPECGAUQ_js.withLayoutItem; }
 });

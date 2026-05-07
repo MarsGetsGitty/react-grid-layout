@@ -1,11 +1,11 @@
-import { useContainerWidth } from './chunk-AVLKPJN3.mjs';
-export { DEFAULT_BREAKPOINTS, DEFAULT_COLS, useContainerWidth, useGridLayout, useResponsiveLayout } from './chunk-AVLKPJN3.mjs';
-import { GridLayout } from './chunk-ZYB6J4NN.mjs';
-export { GridItem, GridLayout, ResponsiveGridLayout } from './chunk-ZYB6J4NN.mjs';
-import { useGridArrangement, useGutterHandles } from './chunk-SRH4PW5C.mjs';
-export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-SRH4PW5C.mjs';
-import { getCompactor } from './chunk-4HJR37C4.mjs';
-export { bottom, calcGridItemPosition, calcWH, calcXY, cloneLayout, cloneLayoutItem, getCompactor, getLayoutItem, horizontalCompactor, noCompactor, setTopLeft, setTransform, verticalCompactor } from './chunk-4HJR37C4.mjs';
+import { useContainerDimensions } from './chunk-7CNLZQEJ.mjs';
+export { DEFAULT_BREAKPOINTS, DEFAULT_COLS, useContainerDimensions, useGridLayout, useResponsiveLayout } from './chunk-7CNLZQEJ.mjs';
+import { GridLayout } from './chunk-IL6VS2ET.mjs';
+export { GridItem, GridLayout, ResponsiveGridLayout } from './chunk-IL6VS2ET.mjs';
+import { useGridArrangement, useGutterHandles } from './chunk-S2F6LW46.mjs';
+export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-S2F6LW46.mjs';
+import { getCompactor, computeAdaptiveMetrics, calcMaxRows } from './chunk-OVTNN5W3.mjs';
+export { bottom, calcGridItemPosition, calcWH, calcXY, cloneLayout, cloneLayoutItem, getCompactor, getLayoutItem, horizontalCompactor, noCompactor, setTopLeft, setTransform, verticalCompactor } from './chunk-OVTNN5W3.mjs';
 import { forwardRef, useMemo } from 'react';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 
@@ -34,26 +34,39 @@ function ContainerGrid({
   onDropDragOver,
   droppingItem,
   autoResize = false,
+  adaptive,
   cols = 12,
   rowHeight = 30,
   margin = [6, 6],
   containerPadding = null,
   children
 }) {
-  const { containerRef, width } = useContainerWidth();
+  const { containerRef, width, height } = useContainerDimensions();
+  const stableMargin = useMemo(() => margin, [margin[0], margin[1]]);
+  const stablePadding = useMemo(
+    () => containerPadding,
+    [containerPadding?.[0] ?? null, containerPadding?.[1] ?? null]
+  );
+  const metrics = useMemo(
+    () => adaptive !== void 0 ? computeAdaptiveMetrics(width, height, { margin: stableMargin, containerPadding: stablePadding, ...adaptive }) : null,
+    [adaptive, width, height, stableMargin, stablePadding]
+  );
+  const effectiveCols = metrics?.cols ?? cols;
+  const effectiveRowHeight = metrics?.rowHeight ?? rowHeight;
+  const effectivePadding = stablePadding ?? stableMargin;
+  const effectiveMaxRows = metrics?.maxRows ?? calcMaxRows(height, rowHeight, stableMargin[1], effectivePadding[1]);
   const gridConfig = useMemo(() => ({
-    cols,
-    rowHeight,
-    margin,
-    containerPadding,
-    maxRows: Infinity
-    // Enforced internally by squashPushEngine
-  }), [cols, rowHeight, margin, containerPadding]);
+    cols: effectiveCols,
+    rowHeight: effectiveRowHeight,
+    margin: stableMargin,
+    containerPadding: stablePadding,
+    maxRows: effectiveMaxRows
+  }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows]);
   const { isRglInteracting, collisionResolver, handlers } = useGridArrangement({
     layout,
     onLayoutChange,
-    maxRows: Infinity,
-    cols
+    maxRows: effectiveMaxRows,
+    cols: effectiveCols
   });
   const dragConfig = useMemo(() => ({
     enabled: isEditMode,
