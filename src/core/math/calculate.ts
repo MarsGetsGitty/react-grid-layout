@@ -30,11 +30,12 @@ export interface PositionParams {
  * Calculate the width of a single grid column in pixels.
  *
  * @param positionParams - Grid parameters
- * @returns Column width in pixels
+ * @returns Column width in pixels (minimum 1px)
  */
 export function calcGridColWidth(positionParams: PositionParams): number {
   const { margin, containerPadding, containerWidth, cols } = positionParams;
-  return (
+  return Math.max(
+    1,
     (containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
   );
 }
@@ -434,7 +435,7 @@ export function calcGridCellDimensions(
   // Calculate cell width: total width minus padding and gaps, divided by columns
   // Formula: width = 2*padding + cols*cellWidth + (cols-1)*gap
   // Solving for cellWidth: cellWidth = (width - 2*padding - (cols-1)*gap) / cols
-  const cellWidth = (width - padding[0] * 2 - margin[0] * (cols - 1)) / cols;
+  const cellWidth = Math.max(1, (width - padding[0] * 2 - margin[0] * (cols - 1)) / cols);
   const cellHeight = rowHeight;
 
   return {
