@@ -100,7 +100,7 @@ export function repairLayout(
     if (item.y + item.h > maxRows) {
       item.y = Math.max(0, maxRows - item.h);
       if (item.y + item.h > maxRows) {
-        item.h = maxRows - item.y;
+        item.h = Math.max(minH, maxRows - item.y);
       }
     }
   }
