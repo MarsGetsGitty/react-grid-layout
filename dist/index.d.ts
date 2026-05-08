@@ -4,5 +4,5 @@ export { C as CompactType, a as Compactor, D as DroppingPosition, E as EventCall
 export { B as Breakpoint, a as Breakpoints, R as ResponsiveLayouts } from './responsive-CAtIWshU.js';
 export { c as collides, f as findOrGenerateResponsiveLayout, g as getAllCollisions, a as getBreakpointFromWidth, b as getColsFromBreakpoint, d as getFirstCollision, m as moveElement, s as sortLayoutItems, e as sortLayoutItemsByColRow, h as sortLayoutItemsByRowCol } from './responsive-DQyi_m3X.js';
 export { b as bottom, c as cloneLayout, a as cloneLayoutItem, g as getCompactor, d as getLayoutItem, h as horizontalCompactor, n as noCompactor, s as setTopLeft, e as setTransform, v as validateLayout, f as verticalCompactor } from './css-strategies-QLCl-0rx.js';
-export { c as calcGridItemPosition, a as calcWH, b as calcXY } from './calculate-yQFbZ3UD.js';
+export { c as calcGridItemPosition, a as calcWH, b as calcXY } from './calculate-DaFqnH5L.js';
 import 'react';

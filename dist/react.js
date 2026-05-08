@@ -1,9 +1,9 @@
 'use strict';
 
-var chunkIHGJCZ5Q_js = require('./chunk-IHGJCZ5Q.js');
-var chunkTG5XQVTB_js = require('./chunk-TG5XQVTB.js');
-var chunkLBJWRGSG_js = require('./chunk-LBJWRGSG.js');
-var chunkIUJOLYR7_js = require('./chunk-IUJOLYR7.js');
+var chunkLPCEXCAJ_js = require('./chunk-LPCEXCAJ.js');
+var chunkAKCX3CP6_js = require('./chunk-AKCX3CP6.js');
+var chunkXVKF4CBF_js = require('./chunk-XVKF4CBF.js');
+var chunkTNAOBXMI_js = require('./chunk-TNAOBXMI.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 
@@ -21,7 +21,7 @@ var resizeConfig = {
   handles: ["s", "w", "e", "n", "sw", "nw", "se", "ne"],
   handleComponent: /* @__PURE__ */ jsxRuntime.jsx(ResizeHandle, { handleAxis: "" })
 };
-var freeformCompactor = chunkIUJOLYR7_js.getCompactor(null, true, false);
+var freeformCompactor = chunkTNAOBXMI_js.getCompactor(null, true, false);
 function ContainerGrid({
   layout,
   onLayoutChange,
@@ -39,20 +39,20 @@ function ContainerGrid({
   containerPadding = null,
   children
 }) {
-  const { containerRef, width, height } = chunkIHGJCZ5Q_js.useContainerDimensions();
+  const { containerRef, width, height } = chunkLPCEXCAJ_js.useContainerDimensions();
   const stableMargin = react.useMemo(() => margin, [margin[0], margin[1]]);
   const stablePadding = react.useMemo(
     () => containerPadding,
     [containerPadding?.[0] ?? null, containerPadding?.[1] ?? null]
   );
   const metrics = react.useMemo(
-    () => adaptive !== void 0 ? chunkIUJOLYR7_js.computeAdaptiveMetrics(width, height, { margin: stableMargin, containerPadding: stablePadding, ...adaptive }) : null,
+    () => adaptive !== void 0 ? chunkTNAOBXMI_js.computeAdaptiveMetrics(width, height, { margin: stableMargin, containerPadding: stablePadding, ...adaptive }) : null,
     [adaptive, width, height, stableMargin, stablePadding]
   );
   const effectiveCols = metrics?.cols ?? cols;
   const effectiveRowHeight = metrics?.rowHeight ?? rowHeight;
   const effectivePadding = stablePadding ?? stableMargin;
-  const effectiveMaxRows = metrics?.maxRows ?? chunkIUJOLYR7_js.calcMaxRows(height, rowHeight, stableMargin[1], effectivePadding[1]);
+  const effectiveMaxRows = metrics?.maxRows ?? chunkTNAOBXMI_js.calcMaxRows(height, rowHeight, stableMargin[1], effectivePadding[1]);
   const gridConfig = react.useMemo(() => ({
     cols: effectiveCols,
     rowHeight: effectiveRowHeight,
@@ -60,7 +60,7 @@ function ContainerGrid({
     containerPadding: stablePadding,
     maxRows: effectiveMaxRows
   }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows]);
-  const { isRglInteracting, collisionResolver, handlers } = chunkLBJWRGSG_js.useGridArrangement({
+  const { isRglInteracting, collisionResolver, handlers } = chunkXVKF4CBF_js.useGridArrangement({
     layout,
     onLayoutChange,
     maxRows: effectiveMaxRows,
@@ -99,7 +99,7 @@ function ContainerGrid({
       }
     };
   }, [handlers, onLayoutSettled]);
-  const { gutterElements, isDraggingGutter } = chunkLBJWRGSG_js.useGutterHandles(
+  const { gutterElements, isDraggingGutter } = chunkXVKF4CBF_js.useGutterHandles(
     layout,
     onLayoutChange,
     width,
@@ -113,7 +113,7 @@ function ContainerGrid({
   ].filter(Boolean).join(" ");
   return /* @__PURE__ */ jsxRuntime.jsx("div", { ref: containerRef, className: containerClass, style: { height: "100%", width: "100%" }, children: width > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
     /* @__PURE__ */ jsxRuntime.jsx(
-      chunkTG5XQVTB_js.GridLayout,
+      chunkAKCX3CP6_js.GridLayout,
       {
         layout,
         width,
@@ -136,98 +136,98 @@ function ContainerGrid({
 
 Object.defineProperty(exports, "DEFAULT_BREAKPOINTS", {
   enumerable: true,
-  get: function () { return chunkIHGJCZ5Q_js.DEFAULT_BREAKPOINTS; }
+  get: function () { return chunkLPCEXCAJ_js.DEFAULT_BREAKPOINTS; }
 });
 Object.defineProperty(exports, "DEFAULT_COLS", {
   enumerable: true,
-  get: function () { return chunkIHGJCZ5Q_js.DEFAULT_COLS; }
+  get: function () { return chunkLPCEXCAJ_js.DEFAULT_COLS; }
 });
 Object.defineProperty(exports, "useContainerDimensions", {
   enumerable: true,
-  get: function () { return chunkIHGJCZ5Q_js.useContainerDimensions; }
+  get: function () { return chunkLPCEXCAJ_js.useContainerDimensions; }
 });
 Object.defineProperty(exports, "useGridLayout", {
   enumerable: true,
-  get: function () { return chunkIHGJCZ5Q_js.useGridLayout; }
+  get: function () { return chunkLPCEXCAJ_js.useGridLayout; }
 });
 Object.defineProperty(exports, "useResponsiveLayout", {
   enumerable: true,
-  get: function () { return chunkIHGJCZ5Q_js.useResponsiveLayout; }
+  get: function () { return chunkLPCEXCAJ_js.useResponsiveLayout; }
 });
 Object.defineProperty(exports, "GridItem", {
   enumerable: true,
-  get: function () { return chunkTG5XQVTB_js.GridItem; }
+  get: function () { return chunkAKCX3CP6_js.GridItem; }
 });
 Object.defineProperty(exports, "GridLayout", {
   enumerable: true,
-  get: function () { return chunkTG5XQVTB_js.GridLayout; }
+  get: function () { return chunkAKCX3CP6_js.GridLayout; }
 });
 Object.defineProperty(exports, "ResponsiveGridLayout", {
   enumerable: true,
-  get: function () { return chunkTG5XQVTB_js.ResponsiveGridLayout; }
+  get: function () { return chunkAKCX3CP6_js.ResponsiveGridLayout; }
 });
 Object.defineProperty(exports, "GutterHandle", {
   enumerable: true,
-  get: function () { return chunkLBJWRGSG_js.GutterHandle; }
+  get: function () { return chunkXVKF4CBF_js.GutterHandle; }
 });
 Object.defineProperty(exports, "useGridArrangement", {
   enumerable: true,
-  get: function () { return chunkLBJWRGSG_js.useGridArrangement; }
+  get: function () { return chunkXVKF4CBF_js.useGridArrangement; }
 });
 Object.defineProperty(exports, "useGutterHandles", {
   enumerable: true,
-  get: function () { return chunkLBJWRGSG_js.useGutterHandles; }
+  get: function () { return chunkXVKF4CBF_js.useGutterHandles; }
 });
 Object.defineProperty(exports, "bottom", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.bottom; }
+  get: function () { return chunkTNAOBXMI_js.bottom; }
 });
 Object.defineProperty(exports, "calcGridItemPosition", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.calcGridItemPosition; }
+  get: function () { return chunkTNAOBXMI_js.calcGridItemPosition; }
 });
 Object.defineProperty(exports, "calcWH", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.calcWH; }
+  get: function () { return chunkTNAOBXMI_js.calcWH; }
 });
 Object.defineProperty(exports, "calcXY", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.calcXY; }
+  get: function () { return chunkTNAOBXMI_js.calcXY; }
 });
 Object.defineProperty(exports, "cloneLayout", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.cloneLayout; }
+  get: function () { return chunkTNAOBXMI_js.cloneLayout; }
 });
 Object.defineProperty(exports, "cloneLayoutItem", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.cloneLayoutItem; }
+  get: function () { return chunkTNAOBXMI_js.cloneLayoutItem; }
 });
 Object.defineProperty(exports, "getCompactor", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.getCompactor; }
+  get: function () { return chunkTNAOBXMI_js.getCompactor; }
 });
 Object.defineProperty(exports, "getLayoutItem", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.getLayoutItem; }
+  get: function () { return chunkTNAOBXMI_js.getLayoutItem; }
 });
 Object.defineProperty(exports, "horizontalCompactor", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.horizontalCompactor; }
+  get: function () { return chunkTNAOBXMI_js.horizontalCompactor; }
 });
 Object.defineProperty(exports, "noCompactor", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.noCompactor; }
+  get: function () { return chunkTNAOBXMI_js.noCompactor; }
 });
 Object.defineProperty(exports, "setTopLeft", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.setTopLeft; }
+  get: function () { return chunkTNAOBXMI_js.setTopLeft; }
 });
 Object.defineProperty(exports, "setTransform", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.setTransform; }
+  get: function () { return chunkTNAOBXMI_js.setTransform; }
 });
 Object.defineProperty(exports, "verticalCompactor", {
   enumerable: true,
-  get: function () { return chunkIUJOLYR7_js.verticalCompactor; }
+  get: function () { return chunkTNAOBXMI_js.verticalCompactor; }
 });
 exports.ContainerGrid = ContainerGrid;

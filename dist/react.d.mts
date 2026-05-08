@@ -1,6 +1,6 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import React__default from 'react';
-import { A as AdaptiveOptionsInput } from './adaptive-metrics-BljnZr6R.mjs';
+import { A as AdaptiveOptionsInput } from './adaptive-metrics-WDbeE7-j.mjs';
 import { c as LayoutItem } from './layout-CFHbwcvs.mjs';
 export { d as CollisionResolver, C as CompactType, a as Compactor, D as DroppingPosition, E as EventCallback, G as GridDragEvent, b as GridResizeEvent, L as Layout, P as Position, R as ResizeHandleAxis } from './layout-CFHbwcvs.mjs';
 export { D as DEFAULT_BREAKPOINTS, a as DEFAULT_COLS, b as DefaultBreakpoints, c as DragState, d as DropState, G as GridItem, e as GridItemCallback, f as GridItemProps, R as ResizeHandle, g as ResizeState, U as UseContainerDimensionsOptions, h as UseContainerDimensionsResult, i as UseGridLayoutOptions, j as UseGridLayoutResult, k as UseResponsiveLayoutOptions, l as UseResponsiveLayoutResult, u as useContainerDimensions, m as useGridLayout, n as useResponsiveLayout } from './useResponsiveLayout-CcuGPFSf.mjs';
@@ -8,7 +8,7 @@ export { G as GridLayout, a as GridLayoutProps, R as ResponsiveGridLayout, b as 
 export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-ZBDWcbq5.mjs';
 export { B as Breakpoint, a as Breakpoints, R as ResponsiveLayouts } from './responsive-DKRPaN_o.mjs';
 export { b as bottom, c as cloneLayout, a as cloneLayoutItem, g as getCompactor, d as getLayoutItem, h as horizontalCompactor, n as noCompactor, s as setTopLeft, e as setTransform, f as verticalCompactor } from './css-strategies-CofaQPLs.mjs';
-export { c as calcGridItemPosition, a as calcWH, b as calcXY } from './calculate-TosCSAO3.mjs';
+export { c as calcGridItemPosition, a as calcWH, b as calcXY } from './calculate-Ci2ygafy.mjs';
 
 interface ContainerGridProps {
     /** RGL-compatible layout items */
@@ -41,7 +41,7 @@ interface ContainerGridProps {
     /**
      * When provided, cols, rowHeight, and maxRows are computed from measured
      * container dimensions. Overrides the explicit cols/rowHeight props.
-     * Pass `{}` to use all defaults (targetCellWidth=120, cellAspectRatio=0.75).
+     * Pass `{}` to use all defaults (targetCellWidth=120, minRowHeight=50).
      * When absent (undefined), behavior is unchanged — uses explicit props.
      */
     adaptive?: AdaptiveOptionsInput;
