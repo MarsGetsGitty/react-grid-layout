@@ -44,13 +44,14 @@ describe("trySwap", () => {
 
     expect(result).not.toBeNull();
     // Target "b" should have moved to origin slot
-    const b = result!.find(l => l.i === "b");
+    const b = result!.layout.find(l => l.i === "b");
     expect(b!.x).toBe(0);
     expect(b!.y).toBe(0);
     // "a" stays where it was dragged
-    const a = result!.find(l => l.i === "a");
+    const a = result!.layout.find(l => l.i === "a");
     expect(a!.x).toBe(3);
     expect(a!.y).toBe(0);
+    expect(result!.swappedItemId).toBe("b");
   });
 
   it("returns null when zero collisions (no swap target)", () => {

@@ -11,10 +11,27 @@ import { clamp } from "../math/calculate.js";
 
 import { type Mutable } from "../types/utils.js";
 
-function hasAnyCollisions(layout: LayoutItem[]): boolean {
+/** @deprecated Only kept for DEV/TEST safety fallback comparisons. */
+export function hasAnyCollisions(layout: LayoutItem[]): boolean {
   return layout.some(item =>
     getAllCollisions(layout, item).some(other => other.i !== item.i)
   );
+}
+
+export function hasTargetedCollisions(layout: LayoutItem[], itemsToCheck: LayoutItem[]): boolean {
+  const hasCollisions = itemsToCheck.some(item =>
+    getAllCollisions(layout, item).some(other => other.i !== item.i)
+  );
+
+  // Safety fallback: ensure targeted logic matches O(n^2) logic
+  if (typeof process !== "undefined" && process.env && process.env.NODE_ENV !== "production") {
+    const baseline = hasAnyCollisions(layout);
+    if (hasCollisions !== baseline) {
+      console.warn("Targeted collision check mismatch! Targeted:", hasCollisions, "Baseline:", baseline);
+    }
+  }
+
+  return hasCollisions;
 }
 
 /**
@@ -107,12 +124,16 @@ export const pcdCollisionResolver: CollisionResolver = (
   }
 
   // 1. Try swap — if a single same-dimension collision exists, swap positions
-  const swapped = trySwap(layoutArray, movedItem.i, originalPosition);
-  if (swapped) {
-    const swappedArray = swapped as LayoutItem[];
-    if (hasAnyCollisions(swappedArray)) return null;
+  const swapResult = trySwap(layoutArray, movedItem.i, originalPosition);
+  if (swapResult) {
+    const { layout: swappedArray, swappedItemId } = swapResult;
+    
+    // Check dragged item and the item it swapped with
+    const itemsToCheck = swappedArray.filter(item => item.i === movedItem.i || item.i === swappedItemId);
+    if (hasTargetedCollisions(swappedArray, itemsToCheck)) return null;
+    
     if (hasNewlyInvalidItems(swappedArray, previousLayout, maxRows)) return null;
-    return swapped;
+    return swappedArray;
   }
 
   // Check if there are no collisions (free space move)
@@ -252,7 +273,10 @@ export const pcdCollisionResolver: CollisionResolver = (
       false  // allowOverlap — resolve collisions, don't ignore them
     );
 
-    if (hasAnyCollisions(pushedLayout)) return null;
+    // Check dragged item and any item that was moved by moveElement
+    const itemsToCheck = pushedLayout.filter(item => item.i === movedItem.i || item.moved);
+    if (hasTargetedCollisions(pushedLayout, itemsToCheck)) return null;
+    
     if (hasNewlyInvalidItems(pushedLayout, previousLayout, maxRows)) return null;
     return pushedLayout;
   }

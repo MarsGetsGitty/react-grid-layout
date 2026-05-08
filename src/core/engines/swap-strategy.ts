@@ -30,7 +30,7 @@ export function trySwap(
   layout: LayoutItem[],
   draggedId: string,
   dragSlot: DragSlot,
-): LayoutItem[] | null {
+): { layout: LayoutItem[], swappedItemId: string } | null {
   const dragged = layout.find(item => item.i === draggedId);
   if (!dragged) return null;
 
@@ -64,5 +64,5 @@ export function trySwap(
 
   if (secondaryCollisions.length > 0) return null;
 
-  return tentativeLayout;
+  return { layout: tentativeLayout, swappedItemId: target.i };
 }
