@@ -177,7 +177,8 @@ export {
   calcWHRaw,
   clamp,
   calcMaxRows,
-  calcGridCellDimensions
+  calcGridCellDimensions,
+  toGridUnits
 } from "./math/calculate.js";
 
 // =============================================================================

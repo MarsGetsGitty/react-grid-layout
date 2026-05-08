@@ -449,3 +449,27 @@ export function calcGridCellDimensions(
     containerWidth: width
   };
 }
+
+// ============================================================================
+// Percentage → Grid Unit Conversion
+// ============================================================================
+
+/**
+ * Convert a fraction (0–1) to grid units, rounded to the nearest integer.
+ * Clamps the result to [1, totalUnits].
+ *
+ * Handles degenerate inputs defensively:
+ * - NaN / negative fraction → treated as 0 → clamped to 1
+ * - NaN / zero / negative totalUnits → returns 1
+ *
+ * @param fraction - Value in [0, 1] representing percentage of a grid axis
+ * @param totalUnits - Total grid units on that axis (cols or maxRows)
+ * @returns Grid units, clamped to [1, totalUnits]
+ */
+export function toGridUnits(fraction: number, totalUnits: number): number {
+  // Guard degenerate inputs — NaN, negative, or zero totalUnits
+  if (!Number.isFinite(fraction) || !Number.isFinite(totalUnits) || totalUnits < 1) {
+    return 1;
+  }
+  return Math.max(1, Math.min(totalUnits, Math.round(fraction * totalUnits)));
+}
