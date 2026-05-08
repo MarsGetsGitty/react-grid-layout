@@ -4,6 +4,9 @@
  * Tests for computeAdaptiveMetrics(), the pure function that computes
  * dynamic cols, rowHeight, and maxRows from container dimensions.
  *
+ * Session 6 — Adaptive Grid V2: cellAspectRatio removed, replaced by minRowHeight.
+ * Row height is now derived from container height ÷ minRowHeight, not colWidth × aspectRatio.
+ *
  * @module test/spec/adaptive-metrics
  */
 
@@ -23,6 +26,45 @@ const compute = (
   h: number,
   opts: Parameters<typeof computeAdaptiveMetrics>[2] = {}
 ) => computeAdaptiveMetrics(w, h, opts);
+
+// ============================================================================
+// Regression: Column Baseline (must NOT change)
+// ============================================================================
+
+describe("computeAdaptiveMetrics — regression (column baseline)", () => {
+  it("REG-1: 1200×800 → cols=9", () => {
+    expect(compute(1200, 800).cols).toBe(9);
+  });
+
+  it("REG-2: 1920×1080 → cols=15", () => {
+    expect(compute(1920, 1080).cols).toBe(15);
+  });
+
+  it("REG-3: 2560×1440 → cols=21", () => {
+    expect(compute(2560, 1440).cols).toBe(21);
+  });
+
+  it("REG-4: cols are unaffected by container height", () => {
+    const a = compute(1200, 400);
+    const b = compute(1200, 1200);
+    expect(a.cols).toBe(b.cols);
+    expect(a.colWidth).toBe(b.colWidth);
+  });
+
+  it("REG-5: colWidth formula parity still holds", () => {
+    const margin: [number, number] = [6, 6];
+    const r = compute(1200, 800, { margin, containerPadding: null });
+    const expected = calcGridColWidth({
+      margin,
+      containerPadding: margin, // null → uses margin
+      containerWidth: 1200,
+      cols: r.cols,
+      rowHeight: r.rowHeight,
+      maxRows: r.maxRows,
+    });
+    expect(Math.abs(r.colWidth - expected)).toBeLessThan(0.001);
+  });
+});
 
 // ============================================================================
 // Column Computation
@@ -69,18 +111,78 @@ describe("computeAdaptiveMetrics — column computation", () => {
 });
 
 // ============================================================================
-// Row Height Computation
+// Row Height / minRowHeight Computation
 // ============================================================================
 
-describe("computeAdaptiveMetrics — row height", () => {
-  it("#11: cellAspectRatio=1.0 → rowHeight ≈ colWidth", () => {
-    const result = compute(1200, 800, { cellAspectRatio: 1.0 });
-    expect(result.rowHeight).toBe(Math.max(1, Math.round(result.colWidth * 1.0)));
+describe("computeAdaptiveMetrics — minRowHeight (adaptive rows)", () => {
+  it("MRH-1: 1200×650 → correct maxRows and rowHeight", () => {
+    const r = compute(1200, 650);
+    // availableHeight = 650 - 6*2 = 638
+    // maxRows = floor((638 + 6) / (50 + 6)) = floor(644/56) = 11
+    expect(r.maxRows).toBe(11);
+    expect(r.rowHeight).toBeGreaterThanOrEqual(50);
   });
 
-  it("#12: cellAspectRatio=0.5 → rowHeight ≈ colWidth × 0.5", () => {
-    const result = compute(1200, 800, { cellAspectRatio: 0.5 });
-    expect(result.rowHeight).toBe(Math.max(1, Math.round(result.colWidth * 0.5)));
+  it("MRH-2: taller viewport → more rows", () => {
+    const small = compute(1200, 650);
+    const large = compute(1200, 950);
+    expect(large.maxRows).toBeGreaterThan(small.maxRows);
+  });
+
+  it("MRH-3: rowHeight is stable (~50px) across viewport heights", () => {
+    for (const h of [600, 700, 800, 900, 1000, 1200, 1400]) {
+      const r = compute(1200, h);
+      if (r.maxRows !== Infinity) {
+        expect(r.rowHeight).toBeGreaterThanOrEqual(50);
+        expect(r.rowHeight).toBeLessThanOrEqual(60);
+      }
+    }
+  });
+
+  it("MRH-4: no overflow — total grid height ≤ containerHeight", () => {
+    const margin: [number, number] = [6, 6];
+    for (const h of [600, 700, 800, 950, 1200, 1400]) {
+      const r = compute(1200, h, { margin });
+      if (r.maxRows !== Infinity) {
+        // total = padding*2 + maxRows*rowHeight + (maxRows-1)*margin
+        const total = r.maxRows * r.rowHeight + (r.maxRows - 1) * margin[1] + margin[1] * 2;
+        expect(total).toBeLessThanOrEqual(h);
+      }
+    }
+  });
+
+  it("MRH-5: cols are unaffected by minRowHeight", () => {
+    const a = compute(1200, 800, { minRowHeight: 50 });
+    const b = compute(1200, 800, { minRowHeight: 100 });
+    expect(a.cols).toBe(b.cols);
+    expect(a.colWidth).toBe(b.colWidth);
+  });
+
+  it("MRH-6: height=0 → maxRows=Infinity", () => {
+    expect(compute(1200, 0).maxRows).toBe(Infinity);
+  });
+
+  it("MRH-7: height < minRowHeight → maxRows=1", () => {
+    const r = compute(1200, 30);
+    // availableHeight = 30 - 12 = 18, floor((18+6)/56) = 0, clamped to 1
+    expect(r.maxRows).toBe(1);
+  });
+
+  it("MRH-8: minRowHeight=0 → clamped to 1, does not crash", () => {
+    expect(() => compute(1200, 800, { minRowHeight: 0 })).not.toThrow();
+    expect(compute(1200, 800, { minRowHeight: 0 }).maxRows).toBeGreaterThanOrEqual(1);
+  });
+
+  it("MRH-9: different minRowHeight → different maxRows", () => {
+    const small = compute(1200, 800, { minRowHeight: 50 });
+    const large = compute(1200, 800, { minRowHeight: 100 });
+    expect(small.maxRows).toBeGreaterThan(large.maxRows);
+  });
+
+  it("MRH-10: margin affects maxRows correctly", () => {
+    const tight = compute(1200, 800, { margin: [0, 0] });
+    const loose = compute(1200, 800, { margin: [10, 10] });
+    expect(tight.maxRows).toBeGreaterThan(loose.maxRows);
   });
 
   it("#15: rowHeight is always a positive integer", () => {
@@ -157,8 +259,6 @@ describe("computeAdaptiveMetrics — colWidth matches calcGridColWidth", () => {
     });
     expect(result.cols).toBe(9);
     expect(result.colWidth).toBeCloseTo(880 / 9, 2);
-    // rowHeight = round(colWidth * 0.75) = round(97.778 * 0.75) = round(73.333) = 73
-    expect(result.rowHeight).toBe(73);
   });
 });
 
@@ -172,15 +272,16 @@ describe("computeAdaptiveMetrics — maxRows", () => {
     expect(result.maxRows).toBe(Infinity);
   });
 
-  it("#8: containerHeight=800 uses computed rowHeight for maxRows", () => {
+  it("#8: containerHeight=800 uses minRowHeight for maxRows", () => {
     const margin: [number, number] = [6, 6];
     const result = compute(1200, 800, { margin, containerPadding: null });
 
     // Verify maxRows formula: accounts for vertical padding (=margin when null)
     const effectivePadding = margin;
     const availableHeight = Math.max(0, 800 - effectivePadding[1] * 2);
+    const effectiveMinRowHeight = Math.max(1, ADAPTIVE_DEFAULTS.minRowHeight);
     const expectedMaxRows = Math.floor(
-      (availableHeight + margin[1]) / (result.rowHeight + margin[1])
+      (availableHeight + margin[1]) / (effectiveMinRowHeight + margin[1])
     );
 
     expect(result.maxRows).toBe(expectedMaxRows);
@@ -238,16 +339,6 @@ describe("computeAdaptiveMetrics — edge cases", () => {
     expect(result.cols).toBe(20);
   });
 
-  it("#15b: cellAspectRatio=0 → clamped, rowHeight ≥ 1", () => {
-    const result = compute(1200, 800, { cellAspectRatio: 0 });
-    expect(result.rowHeight).toBeGreaterThanOrEqual(1);
-  });
-
-  it("#15c: cellAspectRatio=-1 → clamped, rowHeight ≥ 1", () => {
-    const result = compute(1200, 800, { cellAspectRatio: -1 });
-    expect(result.rowHeight).toBeGreaterThanOrEqual(1);
-  });
-
   it("#15d: tiny container (20px, padding 20px) → does not crash", () => {
     const result = compute(20, 100, {
       containerPadding: [20, 20],
@@ -272,7 +363,7 @@ describe("computeAdaptiveMetrics — defaults", () => {
     const withEmpty = compute(1200, 800, {});
     const withDefaults = compute(1200, 800, {
       targetCellWidth: 120,
-      cellAspectRatio: 0.75,
+      minRowHeight: 50,
       minCols: 6,
       maxCols: 24,
       margin: [6, 6],
@@ -284,7 +375,7 @@ describe("computeAdaptiveMetrics — defaults", () => {
   it("undefined adaptive options fall through to defaults", () => {
     const result = compute(1200, 800, {
       targetCellWidth: undefined,
-      cellAspectRatio: undefined,
+      minRowHeight: undefined,
     });
     const defaultResult = compute(1200, 800);
     expect(result).toEqual(defaultResult);

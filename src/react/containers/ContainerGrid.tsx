@@ -61,7 +61,7 @@ export interface ContainerGridProps {
   /**
    * When provided, cols, rowHeight, and maxRows are computed from measured
    * container dimensions. Overrides the explicit cols/rowHeight props.
-   * Pass `{}` to use all defaults (targetCellWidth=120, cellAspectRatio=0.75).
+   * Pass `{}` to use all defaults (targetCellWidth=120, minRowHeight=50).
    * When absent (undefined), behavior is unchanged — uses explicit props.
    */
   adaptive?: AdaptiveOptionsInput;

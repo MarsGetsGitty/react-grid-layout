@@ -7,13 +7,13 @@
  * The adaptive system works by:
  *   1. Choosing a column count from an approximate `targetCellWidth` hint
  *   2. Computing the real rendered column width via RGL's margin/padding formula
- *   3. Deriving row height from column width × aspect ratio
- *   4. Computing maximum rows from available container height
+ *   3. Computing maximum rows from available height ÷ minRowHeight
+ *   4. Deriving row height so total grid track height does not exceed the container
  *
  * @module core/math/adaptive-metrics
  */
 
-import { clamp, calcMaxRows } from "./calculate.js";
+import { clamp } from "./calculate.js";
 
 // ============================================================================
 // Types
@@ -38,16 +38,19 @@ export interface AdaptiveOptionsInput {
   targetCellWidth?: number;
 
   /**
-   * Cell aspect ratio: `rowHeight = round(colWidth × cellAspectRatio)`.
-   * Controls the shape of grid cells.
+   * Target minimum row height in pixels.
    *
-   * - 0.5 = landscape cells (wider than tall)
-   * - 0.75 = slightly wider than tall (default)
-   * - 1.0 = square cells
+   * Row count is computed from available height while accounting for vertical
+   * margins. rowHeight is then derived so the total grid track height does not
+   * exceed the available container height.
    *
-   * @default 0.75
+   * Rows are approximately this height when sufficient space exists. In
+   * degenerate containers, the grid clamps to one row and uses the available
+   * height.
+   *
+   * @default 50
    */
-  cellAspectRatio?: number;
+  minRowHeight?: number;
 
   /** Minimum number of columns. @default 6 */
   minCols?: number;
@@ -76,7 +79,7 @@ export interface AdaptiveOptionsInput {
  */
 export interface ResolvedAdaptiveOptions {
   readonly targetCellWidth: number;
-  readonly cellAspectRatio: number;
+  readonly minRowHeight: number;
   readonly minCols: number;
   readonly maxCols: number;
   readonly margin: readonly [number, number];
@@ -91,7 +94,7 @@ export interface AdaptiveMetrics {
   /** Computed number of columns. */
   readonly cols: number;
 
-  /** Computed row height in pixels (derived from colWidth × aspectRatio). */
+  /** Computed row height in pixels (derived from minRowHeight and available height). */
   readonly rowHeight: number;
 
   /** Computed maximum rows that fit in the container (accounts for vertical padding). */
@@ -120,7 +123,7 @@ export interface AdaptiveMetrics {
  */
 export const ADAPTIVE_DEFAULTS: Readonly<ResolvedAdaptiveOptions> = Object.freeze({
   targetCellWidth: 120,
-  cellAspectRatio: 0.75,
+  minRowHeight: 50,
   minCols: 6,
   maxCols: 24,
   margin: Object.freeze([6, 6]) as readonly [number, number],
@@ -148,7 +151,7 @@ export function computeAdaptiveMetrics(
 ): AdaptiveMetrics {
   // ── 1. Resolve options ──────────────────────────────────
   const resolved = resolveOptions(options);
-  const { minCols, maxCols, cellAspectRatio, margin, containerPadding } = resolved;
+  const { minCols, maxCols, margin, containerPadding } = resolved;
   const targetCellWidth = Math.max(1, resolved.targetCellWidth);
   const effectivePadding = containerPadding ?? margin;
 
@@ -168,13 +171,35 @@ export function computeAdaptiveMetrics(
     (containerWidth - margin[0] * (cols - 1) - effectivePadding[0] * 2) / cols;
   const colWidth = Math.max(1, rawColWidth);
 
-  // ── 4. Derive row height from aspect ratio ──────────────
-  const rawRowHeight = colWidth * Math.max(0.1, cellAspectRatio);
-  const rowHeight = Math.max(1, Math.round(rawRowHeight));
+  // ── 4. Compute rows from available height ───────────────
+  const { minRowHeight } = resolved;
+  const availableHeight = Math.max(0, containerHeight - effectivePadding[1] * 2);
 
-  // ── 5. Compute maxRows from available height ────────────
-  // Delegates to the shared calcMaxRows utility (single source of truth).
-  const maxRows = calcMaxRows(containerHeight, rowHeight, margin[1], effectivePadding[1]);
+  let rowHeight: number;
+  let maxRows: number;
+
+  if (availableHeight <= 0) {
+    // Container not measured yet or degenerate.
+    // maxRows=Infinity is EXISTING behavior (see test #7) — downstream
+    // code (ContainerGrid, DashboardGridShell, serialization) already handles it.
+    rowHeight = Math.max(1, minRowHeight);
+    maxRows = Infinity;
+  } else {
+    // maxRows: how many rows of minRowHeight fit, accounting for inter-row margins.
+    // availableHeight >= maxRows * minRowHeight + (maxRows - 1) * marginY
+    // => maxRows <= (availableHeight + marginY) / (minRowHeight + marginY)
+    const effectiveMinRowHeight = Math.max(1, minRowHeight);
+    maxRows = Math.max(1, Math.floor(
+      (availableHeight + margin[1]) / (effectiveMinRowHeight + margin[1])
+    ));
+
+    // rowHeight: does not exceed available height.
+    // Uses floor() — may leave a few slack pixels. Intentional.
+    // Contract: "does not exceed", not "fills exactly."
+    rowHeight = Math.max(1, Math.floor(
+      (availableHeight - (maxRows - 1) * margin[1]) / maxRows
+    ));
+  }
 
   return { cols, rowHeight, maxRows, colWidth };
 }
@@ -190,7 +215,7 @@ export function computeAdaptiveMetrics(
 function resolveOptions(input: AdaptiveOptionsInput): ResolvedAdaptiveOptions {
   return {
     targetCellWidth: input.targetCellWidth ?? ADAPTIVE_DEFAULTS.targetCellWidth,
-    cellAspectRatio: input.cellAspectRatio ?? ADAPTIVE_DEFAULTS.cellAspectRatio,
+    minRowHeight: input.minRowHeight ?? ADAPTIVE_DEFAULTS.minRowHeight,
     minCols: input.minCols ?? ADAPTIVE_DEFAULTS.minCols,
     maxCols: input.maxCols ?? ADAPTIVE_DEFAULTS.maxCols,
     margin: input.margin ?? ADAPTIVE_DEFAULTS.margin,
