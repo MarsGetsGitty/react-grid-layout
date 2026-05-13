@@ -585,7 +585,10 @@ type ResizeCollisionResolver = (layout: LayoutItem[], resizedId: string, oldItem
  * @param dragSlot  - The grid slot the dragged widget came from
  * @returns A new layout array with the swap applied, or `null` if no valid swap.
  */
-declare function trySwap(layout: LayoutItem[], draggedId: string, dragSlot: DragSlot): LayoutItem[] | null;
+declare function trySwap(layout: LayoutItem[], draggedId: string, dragSlot: DragSlot): {
+    layout: LayoutItem[];
+    swappedItemId: string;
+} | null;
 
 /**
  * squashPushStrategy — Recursive Squash-then-Push Resize Collision Resolution

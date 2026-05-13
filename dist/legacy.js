@@ -2,8 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var chunkAKCX3CP6_js = require('./chunk-AKCX3CP6.js');
-var chunkTNAOBXMI_js = require('./chunk-TNAOBXMI.js');
+var chunkPXL5MAMQ_js = require('./chunk-PXL5MAMQ.js');
+var chunkOUXHNDU6_js = require('./chunk-OUXHNDU6.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 var clsx = require('clsx');
@@ -96,16 +96,16 @@ function ReactGridLayout(props) {
   };
   let positionStrategy;
   if (!useCSSTransforms) {
-    positionStrategy = chunkTNAOBXMI_js.absoluteStrategy;
+    positionStrategy = chunkOUXHNDU6_js.absoluteStrategy;
   } else if (transformScale !== 1) {
-    positionStrategy = chunkTNAOBXMI_js.createScaledStrategy(transformScale);
+    positionStrategy = chunkOUXHNDU6_js.createScaledStrategy(transformScale);
   } else {
-    positionStrategy = chunkTNAOBXMI_js.transformStrategy;
+    positionStrategy = chunkOUXHNDU6_js.transformStrategy;
   }
-  const compactor = chunkTNAOBXMI_js.getCompactor(compactType, allowOverlap, preventCollision);
-  const constraints = isBounded ? [...chunkTNAOBXMI_js.defaultConstraints, chunkTNAOBXMI_js.containerBounds] : chunkTNAOBXMI_js.defaultConstraints;
+  const compactor = chunkOUXHNDU6_js.getCompactor(compactType, allowOverlap, preventCollision);
+  const constraints = isBounded ? [...chunkOUXHNDU6_js.defaultConstraints, chunkOUXHNDU6_js.containerBounds] : chunkOUXHNDU6_js.defaultConstraints;
   return /* @__PURE__ */ jsxRuntime.jsx(
-    chunkAKCX3CP6_js.GridLayout,
+    chunkPXL5MAMQ_js.GridLayout,
     {
       width,
       gridConfig,
@@ -215,15 +215,15 @@ function ResponsiveReactGridLayout(props) {
   };
   let positionStrategy;
   if (!useCSSTransforms) {
-    positionStrategy = chunkTNAOBXMI_js.absoluteStrategy;
+    positionStrategy = chunkOUXHNDU6_js.absoluteStrategy;
   } else if (transformScale !== 1) {
-    positionStrategy = chunkTNAOBXMI_js.createScaledStrategy(transformScale);
+    positionStrategy = chunkOUXHNDU6_js.createScaledStrategy(transformScale);
   } else {
-    positionStrategy = chunkTNAOBXMI_js.transformStrategy;
+    positionStrategy = chunkOUXHNDU6_js.transformStrategy;
   }
-  const compactor = chunkTNAOBXMI_js.getCompactor(compactType, allowOverlap, preventCollision);
+  const compactor = chunkOUXHNDU6_js.getCompactor(compactType, allowOverlap, preventCollision);
   return /* @__PURE__ */ jsxRuntime.jsx(
-    chunkAKCX3CP6_js.ResponsiveGridLayout,
+    chunkPXL5MAMQ_js.ResponsiveGridLayout,
     {
       width,
       breakpoint,

@@ -24,7 +24,7 @@ export function hasTargetedCollisions(layout: LayoutItem[], itemsToCheck: Layout
   );
 
   // Safety fallback: ensure targeted logic matches O(n^2) logic
-  if (typeof process !== "undefined" && process.env && process.env.NODE_ENV !== "production") {
+  if (typeof process !== "undefined" && process.env && process.env['NODE_ENV'] !== "production") {
     const baseline = hasAnyCollisions(layout);
     if (hasCollisions !== baseline) {
       console.warn("Targeted collision check mismatch! Targeted:", hasCollisions, "Baseline:", baseline);
