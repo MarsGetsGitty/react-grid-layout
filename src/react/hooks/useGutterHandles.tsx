@@ -113,11 +113,31 @@ function calcGutterPixelPos(
   pair: AdjacentPair,
   dims: GridCellDimensions,
 ): GutterPixelPos {
-  const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY } = dims;
+  const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY, cellWidths } = dims;
+
+  // Helper: pixel left edge of column `col` (handles unequal widths)
+  const colLeft = (col: number): number => {
+    if (!cellWidths) return offsetX + col * (cellWidth + gapX);
+    let x = offsetX;
+    for (let c = 0; c < col; c++) {
+      x += (cellWidths[c] ?? cellWidth) + gapX;
+    }
+    return x;
+  };
+
+  // Helper: pixel width spanning from column `start` to `start + span`
+  const colSpanWidth = (start: number, span: number): number => {
+    if (!cellWidths) return (cellWidth + gapX) * span - gapX;
+    let w = 0;
+    for (let c = start; c < start + span; c++) {
+      w += (cellWidths[c] ?? cellWidth) + gapX;
+    }
+    return w - gapX;
+  };
 
   if (pair.type === "horizontal") {
     // Gutter sits in the horizontal gap between a's right edge and b's left edge
-    const left = offsetX + pair.b.x * (cellWidth + gapX) - gapX;
+    const left = colLeft(pair.b.x) - gapX;
     const top = offsetY + pair.overlapStart * (cellHeight + gapY);
     const width = gapX;
     const height = (cellHeight + gapY) * (pair.overlapEnd - pair.overlapStart) - gapY;
@@ -125,9 +145,9 @@ function calcGutterPixelPos(
   }
 
   // Vertical: gutter sits in the vertical gap between a's bottom edge and b's top edge
-  const left = offsetX + pair.overlapStart * (cellWidth + gapX);
+  const left = colLeft(pair.overlapStart);
   const top = offsetY + pair.b.y * (cellHeight + gapY) - gapY;
-  const width = (cellWidth + gapX) * (pair.overlapEnd - pair.overlapStart) - gapX;
+  const width = colSpanWidth(pair.overlapStart, pair.overlapEnd - pair.overlapStart);
   const height = gapY;
   return { left, top, width, height };
 }
@@ -169,8 +189,9 @@ export function useGutterHandles(
       cols: gridConfig.cols,
       rowHeight: gridConfig.rowHeight,
       margin: gridConfig.margin,
+      columnWidths: gridConfig.columnWidths,
     }),
-    [containerWidth, gridConfig.cols, gridConfig.rowHeight, gridConfig.margin],
+    [containerWidth, gridConfig.cols, gridConfig.rowHeight, gridConfig.margin, gridConfig.columnWidths],
   );
 
   // Detect adjacent pairs from current layout

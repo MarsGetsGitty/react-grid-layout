@@ -20,6 +20,12 @@ export interface GridConfig {
 
   /** Maximum number of rows (default: Infinity) */
   maxRows: number;
+
+  /**
+   * Per-column width fractions (0–1, sum to 1.0). Length must equal `cols`.
+   * When absent, all columns have equal width.
+   */
+  columnWidths?: readonly number[];
 }
 
 /** Default grid configuration */

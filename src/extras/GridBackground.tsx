@@ -86,6 +86,7 @@ export function GridBackground({
   rowHeight,
   margin = [10, 10],
   containerPadding,
+  columnWidths,
   rows = 10,
   height,
   color = "#e0e0e0",
@@ -93,6 +94,7 @@ export function GridBackground({
   className,
   style
 }: GridBackgroundProps): React.ReactElement {
+
   const dims = useMemo(
     () =>
       calcGridCellDimensions({
@@ -100,9 +102,10 @@ export function GridBackground({
         cols,
         rowHeight,
         margin,
-        containerPadding
+        containerPadding,
+        columnWidths,
       }),
-    [width, cols, rowHeight, margin, containerPadding]
+    [width, cols, rowHeight, margin, containerPadding, columnWidths]
   );
 
   // Calculate number of rows
@@ -127,11 +130,12 @@ export function GridBackground({
   // Generate cell rectangles
   const cells = useMemo(() => {
     const rects: React.ReactElement[] = [];
-    const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY } = dims;
+    const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY, cellWidths } = dims;
 
     for (let row = 0; row < rowCount; row++) {
+      let x = offsetX;
       for (let col = 0; col < cols; col++) {
-        const x = offsetX + col * (cellWidth + gapX);
+        const w = cellWidths ? (cellWidths[col] ?? cellWidth) : cellWidth;
         const y = offsetY + row * (cellHeight + gapY);
 
         rects.push(
@@ -139,13 +143,14 @@ export function GridBackground({
             key={`${row}-${col}`}
             x={x}
             y={y}
-            width={cellWidth}
+            width={w}
             height={cellHeight}
             rx={borderRadius}
             ry={borderRadius}
             fill={color}
           />
         );
+        x += w + gapX;
       }
     }
 

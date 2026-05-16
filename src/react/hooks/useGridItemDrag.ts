@@ -275,6 +275,9 @@ export function useGridItemDrag(opts: UseGridItemDragOptions): UseGridItemDragRe
             calcGridItemWHPx(h, rowHeight, margin[1]);
           top = clamp(top, 0, bottomBoundary);
 
+          // TODO: columnWidths not supported with isBounded=true — widget pixel
+          // width changes per-column during drag, creating circular bounding logic.
+          // Body sections set isBounded=false, so this path never executes.
           const colWidth = calcGridColWidth(positionParams);
           const rightBoundary =
             containerWidth - calcGridItemWHPx(w, colWidth, margin[0]);

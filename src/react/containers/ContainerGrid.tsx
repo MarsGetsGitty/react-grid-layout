@@ -73,6 +73,11 @@ export interface ContainerGridProps {
   rowHeight?: number;
   margin?: [number, number];
   containerPadding?: [number, number] | null;
+  /**
+   * Per-column width fractions (0–1, sum to 1.0). Length must equal `cols`.
+   * When absent, all columns have equal width.
+   */
+  columnWidths?: readonly number[];
 
   children: React.ReactNode;
 }
@@ -92,6 +97,7 @@ export function ContainerGrid({
   rowHeight = 30,
   margin = [6, 6],
   containerPadding = null,
+  columnWidths,
   children
 }: ContainerGridProps) {
   const { containerRef, width, height } = useContainerDimensions();
@@ -128,13 +134,22 @@ export function ContainerGrid({
   const effectiveMaxRows = metrics?.maxRows
     ?? calcMaxRows(height, rowHeight, stableMargin[1], effectivePadding[1]);
 
+  // Stabilize columnWidths reference — compare by serialized content
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: compare values
+  const stableColumnWidths = useMemo(
+    () => columnWidths,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [columnWidths?.join(',')]
+  );
+
   const gridConfig = useMemo<GridConfig>(() => ({
     cols: effectiveCols,
     rowHeight: effectiveRowHeight,
     margin: stableMargin,
     containerPadding: stablePadding,
     maxRows: effectiveMaxRows,
-  }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows]);
+    ...(stableColumnWidths ? { columnWidths: stableColumnWidths } : {}),
+  }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows, stableColumnWidths]);
 
   // Use the grid arrangement hook for collision resolution.
   const { isRglInteracting, collisionResolver, handlers } = useGridArrangement({

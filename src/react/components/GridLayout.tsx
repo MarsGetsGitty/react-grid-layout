@@ -316,7 +316,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     [dropConfigProp]
   );
 
-  const { cols, rowHeight, maxRows, margin, containerPadding } = gridConfig;
+  const { cols, rowHeight, maxRows, margin, containerPadding, columnWidths } = gridConfig;
   const {
     enabled: isDraggable,
     bounded: isBounded,
@@ -503,6 +503,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
     setDroppingDOMNode,
     setDroppingPosition,
     setActiveDrag,
+    columnWidths,
   });
 
   // ============================================================================
@@ -580,6 +581,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
           constraints={constraints}
           layoutItem={l}
           layout={layout}
+          columnWidths={columnWidths}
         >
           {child}
         </GridItem>
@@ -613,7 +615,8 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
       resizeHandles,
       resizeHandle,
       constraints,
-      ghostDrag
+      ghostDrag,
+      columnWidths
     ]
   );
 
@@ -641,6 +644,7 @@ export function GridLayout(props: GridLayoutProps): ReactElement {
         transformScale={transformScale}
         constraints={constraints}
         layout={layout}
+        columnWidths={columnWidths}
       >
         <div />
       </GridItem>

@@ -72,6 +72,8 @@ export interface UseGridLayoutDropOptions {
   setDroppingDOMNode: React.Dispatch<React.SetStateAction<ReactElement | null>>;
   setDroppingPosition: React.Dispatch<React.SetStateAction<DroppingPosition | undefined>>;
   setActiveDrag: React.Dispatch<React.SetStateAction<LayoutItem | null>>;
+  /** Per-column width fractions (0–1, sum to 1.0). When absent, equal widths. */
+  columnWidths?: readonly number[];
 }
 
 export interface UseGridLayoutDropResult {
@@ -114,6 +116,7 @@ export function useGridLayoutDrop(opts: UseGridLayoutDropOptions): UseGridLayout
     setDroppingDOMNode,
     setDroppingPosition,
     setActiveDrag,
+    columnWidths,
   } = opts;
 
   const dragEnterCounterRef = React.useRef(0);
@@ -183,7 +186,8 @@ export function useGridLayoutDrop(opts: UseGridLayoutDropOptions): UseGridLayout
         maxRows,
         rowHeight,
         containerWidth: width,
-        containerPadding: effectiveContainerPadding as [number, number]
+        containerPadding: effectiveContainerPadding as [number, number],
+        ...(columnWidths ? { columnWidths } : {}),
       };
 
       const actualColWidth = calcGridColWidth(positionParams);

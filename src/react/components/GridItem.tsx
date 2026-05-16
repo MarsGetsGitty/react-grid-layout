@@ -168,6 +168,8 @@ export interface GridItemProps {
   ghostDrag?: boolean;
   /** Ref to grid container element (portal target for ghost) */
   gridContainerRef?: React.RefObject<HTMLDivElement | null>;
+  /** Per-column width fractions (0–1, sum to 1.0). When absent, equal widths. */
+  columnWidths?: readonly number[];
 }
 
 // ============================================================================
@@ -224,6 +226,7 @@ export function GridItem(props: GridItemProps): ReactElement {
     onResizeStop: onResizeStopProp,
     ghostDrag,
     gridContainerRef,
+    columnWidths,
   } = props;
 
   // Refs
@@ -241,9 +244,10 @@ export function GridItem(props: GridItemProps): ReactElement {
       containerWidth,
       margin: margin as [number, number],
       maxRows,
-      rowHeight
+      rowHeight,
+      ...(columnWidths ? { columnWidths } : {}),
     }),
-    [cols, containerPadding, containerWidth, margin, maxRows, rowHeight]
+    [cols, containerPadding, containerWidth, margin, maxRows, rowHeight, columnWidths]
   );
 
   // Constraint context
@@ -398,7 +402,7 @@ export function GridItem(props: GridItemProps): ReactElement {
   const child = React.Children.only(children);
 
   // Calculate constraints for resizing (#2235)
-  const colWidth = calcGridColWidth(positionParams);
+  const colWidth = calcGridColWidth(positionParams, x);
   const minConstraints: [number, number] = [
     calcGridItemWHPx(minW, colWidth, margin[0]),
     calcGridItemWHPx(minH, rowHeight, margin[1])

@@ -12,6 +12,10 @@ import type { Position, ResizeHandleAxis } from "../types/index.js";
 
 /**
  * Parameters needed for position calculations.
+ *
+ * When `columnWidths` is provided, columns have unequal pixel widths
+ * instead of the default equal-division model. Values are fractions
+ * (0–1) that must sum to 1.0. Length must equal `cols`.
  */
 export interface PositionParams {
   readonly margin: readonly [number, number];
@@ -20,6 +24,94 @@ export interface PositionParams {
   readonly cols: number;
   readonly rowHeight: number;
   readonly maxRows: number;
+  /** Per-column width fractions (0–1, sum to 1.0). When absent, equal widths. */
+  readonly columnWidths?: readonly number[];
+}
+
+// ============================================================================
+// Column Width Helpers (private)
+// ============================================================================
+
+/**
+ * Total usable width after subtracting padding and inter-column margins.
+ * This is the space distributed among columns.
+ */
+function usableWidth(params: PositionParams): number {
+  const { margin, containerPadding, containerWidth, cols } = params;
+  return containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2;
+}
+
+/**
+ * Pixel width of a single column.
+ *
+ * When `columnWidths` is absent, returns the equal-division width.
+ * When present, returns `fraction * usableWidth`.
+ *
+ * @param params - Grid parameters
+ * @param col - Column index (default 0)
+ */
+function calcColumnWidthPx(params: PositionParams, col: number = 0): number {
+  const { columnWidths, cols } = params;
+  if (!columnWidths) {
+    return Math.max(1, usableWidth(params) / cols);
+  }
+  const fraction = columnWidths[clamp(col, 0, cols - 1)] ?? (1 / cols);
+  return Math.max(1, fraction * usableWidth(params));
+}
+
+/**
+ * Pixel offset to the left edge of column `col`.
+ *
+ * When `columnWidths` is absent, uses `(colWidth + margin) * col + padding`.
+ * When present, sums widths of columns 0..col-1 plus margins.
+ *
+ * Handles `col >= cols` (one-past-the-end) by returning the right inner edge
+ * of the container. This is needed for margin rounding corrections.
+ *
+ * @param params - Grid parameters
+ * @param col - Column index (0-based). May equal `cols` for boundary calc.
+ */
+function calcColumnLeft(params: PositionParams, col: number): number {
+  const { margin, containerPadding, cols, columnWidths } = params;
+
+  if (!columnWidths) {
+    const colWidth = Math.max(1, usableWidth(params) / cols);
+    return (colWidth + margin[0]) * col + containerPadding[0];
+  }
+
+  // Clamp to [0, cols] — col=cols gives the right inner edge
+  const c = clamp(col, 0, cols);
+  const uw = usableWidth(params);
+  let left = containerPadding[0];
+  for (let i = 0; i < c; i++) {
+    const fraction = columnWidths[i] ?? (1 / cols);
+    left += Math.max(1, fraction * uw) + margin[0];
+  }
+  return left;
+}
+
+/**
+ * Find which column index a pixel offset falls into.
+ * Uses midpoint-crossing: snaps when cursor crosses the visual center
+ * between two column boundaries.
+ *
+ * @param params - Grid parameters (must have columnWidths)
+ * @param leftPx - Left pixel offset (relative to container)
+ * @returns Column index (0-based)
+ */
+function findColumnAtPixel(params: PositionParams, leftPx: number): number {
+  const { cols } = params;
+  // Find the column whose left edge is closest to leftPx
+  let best = 0;
+  let bestDist = Infinity;
+  for (let c = 0; c < cols; c++) {
+    const dist = Math.abs(leftPx - calcColumnLeft(params, c));
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = c;
+    }
+  }
+  return best;
 }
 
 // ============================================================================
@@ -27,17 +119,17 @@ export interface PositionParams {
 // ============================================================================
 
 /**
- * Calculate the width of a single grid column in pixels.
+ * Calculate the width of a grid column in pixels.
+ *
+ * When `columnWidths` is absent, all columns are equal and `colIndex` is ignored.
+ * When present, returns the width of the specified column.
  *
  * @param positionParams - Grid parameters
+ * @param colIndex - Column index (default 0). Only meaningful with `columnWidths`.
  * @returns Column width in pixels (minimum 1px)
  */
-export function calcGridColWidth(positionParams: PositionParams): number {
-  const { margin, containerPadding, containerWidth, cols } = positionParams;
-  return Math.max(
-    1,
-    (containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols
-  );
+export function calcGridColWidth(positionParams: PositionParams, colIndex: number = 0): number {
+  return calcColumnWidthPx(positionParams, colIndex);
 }
 
 /**
@@ -96,8 +188,8 @@ export function calcGridItemPosition(
     width: number;
   } | null
 ): Position {
-  const { margin, containerPadding, rowHeight } = positionParams;
-  const colWidth = calcGridColWidth(positionParams);
+  const { margin, containerPadding, rowHeight, columnWidths } = positionParams;
+  const colWidth = calcGridColWidth(positionParams, x);
 
   let width: number;
   let height: number;
@@ -110,7 +202,17 @@ export function calcGridItemPosition(
     height = Math.round(resizePosition.height);
   } else {
     // Calculate from grid units
-    width = calcGridItemWHPx(w, colWidth, margin[0]);
+    if (columnWidths) {
+      // With unequal columns, width = sum of column widths + inter-column margins
+      // For w=1 (body sections), this is just calcColumnWidthPx(params, x)
+      width = Math.round(
+        calcColumnLeft(positionParams, x + w) - calcColumnLeft(positionParams, x) - margin[0]
+      );
+      // Ensure minimum 1px
+      width = Math.max(1, width);
+    } else {
+      width = calcGridItemWHPx(w, colWidth, margin[0]);
+    }
     height = calcGridItemWHPx(h, rowHeight, margin[1]);
   }
 
@@ -125,7 +227,7 @@ export function calcGridItemPosition(
   } else {
     // Calculate from grid units
     top = Math.round((rowHeight + margin[1]) * y + containerPadding[1]);
-    left = Math.round((colWidth + margin[0]) * x + containerPadding[0]);
+    left = Math.round(calcColumnLeft(positionParams, x));
   }
 
   // When not dragging or resizing, fix margin inconsistencies caused by rounding.
@@ -136,9 +238,7 @@ export function calcGridItemPosition(
   if (!dragPosition && !resizePosition) {
     if (Number.isFinite(w)) {
       // Calculate where the next column's item would start
-      const siblingLeft = Math.round(
-        (colWidth + margin[0]) * (x + w) + containerPadding[0]
-      );
+      const siblingLeft = Math.round(calcColumnLeft(positionParams, x + w));
       // Calculate actual margin: sibling start - (our left + our width)
       const actualMarginRight = siblingLeft - left - width;
       // Adjust width if margin doesn't match
@@ -181,12 +281,17 @@ export function calcXY(
   w: number,
   h: number
 ): { x: number; y: number } {
-  const { margin, containerPadding, cols, rowHeight, maxRows } = positionParams;
-  const colWidth = calcGridColWidth(positionParams);
+  const { margin, containerPadding, cols, rowHeight, maxRows, columnWidths } = positionParams;
 
-  // left = containerPaddingX + x * (colWidth + marginX)
-  // x = (left - containerPaddingX) / (colWidth + marginX)
-  let x = Math.round((left - containerPadding[0]) / (colWidth + margin[0]));
+  let x: number;
+  if (columnWidths) {
+    x = findColumnAtPixel(positionParams, left);
+  } else {
+    const colWidth = calcGridColWidth(positionParams);
+    // left = containerPaddingX + x * (colWidth + marginX)
+    // x = (left - containerPaddingX) / (colWidth + marginX)
+    x = Math.round((left - containerPadding[0]) / (colWidth + margin[0]));
+  }
   let y = Math.round((top - containerPadding[1]) / (rowHeight + margin[1]));
 
   // Clamp to grid bounds
@@ -211,10 +316,15 @@ export function calcXYRaw(
   top: number,
   left: number
 ): { x: number; y: number } {
-  const { margin, containerPadding, rowHeight } = positionParams;
-  const colWidth = calcGridColWidth(positionParams);
+  const { margin, containerPadding, rowHeight, columnWidths } = positionParams;
 
-  const x = Math.round((left - containerPadding[0]) / (colWidth + margin[0]));
+  let x: number;
+  if (columnWidths) {
+    x = findColumnAtPixel(positionParams, left);
+  } else {
+    const colWidth = calcGridColWidth(positionParams);
+    x = Math.round((left - containerPadding[0]) / (colWidth + margin[0]));
+  }
   const y = Math.round((top - containerPadding[1]) / (rowHeight + margin[1]));
 
   return { x, y };
@@ -239,12 +349,24 @@ export function calcWH(
   y: number,
   handle: ResizeHandleAxis
 ): { w: number; h: number } {
-  const { margin, maxRows, cols, rowHeight } = positionParams;
-  const colWidth = calcGridColWidth(positionParams);
+  const { margin, maxRows, cols, rowHeight, columnWidths } = positionParams;
 
-  // width = colWidth * w - (margin * (w - 1))
-  // w = (width + margin) / (colWidth + margin)
-  const w = Math.round((width + margin[0]) / (colWidth + margin[0]));
+  let w: number;
+  if (columnWidths) {
+    // With unequal columns, count how many columns the pixel width spans from x
+    let remaining = width + margin[0]; // account for the margin formula
+    w = 0;
+    for (let c = x; c < cols && remaining > 0; c++) {
+      remaining -= calcColumnWidthPx(positionParams, c) + margin[0];
+      w++;
+    }
+    w = Math.max(1, w);
+  } else {
+    const colWidth = calcGridColWidth(positionParams);
+    // width = colWidth * w - (margin * (w - 1))
+    // w = (width + margin) / (colWidth + margin)
+    w = Math.round((width + margin[0]) / (colWidth + margin[0]));
+  }
   const h = Math.round((height + margin[1]) / (rowHeight + margin[1]));
 
   // Clamp based on resize handle direction
@@ -279,15 +401,24 @@ export function calcWHRaw(
   width: number,
   height: number
 ): { w: number; h: number } {
-  const { margin, rowHeight } = positionParams;
-  const colWidth = calcGridColWidth(positionParams);
+  const { margin, rowHeight, columnWidths, cols } = positionParams;
 
-  // width = colWidth * w - (margin * (w - 1))
-  // w = (width + margin) / (colWidth + margin)
-  const w = Math.max(
-    1,
-    Math.round((width + margin[0]) / (colWidth + margin[0]))
-  );
+  let w: number;
+  if (columnWidths) {
+    // With unequal columns, count columns spanned from column 0
+    let remaining = width + margin[0];
+    w = 0;
+    for (let c = 0; c < cols && remaining > 0; c++) {
+      remaining -= calcColumnWidthPx(positionParams, c) + margin[0];
+      w++;
+    }
+    w = Math.max(1, w);
+  } else {
+    const colWidth = calcGridColWidth(positionParams);
+    // width = colWidth * w - (margin * (w - 1))
+    // w = (width + margin) / (colWidth + margin)
+    w = Math.max(1, Math.round((width + margin[0]) / (colWidth + margin[0])));
+  }
   const h = Math.max(
     1,
     Math.round((height + margin[1]) / (rowHeight + margin[1]))
@@ -355,7 +486,7 @@ export function calcMaxRows(
  * Grid cell dimension information for rendering backgrounds or overlays.
  */
 export interface GridCellDimensions {
-  /** Width of a single cell in pixels */
+  /** Width of a single cell in pixels (column 0 when columnWidths is present) */
   readonly cellWidth: number;
   /** Height of a single cell in pixels */
   readonly cellHeight: number;
@@ -371,6 +502,8 @@ export interface GridCellDimensions {
   readonly cols: number;
   /** Total container width */
   readonly containerWidth: number;
+  /** Per-column pixel widths. Only present when columnWidths is provided. */
+  readonly cellWidths?: readonly number[];
 }
 
 /**
@@ -387,6 +520,8 @@ export interface GridCellConfig {
   margin?: readonly [number, number];
   /** Container padding [x, y], defaults to margin if not specified */
   containerPadding?: readonly [number, number] | null;
+  /** Per-column width fractions (0–1, sum to 1.0). When absent, equal widths. */
+  columnWidths?: readonly number[];
 }
 
 /**
@@ -395,28 +530,11 @@ export interface GridCellConfig {
  * This function provides all the measurements needed to render a visual
  * grid background that aligns with the actual grid cells.
  *
+ * When `columnWidths` is provided, `cellWidth` returns column 0's width
+ * (backward compat) and `cellWidths` provides the full per-column array.
+ *
  * @param config - Grid configuration
  * @returns Cell dimensions and offsets
- *
- * @example
- * ```tsx
- * import { calcGridCellDimensions } from 'react-grid-layout/core';
- *
- * const dims = calcGridCellDimensions({
- *   width: 1200,
- *   cols: 12,
- *   rowHeight: 30,
- *   margin: [10, 10],
- *   containerPadding: [10, 10]
- * });
- *
- * // dims.cellWidth = 88.33...
- * // dims.cellHeight = 30
- * // dims.offsetX = 10 (containerPadding[0])
- * // dims.offsetY = 10 (containerPadding[1])
- * // dims.gapX = 10 (margin[0])
- * // dims.gapY = 10 (margin[1])
- * ```
  */
 export function calcGridCellDimensions(
   config: GridCellConfig
@@ -426,16 +544,33 @@ export function calcGridCellDimensions(
     cols,
     rowHeight,
     margin = [10, 10],
-    containerPadding
+    containerPadding,
+    columnWidths
   } = config;
 
   // Container padding defaults to margin if not specified
   const padding = containerPadding ?? margin;
 
-  // Calculate cell width: total width minus padding and gaps, divided by columns
-  // Formula: width = 2*padding + cols*cellWidth + (cols-1)*gap
-  // Solving for cellWidth: cellWidth = (width - 2*padding - (cols-1)*gap) / cols
-  const cellWidth = Math.max(1, (width - padding[0] * 2 - margin[0] * (cols - 1)) / cols);
+  // Total usable width for column content
+  const uw = Math.max(0, width - padding[0] * 2 - margin[0] * (cols - 1));
+
+  if (columnWidths && columnWidths.length === cols) {
+    const cellWidths = columnWidths.map(f => Math.max(1, f * uw));
+    return {
+      cellWidth: cellWidths[0] ?? Math.max(1, uw / cols),
+      cellHeight: rowHeight,
+      offsetX: padding[0],
+      offsetY: padding[1],
+      gapX: margin[0],
+      gapY: margin[1],
+      cols,
+      containerWidth: width,
+      cellWidths
+    };
+  }
+
+  // Equal-width path (unchanged)
+  const cellWidth = Math.max(1, uw / cols);
   const cellHeight = rowHeight;
 
   return {
