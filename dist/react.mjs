@@ -1,11 +1,11 @@
-import { useContainerDimensions } from './chunk-7V3DTJND.mjs';
-export { DEFAULT_BREAKPOINTS, DEFAULT_COLS, useContainerDimensions, useGridLayout, useResponsiveLayout } from './chunk-7V3DTJND.mjs';
-import { GridLayout } from './chunk-YMDYNJJ4.mjs';
-export { GridItem, GridLayout, ResponsiveGridLayout } from './chunk-YMDYNJJ4.mjs';
-import { useGridArrangement, useGutterHandles } from './chunk-VFAIZ54Y.mjs';
-export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-VFAIZ54Y.mjs';
-import { getCompactor, computeAdaptiveMetrics, calcMaxRows } from './chunk-AVCO5IT6.mjs';
-export { bottom, calcGridItemPosition, calcWH, calcXY, cloneLayout, cloneLayoutItem, getCompactor, getLayoutItem, horizontalCompactor, noCompactor, setTopLeft, setTransform, verticalCompactor } from './chunk-AVCO5IT6.mjs';
+import { useContainerDimensions } from './chunk-2FJPQOQ4.mjs';
+export { DEFAULT_BREAKPOINTS, DEFAULT_COLS, useContainerDimensions, useGridLayout, useResponsiveLayout } from './chunk-2FJPQOQ4.mjs';
+import { GridLayout } from './chunk-W6FFXZEL.mjs';
+export { GridItem, GridLayout, ResponsiveGridLayout } from './chunk-W6FFXZEL.mjs';
+import { useGridArrangement, useGutterHandles } from './chunk-Z76V7DBR.mjs';
+export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-Z76V7DBR.mjs';
+import { getCompactor, computeAdaptiveMetrics, calcMaxRows } from './chunk-VUW57Z7P.mjs';
+export { bottom, calcGridItemPosition, calcWH, calcXY, cloneLayout, cloneLayoutItem, getCompactor, getLayoutItem, horizontalCompactor, noCompactor, setTopLeft, setTransform, verticalCompactor } from './chunk-VUW57Z7P.mjs';
 import { forwardRef, useMemo } from 'react';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 
@@ -39,6 +39,7 @@ function ContainerGrid({
   rowHeight = 30,
   margin = [6, 6],
   containerPadding = null,
+  columnWidths,
   children
 }) {
   const { containerRef, width, height } = useContainerDimensions();
@@ -55,13 +56,19 @@ function ContainerGrid({
   const effectiveRowHeight = metrics?.rowHeight ?? rowHeight;
   const effectivePadding = stablePadding ?? stableMargin;
   const effectiveMaxRows = metrics?.maxRows ?? calcMaxRows(height, rowHeight, stableMargin[1], effectivePadding[1]);
+  const stableColumnWidths = useMemo(
+    () => columnWidths,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [columnWidths?.join(",")]
+  );
   const gridConfig = useMemo(() => ({
     cols: effectiveCols,
     rowHeight: effectiveRowHeight,
     margin: stableMargin,
     containerPadding: stablePadding,
-    maxRows: effectiveMaxRows
-  }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows]);
+    maxRows: effectiveMaxRows,
+    ...stableColumnWidths ? { columnWidths: stableColumnWidths } : {}
+  }), [effectiveCols, effectiveRowHeight, stableMargin, stablePadding, effectiveMaxRows, stableColumnWidths]);
   const { isRglInteracting, collisionResolver, handlers } = useGridArrangement({
     layout,
     onLayoutChange,

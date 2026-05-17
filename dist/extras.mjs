@@ -1,6 +1,6 @@
-export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-VFAIZ54Y.mjs';
-import { calcGridCellDimensions, cloneLayout, cloneLayoutItem } from './chunk-AVCO5IT6.mjs';
-export { pcdCollisionResolver } from './chunk-AVCO5IT6.mjs';
+export { GutterHandle, useGridArrangement, useGutterHandles } from './chunk-Z76V7DBR.mjs';
+import { calcGridCellDimensions, cloneLayout, cloneLayoutItem } from './chunk-VUW57Z7P.mjs';
+export { pcdCollisionResolver } from './chunk-VUW57Z7P.mjs';
 import { useMemo } from 'react';
 import { jsx } from 'react/jsx-runtime';
 
@@ -10,6 +10,7 @@ function GridBackground({
   rowHeight,
   margin = [10, 10],
   containerPadding,
+  columnWidths,
   rows = 10,
   height,
   color = "#e0e0e0",
@@ -23,9 +24,10 @@ function GridBackground({
       cols,
       rowHeight,
       margin,
-      containerPadding
+      containerPadding,
+      columnWidths
     }),
-    [width, cols, rowHeight, margin, containerPadding]
+    [width, cols, rowHeight, margin, containerPadding, columnWidths]
   );
   const rowCount = useMemo(() => {
     if (rows !== "auto") return rows;
@@ -43,10 +45,11 @@ function GridBackground({
   }, [rowCount, rowHeight, margin, containerPadding]);
   const cells = useMemo(() => {
     const rects = [];
-    const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY } = dims;
+    const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY, cellWidths } = dims;
     for (let row = 0; row < rowCount; row++) {
+      let x = offsetX;
       for (let col = 0; col < cols; col++) {
-        const x = offsetX + col * (cellWidth + gapX);
+        const w = cellWidths ? cellWidths[col] ?? cellWidth : cellWidth;
         const y = offsetY + row * (cellHeight + gapY);
         rects.push(
           /* @__PURE__ */ jsx(
@@ -54,7 +57,7 @@ function GridBackground({
             {
               x,
               y,
-              width: cellWidth,
+              width: w,
               height: cellHeight,
               rx: borderRadius,
               ry: borderRadius,
@@ -63,6 +66,7 @@ function GridBackground({
             `${row}-${col}`
           )
         );
+        x += w + gapX;
       }
     }
     return rects;

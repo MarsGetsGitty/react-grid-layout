@@ -1,7 +1,7 @@
 'use strict';
 
-var chunkAJQFGSNA_js = require('./chunk-AJQFGSNA.js');
-var chunkOUXHNDU6_js = require('./chunk-OUXHNDU6.js');
+var chunkAQ544MS3_js = require('./chunk-AQ544MS3.js');
+var chunkNUTAZ53P_js = require('./chunk-NUTAZ53P.js');
 var react = require('react');
 var jsxRuntime = require('react/jsx-runtime');
 
@@ -11,6 +11,7 @@ function GridBackground({
   rowHeight,
   margin = [10, 10],
   containerPadding,
+  columnWidths,
   rows = 10,
   height,
   color = "#e0e0e0",
@@ -19,14 +20,15 @@ function GridBackground({
   style
 }) {
   const dims = react.useMemo(
-    () => chunkOUXHNDU6_js.calcGridCellDimensions({
+    () => chunkNUTAZ53P_js.calcGridCellDimensions({
       width,
       cols,
       rowHeight,
       margin,
-      containerPadding
+      containerPadding,
+      columnWidths
     }),
-    [width, cols, rowHeight, margin, containerPadding]
+    [width, cols, rowHeight, margin, containerPadding, columnWidths]
   );
   const rowCount = react.useMemo(() => {
     if (rows !== "auto") return rows;
@@ -44,10 +46,11 @@ function GridBackground({
   }, [rowCount, rowHeight, margin, containerPadding]);
   const cells = react.useMemo(() => {
     const rects = [];
-    const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY } = dims;
+    const { cellWidth, cellHeight, offsetX, offsetY, gapX, gapY, cellWidths } = dims;
     for (let row = 0; row < rowCount; row++) {
+      let x = offsetX;
       for (let col = 0; col < cols; col++) {
-        const x = offsetX + col * (cellWidth + gapX);
+        const w = cellWidths ? cellWidths[col] ?? cellWidth : cellWidth;
         const y = offsetY + row * (cellHeight + gapY);
         rects.push(
           /* @__PURE__ */ jsxRuntime.jsx(
@@ -55,7 +58,7 @@ function GridBackground({
             {
               x,
               y,
-              width: cellWidth,
+              width: w,
               height: cellHeight,
               rx: borderRadius,
               ry: borderRadius,
@@ -64,6 +67,7 @@ function GridBackground({
             `${row}-${col}`
           )
         );
+        x += w + gapX;
       }
     }
     return rects;
@@ -155,7 +159,7 @@ var fastVerticalCompactor = {
   type: "vertical",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkOUXHNDU6_js.cloneLayout(layout);
+    const out = chunkNUTAZ53P_js.cloneLayout(layout);
     compactVerticalFast(out, cols, false);
     return out;
   }
@@ -164,7 +168,7 @@ var fastVerticalOverlapCompactor = {
   ...fastVerticalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkOUXHNDU6_js.cloneLayout(layout);
+    const out = chunkNUTAZ53P_js.cloneLayout(layout);
     compactVerticalFast(out, cols, true);
     return out;
   }
@@ -293,7 +297,7 @@ var fastHorizontalCompactor = {
   type: "horizontal",
   allowOverlap: false,
   compact(layout, cols) {
-    const out = chunkOUXHNDU6_js.cloneLayout(layout);
+    const out = chunkNUTAZ53P_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, false);
     return out;
   }
@@ -302,7 +306,7 @@ var fastHorizontalOverlapCompactor = {
   ...fastHorizontalCompactor,
   allowOverlap: true,
   compact(layout, cols) {
-    const out = chunkOUXHNDU6_js.cloneLayout(layout);
+    const out = chunkNUTAZ53P_js.cloneLayout(layout);
     compactHorizontalFast(out, cols, true);
     return out;
   }
@@ -338,7 +342,7 @@ function compactWrap(layout, cols) {
   for (let i = 0; i < sorted.length; i++) {
     const sortedItem = sorted[i];
     if (sortedItem === void 0) continue;
-    const l = chunkOUXHNDU6_js.cloneLayoutItem(sortedItem);
+    const l = chunkNUTAZ53P_js.cloneLayoutItem(sortedItem);
     if (l.static) {
       const originalIndex2 = layout.indexOf(sortedItem);
       out[originalIndex2] = l;
@@ -376,25 +380,25 @@ var wrapOverlapCompactor = {
   ...wrapCompactor,
   allowOverlap: true,
   compact(layout, _cols) {
-    return chunkOUXHNDU6_js.cloneLayout(layout);
+    return chunkNUTAZ53P_js.cloneLayout(layout);
   }
 };
 
 Object.defineProperty(exports, "GutterHandle", {
   enumerable: true,
-  get: function () { return chunkAJQFGSNA_js.GutterHandle; }
+  get: function () { return chunkAQ544MS3_js.GutterHandle; }
 });
 Object.defineProperty(exports, "useGridArrangement", {
   enumerable: true,
-  get: function () { return chunkAJQFGSNA_js.useGridArrangement; }
+  get: function () { return chunkAQ544MS3_js.useGridArrangement; }
 });
 Object.defineProperty(exports, "useGutterHandles", {
   enumerable: true,
-  get: function () { return chunkAJQFGSNA_js.useGutterHandles; }
+  get: function () { return chunkAQ544MS3_js.useGutterHandles; }
 });
 Object.defineProperty(exports, "pcdCollisionResolver", {
   enumerable: true,
-  get: function () { return chunkOUXHNDU6_js.pcdCollisionResolver; }
+  get: function () { return chunkNUTAZ53P_js.pcdCollisionResolver; }
 });
 exports.GridBackground = GridBackground;
 exports.fastHorizontalCompactor = fastHorizontalCompactor;

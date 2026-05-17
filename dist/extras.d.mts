@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { G as GridCellConfig } from './calculate-Ci2ygafy.mjs';
-import { a as Compactor } from './layout-CFHbwcvs.mjs';
-export { p as pcdCollisionResolver } from './pcd-collision-resolver-vhKsm_v4.mjs';
-export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-ZBDWcbq5.mjs';
+import { G as GridCellConfig } from './calculate-BVArx2uS.mjs';
+import { a as Compactor } from './layout-urmPNXZn.mjs';
+export { p as pcdCollisionResolver } from './pcd-collision-resolver-XkpiDYae.mjs';
+export { G as GutterHandle, a as GutterHandleProps, U as UseGridArrangementParams, u as useGridArrangement, b as useGutterHandles } from './useGutterHandles-udUUiEew.mjs';
 import 'react/jsx-runtime';
 
 /**
@@ -76,7 +76,7 @@ interface GridBackgroundProps extends GridCellConfig {
  * }
  * ```
  */
-declare function GridBackground({ width, cols, rowHeight, margin, containerPadding, rows, height, color, borderRadius, className, style }: GridBackgroundProps): React.ReactElement;
+declare function GridBackground({ width, cols, rowHeight, margin, containerPadding, columnWidths, rows, height, color, borderRadius, className, style }: GridBackgroundProps): React.ReactElement;
 
 /**
  * Fast Vertical Compactor
